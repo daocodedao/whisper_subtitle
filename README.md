@@ -1,6 +1,6 @@
 # 安装
 ## 项目
-git clone 
+git clone https://github.com/daocodedao/whisper_subtitle.git
 ## 环境
 ```
 # 安装虚拟环境
