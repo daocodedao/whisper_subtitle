@@ -79,7 +79,7 @@ def format_timestamp(seconds: float, always_include_hours: bool = False):
 def write_srt(transcript: Iterator[dict], file: TextIO):
     '''write transcript to SRT file'''
     for i, segment in enumerate(transcript, start=1):
-        api_logger.info(
+        print(
             f"{i}\n"
             f"{format_timestamp(segment['start'], always_include_hours=True)} --> "
             f"{format_timestamp(segment['end'], always_include_hours=True)}\n"
@@ -142,6 +142,7 @@ if __name__ == "__main__":
     api_logger.info("Turning transcription into SRT subtitle file... ")
     # if len(outSrtPath) == 0:
     file_name = Path(videoPath).stem
+    os.makedirs("./out/", exist_ok=True)
     outSrtPath = "./out/{}.srt".format(file_name)
     whisper_result_to_srt(result, outPath=outSrtPath)
 
