@@ -1,15 +1,6 @@
 # 安装
 ## 项目
 git clone https://github.com/daocodedao/whisper_subtitle.git
-## 环境
-```
-# 安装虚拟环境
-python3.10 -m venv venv
-source venv/bin/activate
-
-# 安装包
-pip install -r requirements.txt
-```
 
 
 
@@ -29,35 +20,23 @@ This project
 - Add subtitles to lesson recordings to learn 3x faster by reading subtitles instead of listening. You might also navigate lectures via keywords.
 - and more...
 ## Installation
-Dependency:
-1. `ffmpeg`: used to extract audio from video
-2. `whisper`: used to generate text from audio
-   ``` bash
-   pip install whisper, ffmpeg
-   # or
-   pip3 install whisper, ffmpeg
-   ```
+
+```
+# Dependency
+python3.10 -m venv venv
+source venv/bin/activate
+
+pip install -r requirements.txt
+
+# download https://openaipublic.azureedge.net/main/whisper/models/ed3a0b6b1c0edf879ad9b11b1af5a0e6ab5db9205f891f668f8b0e6c6326e34e/base.pt
+# to models/
+```
+
 It might take a while to install `whisper`. Please be patient.
 ## Usage
-It's fairly simple, just copy and paste the following commands in your terminal.
-1. Download the project
-   ``` bash
-   git clone https://github.com/madeyexz/whisper_subtitle.git
-   ```
-2. Run `main.py`, where `video_path` is the path to your video file and `-LanguageCode` is where you choose the language of the subtitles. 
-   - Currently only `-en` and `-zh` is available for English and Chinese subtitles respectively. However if you don't specify the language, it will choose language automatically.
-   - If its your first project with `whisper` (especially with `base` model), it will take a while to download the model. Please be patient.
-
-   ``` zsh
-   python3 main.py -LanguageCode video_path
-   ```
-   e.g. 
-   ```python
-   python3 main.py -en video.mp4
-   ```
-3. Collect the result. The result will be saved in the same directory as the video file and will be named as the video file name with `.srt` extension.
-4. Play the video with subtitles. You can use VLC or any other video player. Just put the `.srt` subtitle file in the same directory with the original video and play the video via the video player. Also, check if the subtitle file has the same name with the video.
-
+```
+python generate-subtitle.py -v "path_to_your_video.mp4" -o "path_to_save_subtitles.srt" -l "zh"
+```
 
 
 
