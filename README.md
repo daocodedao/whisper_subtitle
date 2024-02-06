@@ -2,9 +2,6 @@
 ## 项目
 git clone https://github.com/daocodedao/whisper_subtitle.git
 
-
-
-
 > *This project is only available to Linux/MacOS users.*
 
 ## About This Project 
@@ -30,6 +27,12 @@ pip install -r requirements.txt
 
 # download https://openaipublic.azureedge.net/main/whisper/models/ed3a0b6b1c0edf879ad9b11b1af5a0e6ab5db9205f891f668f8b0e6c6326e34e/base.pt
 # to models/
+
+# ubuntu install font
+sudo apt install -y ttf-mscorefonts-installer
+# check font
+sudo fc-cache -f
+
 ```
 
 It might take a while to install `whisper`. Please be patient.
