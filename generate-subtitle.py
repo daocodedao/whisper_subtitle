@@ -128,7 +128,7 @@ if __name__ == "__main__":
 
     print_wait()
     if language == "zh":
-        api_logger.info("model selected: base-zh")
+        api_logger.info("模式选择: base-zh")
         print_wait()
         result, json_object = whisper_transcribe_zh(videoPath)
     elif language == "en":
