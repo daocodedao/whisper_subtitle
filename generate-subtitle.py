@@ -144,6 +144,8 @@ if __name__ == "__main__":
     file_name = Path(videoPath).stem
     os.makedirs("./out/", exist_ok=True)
     outSrtPath = "./out/{}.srt".format(file_name)
+    if os.path.isfile(outSrtPath):
+        os.remove(outSrtPath)
     whisper_result_to_srt(result, outPath=outSrtPath)
 
     end_time = time.time()
