@@ -3,7 +3,7 @@
 workdir=/data/work/aishowos/whisper_subtitle
 cd $workdir
 
-. sh/colors.sh
+. colors.sh
 
 
 echo "${YELLOW}source venv/bin/activate${NOCOLOR}"
@@ -46,4 +46,4 @@ done
 
 
 echo -e "${YELLOW}python3 $jobName  -v \"$videoPath\"  -l \"$language\" -o \"$outPath\"${NOCOLOR}"
-python3 $jobName  -p "$videoPath" -l "$language" -o "$outPath"
+python3 $jobName  -v "$videoPath" -l "$language" -o "$outPath"
