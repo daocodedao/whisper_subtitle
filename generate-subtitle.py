@@ -127,8 +127,8 @@ def replacePuncuation(srStc:str=""):
 
 def addInitPrompt(srcWord:str):
     retStr = "会用到以下词： "
-    retStr = f"{retStr}书, 心理, 心灵, 出版, 美文, 感官, "
-    retStr = f"{retStr}{srcWord}"
+    retStr = f"{retStr}书, 心理, 出版, 美文, 感官, 橙黄橘绿半甜时, "
+    # retStr = f"{retStr}{srcWord}"
     return retStr
 
 
@@ -163,6 +163,8 @@ if __name__ == "__main__":
     if language == "zh":
         api_logger.info(f"模式选择: base-zh, audioText:{audioText}")
         print_wait()
+        # initial_prompt
+        # https://github.com/openai/whisper/discussions/963
         result, json_object = whisper_transcribe_zh(videoPath, initial_prompt=audioText)
     elif language == "en":
         api_logger.info("model selected: base-en")
