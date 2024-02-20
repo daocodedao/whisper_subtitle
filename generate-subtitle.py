@@ -133,7 +133,7 @@ if __name__ == "__main__":
     if language == "zh":
         api_logger.info(f"模式选择: base-zh, audioText:{audioText}")
         print_wait()
-        result, json_object = whisper_transcribe_zh(videoPath, initial_prompt=args.audioText)
+        result, json_object = whisper_transcribe_zh(videoPath, initial_prompt=audioText)
     elif language == "en":
         api_logger.info("model selected: base-en")
         print_wait()
