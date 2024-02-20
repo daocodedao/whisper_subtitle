@@ -121,6 +121,7 @@ def replacePuncuation(srStc:str=""):
     srStc = srStc.replace('】', ']')
     srStc = srStc.replace('、', '\\')
     srStc = srStc.replace('～', '~')
+    srStc = srStc.replace(' ', '')
     return srStc
 
 
