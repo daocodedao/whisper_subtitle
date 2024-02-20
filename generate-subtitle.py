@@ -102,10 +102,12 @@ def split_text(text, line_max, line_min):
 
 
 def write_srt(transcript: Iterator[dict], file: TextIO):
-    '''write transcript to SRT file'''
+    api_logger.info("write transcript to SRT file")
     for i, segment in enumerate(transcript, start=1):
         lineStr = segment['text'].strip().replace('-->', '->')
+        api_logger.info(lineStr)
         lineStr = split_text(lineStr, 20, 10)
+        api_logger.info(lineStr)
         print(
             f"{i}\n"
             f"{format_timestamp(segment['start'], always_include_hours=True)} --> "
