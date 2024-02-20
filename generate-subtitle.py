@@ -125,6 +125,11 @@ def replacePuncuation(srStc:str=""):
     srStc = srStc.replace(' ', '')
     return srStc
 
+def addInitPrompt(srcWord:str):
+    retStr = "会用到以下词： "
+    retStr = f"{retStr}书, 心理, 心灵, 出版, 美文, 感官, "
+    retStr = f"{retStr}{srcWord}"
+
 
 if __name__ == "__main__":
     '''main function'''
@@ -148,6 +153,7 @@ if __name__ == "__main__":
     outVideoPath = args.outPath
     audioText = args.audioText
     audioText = replacePuncuation(audioText)
+    audioText = addInitPrompt(audioText)
     # outSrtPath = args.outPath
     dir = get_working_dir()
     start_time = time.time()
