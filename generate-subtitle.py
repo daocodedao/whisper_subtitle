@@ -126,7 +126,7 @@ def replacePuncuation(srStc:str=""):
     return srStc
 
 def addInitPrompt(srcWord:str):
-    retStr = "会用到以下词: "
+    retStr = ""
     retStr = f"{retStr}书, 心理, 出版, 美文, 感官, 心灵, "
     retStr = f"{retStr}{srcWord} "
     return retStr
