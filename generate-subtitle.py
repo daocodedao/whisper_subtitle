@@ -40,11 +40,11 @@ def whisper_transcribe_en(file="{}/audio.mp3".format(dir)):
     return result, json_object
 
 
-def whisper_transcribe_zh(file="{}/audio.mp3".format(dir)):
+def whisper_transcribe_zh(file="{}/audio.mp3".format(dir), initial_prompt="以下是普通话的句子。"):
     '''transcribe audio to text using whisper'''
     model = whisper.load_model(name="base", download_root=download_root)
     # 简体
-    result = model.transcribe(file, fp16=False, language="Chinese", initial_prompt="以下是普通话的句子。")
+    result = model.transcribe(file, fp16=False, language="Chinese", initial_prompt=initial_prompt)
     # 繁体
     # result = model.transcribe(file, fp16=False, language="Chinese", initial_prompt="以下是普通話的句子。")
     json_object = json.dumps(result, indent=4)
@@ -116,21 +116,24 @@ if __name__ == "__main__":
                         dest='language', type=str, default='zh')
     program.add_argument('-o', '--outPath', help='output video path',
                         dest='outPath', type=str, default='')
+    program.add_argument('-t', '--audioText', help='audio text',
+                        dest='audioText', type=str, default='')
     args = program.parse_args()
 
 
     videoPath = args.videoPath
     language = args.language
     outVideoPath = args.outPath
+    audioText = args.audioText
     # outSrtPath = args.outPath
     dir = get_working_dir()
     start_time = time.time()
 
     print_wait()
     if language == "zh":
-        api_logger.info("模式选择: base-zh")
+        api_logger.info(f"模式选择: base-zh, audioText:{audioText}")
         print_wait()
-        result, json_object = whisper_transcribe_zh(videoPath)
+        result, json_object = whisper_transcribe_zh(videoPath, initial_prompt=args.audioText)
     elif language == "en":
         api_logger.info("model selected: base-en")
         print_wait()

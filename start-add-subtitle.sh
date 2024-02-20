@@ -16,6 +16,7 @@ helpFunction()
    echo -e "\t-l language, zh en"
    echo -e "\t-v video path"
    echo -e "\t-o outPath"
+   echo -e "\t-t audio Text"
    exit 1 # Exit script after printing help
 }
 
@@ -36,6 +37,7 @@ do
       l ) language="$OPTARG" ;;
       v ) videoPath="$OPTARG" ;;
       o ) outPath="$OPTARG" ;;
+      t ) audotText="$OPTARG" ;;
       ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
    esac
 done
@@ -43,7 +45,8 @@ done
 [[ -z  $videoPath ]] &&  echo -e "${RED}videoPath is empty ${NOCOLOR}" &&  exit 1
 [[ -z  $outPath ]] &&  echo -e "${RED}outPath is empty ${NOCOLOR}" &&  exit 1
 [[ -z  $language ]] &&  language="zh"
+[[ -z  $audotText ]] &&  audotText="zh"
 
 
-echo -e "${YELLOW}python3 $jobName  -v \"$videoPath\"  -l \"$language\" -o \"$outPath\"${NOCOLOR}"
-python3 $jobName  -v "$videoPath" -l "$language" -o "$outPath"
+echo -e "${YELLOW}python3 $jobName  -v \"$videoPath\"  -l \"$language\" -o \"$outPath\"  -t \"$audotText\" ${NOCOLOR}"
+python3 $jobName  -v "$videoPath" -l "$language" -o "$outPath" -t "$audotText"
