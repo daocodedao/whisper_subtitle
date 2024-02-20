@@ -9,7 +9,7 @@ from pathlib import Path
 from combineSubtitle import *
 from utils.logger_settings import api_logger
 import re
-
+import math
 
 download_root = "./models/"
 
@@ -101,12 +101,51 @@ def split_text(text, line_max, line_min):
     # return [line.strip() for line in result if len(line) >= line_min]
 
 
+def split_cnsubtitle(str1: str, maxlen=20) -> str:
+    """
+    拆分ass字幕中长度超过maxlen个字的中文字幕，超过后是均分两份，每份字符数 int(总字符数/份数+0.5)。
+
+    默认Srt.CHINESE_SUBTITLE_LENGTH，22个字符
+
+    最多拆为5行。
+
+    如：字符共23个,按默认22字符拆分，则拆分为2行，然后均分2份，int(23/2+0.5)=12，第一行12个字符，第二行23-12=11个字符。
+
+    如：字符共50个,按默认22字符拆分，则拆分为3行，然后均分int(50/3+0.5)=17，第一二行17个字符，第三行50-17-17=16个字符。
+
+    ass以\n为折行。
+
+    Arguments:
+        str1 -- 待拆分的字符串
+
+    Returns:
+        拆分结果
+    """
+    if not str1:
+        return str1
+    ret = str1
+    strlen = len(str1)
+    splite_count = math.ceil(strlen / maxlen)
+    splite_len = math.ceil(strlen / splite_count)
+    if splite_count == 1:
+            ret = str1
+    elif splite_count == 2:
+            ret = f"{str1[0:splite_len]}\n{str1[splite_len:]}"
+    elif splite_count == 3:
+            ret = f"{str1[0:splite_len]}\n{str1[splite_len:splite_len*2]}\n{str1[splite_len*2:]}"
+    elif splite_count == 4:
+            ret = f"{str1[0:splite_len]}\n{str1[splite_len:splite_len*2]}\n{str1[splite_len*2:splite_len*3]}\n{str1[splite_len*3:]}"
+    elif splite_count == 5:
+            ret = f"{str1[0:splite_len]}\n{str1[splite_len:splite_len*2]}\n{str1[splite_len*2:splite_len*3]}\n{str1[splite_len*3:splite_len*4]}\n{str1[splite_len*4:]}"
+
+    return ret
+
 def write_srt(transcript: Iterator[dict], file: TextIO):
     api_logger.info("write transcript to SRT file")
     for i, segment in enumerate(transcript, start=1):
         lineStr = segment['text'].strip().replace('-->', '->')
         api_logger.info(lineStr)
-        lineStr = split_text(lineStr, 20, 10)
+        lineStr = split_cnsubtitle(lineStr)
         api_logger.info(lineStr)
         print(
             f"{i}\n"
