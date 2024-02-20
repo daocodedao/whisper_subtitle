@@ -127,8 +127,8 @@ def replacePuncuation(srStc:str=""):
 
 def addInitPrompt(srcWord:str):
     retStr = "会用到以下词: "
-    retStr = f"{retStr}书, 心理, 出版, 美文, 感官, 橙黄橘绿半甜时, "
-    # retStr = f"{retStr}{srcWord}"
+    retStr = f"{retStr}书, 心理, 出版, 美文, 感官, "
+    retStr = f"{retStr}{srcWord} "
     return retStr
 
 
@@ -153,7 +153,7 @@ if __name__ == "__main__":
     language = args.language
     outVideoPath = args.outPath
     audioText = args.audioText
-    audioText = replacePuncuation(audioText)
+    # audioText = replacePuncuation(audioText)
     audioText = addInitPrompt(audioText)
     # outSrtPath = args.outPath
     dir = get_working_dir()
