@@ -31,7 +31,7 @@ sudo kill -9 $TAILPID
 fi
 
 
-while getopts "l:v:o:" opt
+while getopts "l:v:o:t:" opt
 do
    case "$opt" in
       l ) language="$OPTARG" ;;
