@@ -104,6 +104,26 @@ def print_wait():
     return
 
 
+def replacePuncuation(srStc:str=""):
+    srStc = srStc.replace('，', ',')
+    srStc = srStc.replace('。', '.')
+    srStc = srStc.replace('（', '(')
+    srStc = srStc.replace('）', ')')
+    srStc = srStc.replace('“', '\"')
+    srStc = srStc.replace('”', '\"')
+    srStc = srStc.replace('：', ':')
+    srStc = srStc.replace('；', ';')
+    srStc = srStc.replace('？', '?')
+    srStc = srStc.replace('！', '!')
+    srStc = srStc.replace('《', '<')
+    srStc = srStc.replace('》', '>')
+    srStc = srStc.replace('【', '[')
+    srStc = srStc.replace('】', ']')
+    srStc = srStc.replace('、', '\\')
+    srStc = srStc.replace('～', '~')
+    return srStc
+
+
 if __name__ == "__main__":
     '''main function'''
     api_logger.info("Getting working directory...")
@@ -125,6 +145,7 @@ if __name__ == "__main__":
     language = args.language
     outVideoPath = args.outPath
     audioText = args.audioText
+    audioText = replacePuncuation(audioText)
     # outSrtPath = args.outPath
     dir = get_working_dir()
     start_time = time.time()
