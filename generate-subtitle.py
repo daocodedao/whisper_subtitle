@@ -94,7 +94,11 @@ def split_text(text, line_max, line_min):
     if current_line:
         result.append(current_line)
 
-    return [line.strip() for line in result if len(line) >= line_min]
+    retStr = ""
+    for line in result:
+        retStr = retStr + line + "\n"
+    return retStr
+    # return [line.strip() for line in result if len(line) >= line_min]
 
 
 def write_srt(transcript: Iterator[dict], file: TextIO):
@@ -106,7 +110,7 @@ def write_srt(transcript: Iterator[dict], file: TextIO):
             f"{i}\n"
             f"{format_timestamp(segment['start'], always_include_hours=True)} --> "
             f"{format_timestamp(segment['end'], always_include_hours=True)}\n"
-            f"{lineStr}\n",
+            f"{lineStr}",
             file=file,
             flush=True,
         )
