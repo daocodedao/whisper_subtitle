@@ -8,6 +8,8 @@ import argparse
 from pathlib import Path
 from combineSubtitle import *
 from utils.logger_settings import api_logger
+import re
+
 
 download_root = "./models/"
 
@@ -76,14 +78,35 @@ def format_timestamp(seconds: float, always_include_hours: bool = False):
     return f"{hours_marker}{minutes:02d}:{seconds:02d}.{milliseconds:03d}"
 
 
+# 定义函数以拆分文本
+def split_text(text, line_max, line_min):
+    sentences = re.split(r'(?<=[。！？，：:,])', text)  # 使用句号、感叹号、问号作为句子的分隔符
+    result = []
+    current_line = ""
+
+    for sentence in sentences:
+        if len(current_line) + len(sentence) <= line_max:
+            current_line += sentence
+        else:
+            result.append(current_line)
+            current_line = sentence
+
+    if current_line:
+        result.append(current_line)
+
+    return [line.strip() for line in result if len(line) >= line_min]
+
+
 def write_srt(transcript: Iterator[dict], file: TextIO):
     '''write transcript to SRT file'''
     for i, segment in enumerate(transcript, start=1):
+        lineStr = segment['text'].strip().replace('-->', '->')
+        lineStr = split_text(lineStr, 20, 10)
         print(
             f"{i}\n"
             f"{format_timestamp(segment['start'], always_include_hours=True)} --> "
             f"{format_timestamp(segment['end'], always_include_hours=True)}\n"
-            f"{segment['text'].strip().replace('-->', '->')}\n",
+            f"{lineStr}\n",
             file=file,
             flush=True,
         )
