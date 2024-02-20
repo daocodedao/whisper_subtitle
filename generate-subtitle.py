@@ -129,6 +129,7 @@ def addInitPrompt(srcWord:str):
     retStr = "会用到以下词： "
     retStr = f"{retStr}书, 心理, 心灵, 出版, 美文, 感官, "
     retStr = f"{retStr}{srcWord}"
+    return retStr
 
 
 if __name__ == "__main__":
