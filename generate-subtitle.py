@@ -78,32 +78,9 @@ def format_timestamp(seconds: float, always_include_hours: bool = False):
     return f"{hours_marker}{minutes:02d}:{seconds:02d}.{milliseconds:03d}"
 
 
-# 定义函数以拆分文本
-def split_text(text, line_max, line_min):
-    sentences = re.split(r'(?<=[。！？，：:,])', text)  # 使用句号、感叹号、问号作为句子的分隔符
-    result = []
-    current_line = ""
-
-    for sentence in sentences:
-        if len(current_line) + len(sentence) <= line_max:
-            current_line += sentence
-        else:
-            result.append(current_line)
-            current_line = sentence
-
-    if current_line:
-        result.append(current_line)
-
-    retStr = ""
-    for line in result:
-        retStr = retStr + line + "\n"
-    return retStr
-    # return [line.strip() for line in result if len(line) >= line_min]
-
-
-def split_cnsubtitle(str1: str, maxlen=20) -> str:
+def split_cnsubtitle(str1: str, maxlen=22) -> str:
     """
-    拆分ass字幕中长度超过maxlen个字的中文字幕，超过后是均分两份，每份字符数 int(总字符数/份数+0.5)。
+    拆分字幕中长度超过maxlen个字的中文字幕，超过后是均分两份，每份字符数 int(总字符数/份数+0.5)。
 
     默认Srt.CHINESE_SUBTITLE_LENGTH，22个字符
 
@@ -113,7 +90,7 @@ def split_cnsubtitle(str1: str, maxlen=20) -> str:
 
     如：字符共50个,按默认22字符拆分，则拆分为3行，然后均分int(50/3+0.5)=17，第一二行17个字符，第三行50-17-17=16个字符。
 
-    ass以\n为折行。
+    以\n为折行。
 
     Arguments:
         str1 -- 待拆分的字符串
@@ -172,26 +149,6 @@ def print_wait():
     return
 
 
-def replacePuncuation(srStc:str=""):
-    srStc = srStc.replace('，', ',')
-    srStc = srStc.replace('。', '.')
-    srStc = srStc.replace('（', '(')
-    srStc = srStc.replace('）', ')')
-    srStc = srStc.replace('“', '\"')
-    srStc = srStc.replace('”', '\"')
-    srStc = srStc.replace('：', ':')
-    srStc = srStc.replace('；', ';')
-    srStc = srStc.replace('？', '?')
-    srStc = srStc.replace('！', '!')
-    srStc = srStc.replace('《', '<')
-    srStc = srStc.replace('》', '>')
-    srStc = srStc.replace('【', '[')
-    srStc = srStc.replace('】', ']')
-    srStc = srStc.replace('、', '\\')
-    srStc = srStc.replace('～', '~')
-    srStc = srStc.replace('\\', ',')
-    srStc = srStc.replace(' ', '')
-    return srStc
 
 def addInitPrompt(srcWord:str):
     retStr = ""
