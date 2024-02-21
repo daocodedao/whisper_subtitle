@@ -45,7 +45,7 @@ do
 done
 
 [[ -z  $videoPath ]] &&  echo -e "${RED}videoPath is empty ${NOCOLOR}" &&  exit 1
-[[ -z  $outPath ]] &&  echo -e "${RED}outPath is empty ${NOCOLOR}" &&  exit 1
+[[ -z  $outPath ]] &&  outPath=""
 [[ -z  $language ]] &&  language="zh"
 [[ -z  $audioText ]] &&  audioText=""
 [[ -z  $combineVideo ]] &&  combineVideo="combine"
