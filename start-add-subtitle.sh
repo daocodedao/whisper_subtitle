@@ -17,6 +17,7 @@ helpFunction()
    echo -e "\t-v video path"
    echo -e "\t-o outPath"
    echo -e "\t-t audio Text"
+   echo -e "\t-c combine video"
    exit 1 # Exit script after printing help
 }
 
@@ -31,13 +32,14 @@ sudo kill -9 $TAILPID
 fi
 
 
-while getopts "l:v:o:t:" opt
+while getopts "l:v:o:t:c:" opt
 do
    case "$opt" in
       l ) language="$OPTARG" ;;
       v ) videoPath="$OPTARG" ;;
       o ) outPath="$OPTARG" ;;
-      t ) audotText="$OPTARG" ;;
+      t ) audioText="$OPTARG" ;;
+      c ) combineVideo="$OPTARG" ;;
       ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
    esac
 done
@@ -45,8 +47,10 @@ done
 [[ -z  $videoPath ]] &&  echo -e "${RED}videoPath is empty ${NOCOLOR}" &&  exit 1
 [[ -z  $outPath ]] &&  echo -e "${RED}outPath is empty ${NOCOLOR}" &&  exit 1
 [[ -z  $language ]] &&  language="zh"
-[[ -z  $audotText ]] &&  audotText="zh"
+[[ -z  $audioText ]] &&  audioText=""
+[[ -z  $combineVideo ]] &&  combineVideo="combine"
 
 
-echo -e "${YELLOW}python3 $jobName  -v \"$videoPath\"  -l \"$language\" -o \"$outPath\"  -t \"$audotText\" ${NOCOLOR}"
-python3 $jobName  -v "$videoPath" -l "$language" -o "$outPath" -t "$audotText"
+
+echo -e "${YELLOW}python3 $jobName  -v \"$videoPath\"  -l \"$language\" -o \"$outPath\"  -t \"$audioText\" ${NOCOLOR}"
+python3 $jobName  -v "$videoPath" -l "$language" -o "$outPath" -t "$audioText"

@@ -133,7 +133,6 @@ def write_srt(transcript: Iterator[dict], file: TextIO):
             flush=True,
         )
 
-
 def whisper_result_to_srt(whisper_result, outPath=""):
     '''converts whisper result to SRT format'''
     if len(outPath) == 0:
@@ -143,12 +142,9 @@ def whisper_result_to_srt(whisper_result, outPath=""):
         write_srt(whisper_result["segments"], file=srt)
     return
 
-
 def print_wait():
     api_logger.info("Transcribing video with Whisper... This may take long, please wait...")
     return
-
-
 
 def addInitPrompt(srcWord:str):
     retStr = ""
@@ -171,6 +167,8 @@ if __name__ == "__main__":
                         dest='outPath', type=str, default='')
     program.add_argument('-t', '--audioText', help='audio text',
                         dest='audioText', type=str, default='')
+    program.add_argument('-c', '--combineVideo', help='is need combine video',
+                        dest='combineVideo', type=str, default='combine')
     args = program.parse_args()
 
 
@@ -178,6 +176,7 @@ if __name__ == "__main__":
     language = args.language
     outVideoPath = args.outPath
     audioText = args.audioText
+    combineVideo = args.combineVideo
     # audioText = replacePuncuation(audioText)
     audioText = addInitPrompt(audioText)
     # outSrtPath = args.outPath
@@ -211,9 +210,10 @@ if __name__ == "__main__":
     end_time = time.time()
     runtime = end_time - start_time
 
-    if len(outVideoPath) == 0:
-        outPutSubtitleMp4 = f"./out/{file_name}-sub.mp4"
-    combinSubtitle(videoPath, outSrtPath, outVideoPath)
+    if combineVideo == "combine":
+        if len(outVideoPath) == 0:
+            outPutSubtitleMp4 = f"./out/{file_name}-sub.mp4"
+        combinSubtitle(videoPath, outSrtPath, outVideoPath)
 
     os.system("clear")
     api_logger.info("Done! Please check the SRT file in the working directory: {}".format(dir))
