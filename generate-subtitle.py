@@ -213,6 +213,7 @@ if __name__ == "__main__":
     if combineVideo == "combine":
         if len(outVideoPath) == 0:
             outPutSubtitleMp4 = f"./out/{file_name}-sub.mp4"
+        api_logger.info(f"合并视频{outVideoPath}")
         combinSubtitle(videoPath, outSrtPath, outVideoPath)
 
     os.system("clear")
