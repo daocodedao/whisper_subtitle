@@ -117,12 +117,13 @@ def split_cnsubtitle(str1: str, maxlen=22) -> str:
 
     return ret
 
-def write_srt(transcript: Iterator[dict], file: TextIO):
+def write_srt(transcript: Iterator[dict], file: TextIO, language:str):
     api_logger.info("write transcript to SRT file")
     for i, segment in enumerate(transcript, start=1):
         lineStr = segment['text'].strip().replace('-->', '->')
         api_logger.info(lineStr)
-        lineStr = split_cnsubtitle(lineStr)
+        if language == 'zh':
+            lineStr = split_cnsubtitle(lineStr)
         api_logger.info(lineStr)
         print(
             f"{i}\n"
@@ -133,13 +134,13 @@ def write_srt(transcript: Iterator[dict], file: TextIO):
             flush=True,
         )
 
-def whisper_result_to_srt(whisper_result, outPath=""):
+def whisper_result_to_srt(whisper_result, outPath="", language:str="cn"):
     '''converts whisper result to SRT format'''
     if len(outPath) == 0:
         file_name = Path(videoPath).stem
         outPath = "{}.srt".format(file_name)
     with open(outPath, "w", encoding="utf-8") as srt:
-        write_srt(whisper_result["segments"], file=srt)
+        write_srt(whisper_result["segments"], file=srt, language=language)
     return
 
 def print_wait():
@@ -205,7 +206,7 @@ if __name__ == "__main__":
     outSrtPath = "./out/{}.srt".format(file_name)
     if os.path.isfile(outSrtPath):
         os.remove(outSrtPath)
-    whisper_result_to_srt(result, outPath=outSrtPath)
+    whisper_result_to_srt(result, outPath=outSrtPath, language = language)
 
     end_time = time.time()
     runtime = end_time - start_time
