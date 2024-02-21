@@ -52,5 +52,5 @@ done
 
 
 
-echo -e "${YELLOW}python3 $jobName  -v \"$videoPath\"  -l \"$language\" -o \"$outPath\"  -t \"$audioText\" ${NOCOLOR}"
-python3 $jobName  -v "$videoPath" -l "$language" -o "$outPath" -t "$audioText"
+echo -e "${YELLOW}python3 $jobName  -v \"$videoPath\"  -l \"$language\" -o \"$outPath\"  -t \"$audioText\" -c \"$combineVideo\" ${NOCOLOR}"
+python3 $jobName  -v "$videoPath" -l "$language" -o "$outPath" -t "$audioText" -c "$combineVideo"
