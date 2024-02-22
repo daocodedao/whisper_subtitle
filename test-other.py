@@ -22,7 +22,8 @@ api_logger.info("5---------视频加上中文TTS")
 folder_path = os.path.dirname(outSrtCnPath)
 output_dir = os.path.join(folder_path, f"tts/")
 wav_files = [f for f in os.listdir(output_dir) if f.endswith(".wav")]
-wav_files = sorted(wav_files, key=int)
+# wav_files = wav_files.sorted(wav_files, key=lambda fname: int(fname.split('.')[0]))
+wav_files.sort(key=lambda x: '{0:0>8}'.format(x))
 
 with open(outSrtCnPath, 'r') as srcFile:
     # 读取文件内容
