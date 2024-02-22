@@ -97,7 +97,12 @@ def translate_srt(outSrtCnPath, outSrtEnPath):
                 )
 
 
-def add_cn_tts(outSrtCnPath, videoMutePath, combine_mp3_speed_path, ttsDir, videoCnPath):
+def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, processId):
+
+    ttsDir = os.path.join(videoDir, "tts")
+    combine_mp3_path = os.path.join(videoDir, f"{processId}.mp3")
+    combine_mp3_speed_path = os.path.join(videoDir, f"{processId}-speed.mp3")
+
     wav_files = [f for f in os.listdir(ttsDir) if f.endswith(".wav")]
     if(len(wav_files) == 0):
         api_logger.error("srt没有生成音频文件")
@@ -189,8 +194,7 @@ videoMutePath = os.path.join(videoDir, f"{processId}-mute.mp4")
 videoCnPath = os.path.join(videoDir, f"{processId}-cn.mp4")
 outSrtEnPath = os.path.join(videoDir, f"{processId}-en.srt")
 outSrtCnPath = os.path.join(videoDir, f"{processId}-cn.srt")
-combine_mp3_path = os.path.join(videoDir, f"{processId}-combine.mp3") 
-combine_mp3_speed_path = os.path.join(videoDir, f"{processId}-speed.mp3")
+
 
 api_logger.info("1---------视频生成英文SRT")
 result, json_object = whisper_transcribe_en(videoPath)
@@ -214,7 +218,7 @@ result = subprocess.check_output(command, shell=True)
 
 
 api_logger.info("5---------视频加上中文TTS")
-add_cn_tts(outSrtCnPath, videoMutePath, combine_mp3_speed_path, ttsDir, videoCnPath)
+add_cn_tts(outSrtCnPath, videoMutePath, videoDir, processId)
 
 
 api_logger.info("6---------上传到腾讯云")
