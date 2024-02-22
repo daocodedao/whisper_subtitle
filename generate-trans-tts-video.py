@@ -125,7 +125,7 @@ def add_cn_tts(outSrtCnPath, videoMutePath, combine_mp3_speed_path, ttsDir, vide
         if index >= len(subList):
             continue
 
-        audioFilePath = os.path.join(ttsDir, "audioFile")
+        audioFilePath = os.path.join(ttsDir, audioFile)
         genAudioDuration = Util.getMediaDuration(audioFilePath)
         sub = subList[index]
         timeDiff = sub.end.total_seconds() - sub.start.total_seconds()
@@ -207,7 +207,7 @@ result = subprocess.check_output(command, shell=True)
 
 
 api_logger.info("4---------原视频静音")
-command = f"ffmpeg -i '{videoPath}' -c copy -an {videoMutePath}"
+command = f"ffmpeg -y -i '{videoPath}' -c copy -an {videoMutePath}"
 api_logger.info(f"命令：")
 api_logger.info(command)
 result = subprocess.check_output(command, shell=True)
