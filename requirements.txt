@@ -3,3 +3,7 @@ ffmpeg
 translate
 pysrt
 srt
+pydub
+ffmpeg
+librosa
+sounddevice
