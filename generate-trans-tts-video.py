@@ -125,7 +125,7 @@ def add_cn_tts(outSrtCnPath, videoMutePath, combine_mp3_speed_path, ttsDir, vide
         if index >= len(subList):
             continue
 
-        audioFilePath = f"{ttsDir}{audioFile}"
+        audioFilePath = os.path.join(ttsDir, "audioFile")
         genAudioDuration = Util.getMediaDuration(audioFilePath)
         sub = subList[index]
         timeDiff = sub.end.total_seconds() - sub.start.total_seconds()
