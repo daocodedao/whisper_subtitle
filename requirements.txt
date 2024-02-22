@@ -7,3 +7,4 @@ pydub
 ffmpeg
 librosa
 sounddevice
+cos-python-sdk-v5

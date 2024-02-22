@@ -33,15 +33,13 @@ while getopts "v:i:" opt
 do
    case "$opt" in
       v ) videoPath="$OPTARG" ;;
-      o ) processId="$OPTARG" ;;
+      i ) processId="$OPTARG" ;;
       ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
    esac
 done
 
 [[ -z  $videoPath ]] &&  echo -e "${RED}videoPath is empty ${NOCOLOR}" &&  exit 1
 [[ -z  $processId ]] &&  echo -e "${RED}processId is empty ${NOCOLOR}" &&  exit 1
-
-
 
 
 echo -e "${YELLOW}python3 $jobName  -v \"$videoPath\"   -i \"$processId\" ${NOCOLOR}"

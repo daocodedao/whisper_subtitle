@@ -15,7 +15,7 @@ import librosa
 import soundfile as sf
 from scipy.io import wavfile
 import argparse
-
+from utils.Tos import TosService
 
 def format_timestamp(seconds: float, always_include_hours: bool = False):
     '''format timestamp to SRT format'''
@@ -218,6 +218,26 @@ add_cn_tts(outSrtCnPath, videoMutePath, combine_mp3_speed_path, ttsDir, videoCnP
 
 
 api_logger.info("6---------上传到腾讯云")
+bucketName = "magicphoto-1315251136"
+resultUrlPre = f"translate/video/{processId}/"
+videoCnName=os.path.basename(videoCnPath)
+reusultUrl = f"{resultUrlPre}{videoCnName}"
+if os.path.exists(videoCnPath):
+    api_logger.info(f"上传视频到OSS，videoCnPath:{videoCnPath}, task.key:{reusultUrl}, task.bucketName:{bucketName}")
+    TosService.upload_file(videoCnPath, reusultUrl, bucketName)
+    KCDNPlayUrl="http://magicphoto.cdn.yuebanjyapp.com/"
+    playUrl = f"{KCDNPlayUrl}{reusultUrl}"
+    api_logger.info(f"播放地址= {playUrl}")
+
+    # 打开文件并写入
+    dataFilePath = f"/data/work/translate/{processId}/output.txt"
+    os.makedirs(os.path.dirname(dataFilePath), exist_ok=True)
+    api_logger.info(f"url 列表写入文件: {dataFilePath}")
+    with open(dataFilePath, "w") as file:
+        file.write(playUrl + "\n")
+else:
+    api_logger.error(f"上传文件失败")
+    exit(1)
 
 
 
