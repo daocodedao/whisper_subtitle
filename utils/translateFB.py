@@ -15,7 +15,7 @@ def translate_en_to_zh(srcText):
     # url = "http://39.105.194.16:9890/translate/en-cn/"
     url = "http://192.168.31.69:9890/translate/en-cn/"
     
-    localIp = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1]
+    localIp = getNetworkIp()
     print(f"localIp:{localIp}")
     if "192.168.0.69" in localIp:
         # s 机房 /data/work/aishowos/bitwit-bot/start-translate-server.sh

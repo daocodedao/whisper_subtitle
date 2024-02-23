@@ -1,6 +1,6 @@
 from utils.translateFB import *
 
-print (getNetworkIp())
+# print (getNetworkIp())
 
 
 ret = translate_en_to_zh("3 daily habits that will change your life")
