@@ -1,5 +1,5 @@
 import srt
-from translate import Translator
+# from translate import Translator
 from utils.logger_settings import api_logger
 import subprocess
 import whisper
@@ -16,6 +16,7 @@ import soundfile as sf
 from scipy.io import wavfile
 import argparse
 from utils.Tos import TosService
+from utils.translateFB import *
 
 def format_timestamp(seconds: float, always_include_hours: bool = False):
     '''format timestamp to SRT format'''
@@ -75,7 +76,7 @@ def speed_change(input_file, output_file, speedRate: float = 1.0):
 
 
 def translate_srt(outSrtCnPath, outSrtEnPath):
-    translator = Translator(to_lang="zh")
+    # translator = Translator(to_lang="zh")
     # outPath='./sample/simple5-cn.srt'
     with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
         with open(outSrtEnPath, 'r') as srcFile:
@@ -83,7 +84,7 @@ def translate_srt(outSrtCnPath, outSrtEnPath):
             content = srcFile.read()
             subs = srt.parse(content)
             for sub in subs:
-                translation = translator.translate(sub.content)
+                translation = translate_en_to_zh(sub.content)
                 print(translation)
                 print(
                     f"start second:{sub.start.total_seconds()} end:{sub.end.total_seconds()}")
