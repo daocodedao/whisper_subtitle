@@ -1,4 +1,5 @@
 #!/bin/bash
+# 给视频添加字幕
 
 workdir=/data/work/aishowos/whisper_subtitle
 cd $workdir

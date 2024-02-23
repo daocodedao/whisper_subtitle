@@ -1,4 +1,5 @@
 #!/bin/bash
+# 翻译英文视频 为 中文视频
 
 workdir=/data/work/aishowos/whisper_subtitle
 cd $workdir
