@@ -9,7 +9,7 @@ model = MBartForConditionalGeneration.from_pretrained("facebook/mbart-large-50-m
 tokenizer = MBart50TokenizerFast.from_pretrained("facebook/mbart-large-50-many-to-many-mmt")
 
 
-article_cn = "This model is a fine-tuned checkpoint of mBART-large-50. mbart-large-50-many-to-many-mmt is fine-tuned for multilingual machine translation. "
+article_cn = "What to do when you get distracted "
 
 tokenizer.src_lang = "en_XX"
 encoded_zh = tokenizer(article_cn, return_tensors="pt")
