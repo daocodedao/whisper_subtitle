@@ -13,3 +13,5 @@ cos-python-sdk-v5
 transformers
 diffusers
 safetensors
+sentencepiece
+protobuf
