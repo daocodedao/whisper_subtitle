@@ -1,3 +1,5 @@
+--extra-index-url https://download.pytorch.org/whl/cu118
+
 git+https://github.com/openai/whisper.git
 ffmpeg
 translate
@@ -8,3 +10,6 @@ ffmpeg
 librosa
 sounddevice
 cos-python-sdk-v5
+transformers
+diffusers
+safetensors
