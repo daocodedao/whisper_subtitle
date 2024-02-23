@@ -8,7 +8,7 @@ def translate_en_to_zh(srcText):
     # url = "http://39.105.194.16:9890/translate/en-cn/"
     
     # s 机房 /data/work/aishowos/bitwit-bot/start-translate-server.sh
-    url = "http://192.168.0.69:9890/translate/en-cn/"
+    url = "http://127.0.0.1:9890/translate/en-cn/"
 
     data = {
         "srcLang": "en_XX",
