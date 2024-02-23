@@ -19,9 +19,10 @@ def translate_en_to_zh(srcText):
     response = requests.post(url, json=data)
     # print(response)
     json_data = response.json()
+    print(json_data)
     if json_data['code'] == 200:
         messge = json_data['message']
         return messge
     
     return ""
-    # print(json_data)
+    
