@@ -189,6 +189,8 @@ args = program.parse_args()
 videoPath = args.videoPath
 processId = args.processId
 
+api_logger.info(f"videoPath: {videoPath} processId:{processId}")
+
 language = "en"
 videoDir = os.path.dirname(videoPath)
 ttsDir = os.path.join(videoDir, "tts")
