@@ -215,28 +215,33 @@ result = subprocess.check_output(command, shell=True)
 
 
 api_logger.info("4---------原视频静音")
-command = f"ffmpeg -y -i '{videoPath}' -c copy -an {videoMutePath}"
+curVideoPath = videoPath
+command = f"ffmpeg -y -i '{curVideoPath}' -c copy -an {videoMutePath}"
 api_logger.info(f"命令：")
 api_logger.info(command)
 result = subprocess.check_output(command, shell=True)
 
 
 api_logger.info("5---------视频加上中文TTS")
-add_cn_tts(outSrtCnPath, videoMutePath, videoDir, processId)
+curVideoPath = videoMutePath
+add_cn_tts(outSrtCnPath, curVideoPath, videoDir, processId)
+
 
 
 api_logger.info("6---------视频加上中文字幕")
-combinSubtitle(videoCnPath, outSrtCnPath, videoCnSubtitlePath)
+curVideoPath = videoCnPath
+combinSubtitle(curVideoPath, outSrtCnPath, videoCnSubtitlePath)
 
 
 api_logger.info("7---------上传到腾讯云")
+curVideoPath = videoCnSubtitlePath
 bucketName = "magicphoto-1315251136"
 resultUrlPre = f"translate/video/{processId}/"
-videoCnName=os.path.basename(videoCnPath)
+videoCnName=os.path.basename(curVideoPath)
 reusultUrl = f"{resultUrlPre}{videoCnName}"
-if os.path.exists(videoCnPath):
-    api_logger.info(f"上传视频到OSS，videoCnPath:{videoCnPath}, task.key:{reusultUrl}, task.bucketName:{bucketName}")
-    TosService.upload_file(videoCnPath, reusultUrl, bucketName)
+if os.path.exists(curVideoPath):
+    api_logger.info(f"上传视频到OSS，curVideoPath:{curVideoPath}, task.key:{reusultUrl}, task.bucketName:{bucketName}")
+    TosService.upload_file(curVideoPath, reusultUrl, bucketName)
     KCDNPlayUrl="http://magicphoto.cdn.yuebanjyapp.com/"
     playUrl = f"{KCDNPlayUrl}{reusultUrl}"
     api_logger.info(f"播放地址= {playUrl}")
