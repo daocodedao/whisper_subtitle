@@ -82,7 +82,7 @@ for audioFile in wav_files:
         api_logger.info(f"加入前时长：{combined.__len__()/1000}")
         combined = combined + second_of_silence
         api_logger.info(f"加入后时长：{combined.__len__()/1000}")
-        curAudioFileDuration = curAudioFileDuration + second_of_silence
+        curAudioFileDuration = curAudioFileDuration + silence_duration/1000
 
     # srt当前总时间长
     totalSrtDuraton = totalSrtDuraton + timeDiff

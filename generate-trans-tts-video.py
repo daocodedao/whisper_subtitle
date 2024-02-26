@@ -134,10 +134,10 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, processId):
             continue
 
         audioFilePath = os.path.join(ttsDir, audioFile)
-        genAudioDuration = Util.getMediaDuration(audioFilePath)
+        curAudioFileDuration = Util.getMediaDuration(audioFilePath)
         sub = subList[index]
         timeDiff = sub.end.total_seconds() - sub.start.total_seconds()
-        api_logger.info(f"中文音频时长: {genAudioDuration} srt时长:{timeDiff}  srt时长-中文音频:{timeDiff-genAudioDuration}")
+        api_logger.info(f"中文音频时长: {curAudioFileDuration} srt时长:{timeDiff}  srt时长-中文音频:{timeDiff-curAudioFileDuration}")
 
         # 判断是否需要加入静音
         api_logger.info(f"当前字幕开始时间: {sub.start.total_seconds()} 已经合并的音频时长:{totalGenDuration}")
@@ -147,9 +147,11 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, processId):
             api_logger.info(f"需要加入静音音频， 时长：{silence_duration}毫秒")
             second_of_silence = AudioSegment.silent(duration=silence_duration)
             combined = combined + second_of_silence
+            curAudioFileDuration = curAudioFileDuration + silence_duration/1000
+
 
         totalSrtDuraton = totalSrtDuraton + timeDiff
-        totalGenDuration = totalGenDuration + genAudioDuration
+        totalGenDuration = totalGenDuration + curAudioFileDuration
         sound = AudioSegment.from_file(audioFilePath, format="wav")
 
         if combined is None:
@@ -172,8 +174,6 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, processId):
     cmd = f'ffmpeg -y -i {videoMutePath} -i {combine_mp3_path} -c:v copy -c:a aac {videoCnPath}'
     subprocess.call(cmd, shell=True)
     api_logger.info(f'完成任务: {videoCnPath}')
-
-
 
 api_logger.info("准备开始")
 
