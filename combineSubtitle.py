@@ -9,14 +9,14 @@ def check_video_verticle(filepath):
     video = cv2.VideoCapture(filepath)
     
     if not video.isOpened():
-        print("无法打开视频文件")
+        api_logger.error(f"无法打开视频文件{filepath}")
         return True
         
     # 获取第一帧图像
     ret, frame = video.read()
     
     if not ret:
-        print("读取视频失败")
+        api_logger.error(f"读取视频失败{filepath}")
         return True
     
     # 获取图像的高度和宽度
@@ -30,8 +30,10 @@ def check_video_verticle(filepath):
 
     if aspect_ratio < 1.0:
         # display_mode = "横屏"
+        api_logger.info(f"视频文件{filepath}是竖屏视频")
         return True
     else:
+        api_logger.info(f"视频文件{filepath}是横屏视频")
         return False
 
     
