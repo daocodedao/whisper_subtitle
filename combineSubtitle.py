@@ -50,10 +50,13 @@ def combinSubtitle(outPutMp4, subtitleDstPath, outPutSubtitleMp4):
 
     # 竖屏的视频，字幕距离底部更高一些
     marginBottom = 45
+    fontSize = 8
+    # 横屏
     if not check_video_verticle(outPutMp4):
-          marginBottom = 10                      
+        marginBottom = 15
+        fontSize = 12                     
 
-    ffcommand=f"ffmpeg -y -i {outPutMp4} -vf subtitles=\"{subtitleDstPath}:force_style='FontName=ubuntu,Alignment=2,Outline=1,Shadow=0,FontSize=8,MarginV={marginBottom}'\" {outPutSubtitleMp4}"
+    ffcommand=f"ffmpeg -y -i {outPutMp4} -vf subtitles=\"{subtitleDstPath}:force_style='FontName=ubuntu,Alignment=2,Outline=1,Shadow=0,FontSize={fontSize},MarginV={marginBottom}'\" {outPutSubtitleMp4}"
     api_logger.info(f"FFMPEG 合成字幕命令：")
     api_logger.info(ffcommand)
     result = subprocess.check_output(ffcommand, shell=True)
