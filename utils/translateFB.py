@@ -1,6 +1,7 @@
 
 import requests
 import socket
+from  utils.util import Util
 
 def getNetworkIp():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -10,16 +11,16 @@ def getNetworkIp():
 
 
 def translate_en_to_zh(srcText):
-    
-    # 外网
-    # url = "http://39.105.194.16:9890/translate/en-cn/"
     url = "http://192.168.31.69:9890/translate/en-cn/"
-    
-    localIp = getNetworkIp()
-    print(f"localIp:{localIp}")
-    if "192.168.0.69" in localIp:
-        # s 机房 /data/work/aishowos/bitwit-bot/start-translate-server.sh
-        url = "http://127.0.0.1:9890/translate/en-cn/"
+    # 外网
+    if Util.isMac():
+        url = "http://39.105.194.16:9890/translate/en-cn/"
+    else:
+        localIp = getNetworkIp()
+        print(f"localIp:{localIp}")
+        if "192.168.0.69" in localIp:
+            # s 机房 /data/work/aishowos/bitwit-bot/start-translate-server.sh
+            url = "http://127.0.0.1:9890/translate/en-cn/"
 
 
     data = {

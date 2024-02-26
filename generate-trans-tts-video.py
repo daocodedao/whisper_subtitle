@@ -82,19 +82,71 @@ def translate_srt(outSrtCnPath, outSrtEnPath):
             # 读取文件内容
             content = srcFile.read()
             subs = srt.parse(content)
+            subList = []
             for sub in subs:
-                translation = translate_en_to_zh(sub.content)
-                api_logger.info(sub.content)
-                api_logger.info(translation)
-                # api_logger.info(f"start second:{sub.start.total_seconds()} end:{sub.end.total_seconds()}")
-                print(
-                    f"{sub.index}\n"
-                    f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
-                    f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
-                    f"{translation}",
-                    file=outFile,
-                    flush=True,
-                )
+                subList.append(sub)
+
+            curHandleLine = -1
+            for index in range(0, len(subList)):
+                if index == curHandleLine:
+                    continue
+                sub = subList[index]
+                append_punctuations: str = "?.,"
+                # 最后一个字符不是标点符号
+                curLineContent = sub.content
+                lastChar = curLineContent[len(curLineContent) - 1]
+
+                # 结尾不是标点符号, 准备连续操作两行
+                if len(curLineContent) > 0 and lastChar not in append_punctuations and index + 1 < len(subList):
+                    curLineCharCount = Counter(curLineContent)
+                    nextLineContent = subList[index + 1].content
+                    nextLineCharCount = Counter(nextLineContent)
+                    waitTran = curLineContent + " " + nextLineContent
+                    translation = translate_en_to_zh(waitTran)
+                    api_logger.info(waitTran)
+                    api_logger.info(translation)
+
+                    # 准备写2行
+                    # 第一行
+                    line1Per = curLineCharCount.total()/(curLineCharCount.total()+nextLineCharCount.total())
+                    translationLine1 = get_substring(translation, line1Per)
+                    print(
+                        f"{sub.index}\n"
+                        f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+                        f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+                        f"{translationLine1}",
+                        file=outFile,
+                        flush=True,
+                    )
+
+                    index = index + 1
+                    curHandleLine = index
+                    sub = subList[index]
+                    translationLine1 = get_from_substring(translation, line1Per)
+                    print(
+                        f"{sub.index}\n"
+                        f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+                        f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+                        f"{translationLine1}",
+                        file=outFile,
+                        flush=True,
+                    )
+                            
+                else:
+                    # index = index + 1
+                    translation = translate_en_to_zh(sub.content)
+                    api_logger.info(sub.content)
+                    api_logger.info(translation)
+                    # api_logger.info(f"start second:{sub.start.total_seconds()} end:{sub.end.total_seconds()}")
+                    print(
+                        f"{sub.index}\n"
+                        f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+                        f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+                        f"{translation}",
+                        file=outFile,
+                        flush=True,
+                    )
+
 
 
 def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, processId):
