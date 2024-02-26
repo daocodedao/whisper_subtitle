@@ -68,23 +68,26 @@ for audioFile in wav_files:
         continue
 
     audioFilePath = f"{output_dir}{audioFile}"
-    genAudioDuration = Util.getMediaDuration(audioFilePath)
+    curAudioFileDuration = Util.getMediaDuration(audioFilePath)
     sub = subList[index]
     timeDiff = sub.end.total_seconds() - sub.start.total_seconds()
-    print(f"中文音频时长: {genAudioDuration} srt时长:{timeDiff}  srt时长-中文音频:{timeDiff-genAudioDuration}")
+    print(f"当前{audioFilePath} 中文音频时长: {curAudioFileDuration} srt时长:{timeDiff}  srt时长-中文音频:{timeDiff-curAudioFileDuration}")
 
     # 判断是否需要加入静音
     print(f"当前字幕开始时间: {sub.start.total_seconds()} 已经合并的音频时长:{totalGenDuration}")
     if sub.start.total_seconds() > totalGenDuration:
         silence_duration = (sub.start.total_seconds() - totalGenDuration)*1000
-        api_logger.info(f"需要加入静音音频， 时长：{silence_duration}毫秒")
+        api_logger.info(f"需要加入静音音频， 时长：{silence_duration/1000}秒")
         second_of_silence = AudioSegment.silent(duration=silence_duration)
-        api_logger.info(f"加入前时长：{combined.__len__()}")
+        api_logger.info(f"加入前时长：{combined.__len__()/1000}")
         combined = combined + second_of_silence
-        api_logger.info(f"加入后时长：{combined.__len__()}")
+        api_logger.info(f"加入后时长：{combined.__len__()/1000}")
+        curAudioFileDuration = curAudioFileDuration + second_of_silence
 
+    # srt当前总时间长
     totalSrtDuraton = totalSrtDuraton + timeDiff
-    totalGenDuration = totalGenDuration + genAudioDuration
+
+    totalGenDuration = totalGenDuration + curAudioFileDuration
     audioFile_speed_dir = os.path.join(folder_path, f"tts-speed/")
     sound = AudioSegment.from_file(audioFilePath, format="wav")
     
@@ -96,9 +99,10 @@ for audioFile in wav_files:
 
 file_handle = combined.export(combine_mp3_path, format="mp3")
 
-api_logger.info("判断是否需要变速")
+
 combine_mp3_duration = Util.getMediaDuration(combine_mp3_path)
 video_duration = Util.getMediaDuration(videoMutePath)
+api_logger.info(f"判断是否需要变速, combine_mp3_duration={combine_mp3_duration} video_duration={video_duration}")
 if combine_mp3_duration > video_duration:
     api_logger.info(f"视频需要变速, {combine_mp3_duration/video_duration}")
     speed_change(combine_mp3_path, combine_mp3_speed_path, combine_mp3_duration/video_duration)
