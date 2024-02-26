@@ -97,7 +97,7 @@ api_logger.info("判断是否需要变速")
 combine_mp3_duration = Util.getMediaDuration(combine_mp3_path)
 video_duration = Util.getMediaDuration(videoMutePath)
 if combine_mp3_duration > video_duration:
-    api_logger.info("视频需要变速")
+    api_logger.info(f"视频需要变速, {combine_mp3_duration/video_duration}")
     speed_change(combine_mp3_path, combine_mp3_speed_path, combine_mp3_duration/video_duration)
     combine_mp3_path = combine_mp3_speed_path
 

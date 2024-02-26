@@ -159,11 +159,12 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, processId):
 
     file_handle = combined.export(combine_mp3_path, format="mp3")
 
-    api_logger.info("判断是否需要变速")
+    
     combine_mp3_duration = Util.getMediaDuration(combine_mp3_path)
     video_duration = Util.getMediaDuration(videoMutePath)
+    api_logger.info(f"判断是否需要变速, combine_mp3_duration={combine_mp3_duration} video_duration={video_duration}")
     if combine_mp3_duration > video_duration:
-        api_logger.info("视频需要变速")
+        api_logger.info(f"视频需要变速, {combine_mp3_duration/video_duration}")
         speed_change(combine_mp3_path, combine_mp3_speed_path,
                      combine_mp3_duration/video_duration)
         combine_mp3_path = combine_mp3_speed_path
