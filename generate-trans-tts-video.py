@@ -17,6 +17,8 @@ from scipy.io import wavfile
 import argparse
 from utils.Tos import TosService
 from utils.translateFB import *
+from combineSubtitle import *
+
 
 def format_timestamp(seconds: float, always_include_hours: bool = False):
     '''format timestamp to SRT format'''
@@ -193,6 +195,7 @@ videoDir = os.path.dirname(videoPath)
 ttsDir = os.path.join(videoDir, "tts")
 videoMutePath = os.path.join(videoDir, f"{processId}-mute.mp4")
 videoCnPath = os.path.join(videoDir, f"{processId}-cn.mp4")
+videoCnSubtitlePath = os.path.join(videoDir, f"{processId}-cn-subtitle.mp4")
 outSrtEnPath = os.path.join(videoDir, f"{processId}-en.srt")
 outSrtCnPath = os.path.join(videoDir, f"{processId}-cn.srt")
 
@@ -222,7 +225,11 @@ api_logger.info("5---------视频加上中文TTS")
 add_cn_tts(outSrtCnPath, videoMutePath, videoDir, processId)
 
 
-api_logger.info("6---------上传到腾讯云")
+api_logger.info("6---------视频加上中文字幕")
+combinSubtitle(videoCnPath, outSrtCnPath, videoCnSubtitlePath)
+
+
+api_logger.info("7---------上传到腾讯云")
 bucketName = "magicphoto-1315251136"
 resultUrlPre = f"translate/video/{processId}/"
 videoCnName=os.path.basename(videoCnPath)
