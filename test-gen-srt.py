@@ -3,6 +3,7 @@ from whisper.utils import get_writer
 from utils.logger_settings import api_logger
 import whisper
 import json
+import os
 
 
 def whisper_transcribe_en(file="{}/audio.mp3".format(dir)):
@@ -19,5 +20,7 @@ result, json_object = whisper_transcribe_en(videoPath)
 
 output_directory = "./sample/out"
 # Save as an SRT file
+os.makedirs(output_directory, exist_ok=True)
+
 srt_writer = get_writer("srt", output_directory)
 srt_writer(result, videoPath)
