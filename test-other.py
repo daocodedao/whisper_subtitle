@@ -20,7 +20,7 @@ from scipy.io import wavfile
 videoDir = "/Users/linzhiji/Downloads/kRr9LQ7mZ_A/"
 videoId = "kRr9LQ7mZ_A"
 videoPath=f"{videoDir}{videoId}.mp4"
-videoMutePath=f"{videoDir}{videoId}_mute.mp4"
+videoMutePath=f"{videoDir}{videoId}-mute.mp4"
 videoCnPath=f"{videoDir}{videoId}-cn.mp4"
 
 outSrtEnPath=f"{videoDir}{videoId}-en.srt"
