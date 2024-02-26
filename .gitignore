@@ -16,3 +16,4 @@ venv/
 out/
 *.pt
 README-local.md
+sample/out/

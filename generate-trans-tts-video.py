@@ -9,16 +9,13 @@ from typing import Iterator, TextIO
 import os
 from utils.util import Util
 from pydub import AudioSegment
-import ffmpeg
-import numpy as np
 import librosa
-import soundfile as sf
 from scipy.io import wavfile
 import argparse
 from utils.Tos import TosService
 from utils.translateFB import *
 from combineSubtitle import *
-
+from whisper.utils import get_writer
 
 def format_timestamp(seconds: float, always_include_hours: bool = False):
     '''format timestamp to SRT format'''
