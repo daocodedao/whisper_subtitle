@@ -206,7 +206,11 @@ result, json_object = whisper_transcribe_en(videoPath)
 whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
 
 api_logger.info("2---------翻译中文SRT")
-translate_srt(outSrtCnPath, outSrtEnPath)
+try:
+    translate_srt(outSrtCnPath, outSrtEnPath)
+except Exception as e:
+    api_logger.error(f"翻译失败：{e}")
+    exit(1)
 
 api_logger.info("3---------中文SRT转TTS")
 command = f"/data/work/GPT-SoVITS/start-gen-voice-local.sh -l 'zh'  -s '{outSrtCnPath}' "
