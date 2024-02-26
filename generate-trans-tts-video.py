@@ -87,9 +87,8 @@ def translate_srt(outSrtCnPath, outSrtEnPath):
             subs = srt.parse(content)
             for sub in subs:
                 translation = translate_en_to_zh(sub.content)
-                print(translation)
-                print(
-                    f"start second:{sub.start.total_seconds()} end:{sub.end.total_seconds()}")
+                api_logger.info(translation)
+                api_logger.info(f"start second:{sub.start.total_seconds()} end:{sub.end.total_seconds()}")
                 print(
                     f"{sub.index}\n"
                     f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
