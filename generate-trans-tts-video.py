@@ -16,6 +16,8 @@ from utils.Tos import TosService
 from utils.translateFB import *
 from combineSubtitle import *
 from whisper.utils import get_writer
+from collections import Counter
+
 
 def format_timestamp(seconds: float, always_include_hours: bool = False):
     '''format timestamp to SRT format'''
@@ -73,6 +75,13 @@ def speed_change(input_file, output_file, speedRate: float = 1.0):
     song_2_times_faster = librosa.effects.time_stretch(song, rate=speedRate)
     wavfile.write(output_file, fs, song_2_times_faster)  # save the song
 
+def get_substring(string, percentage):
+    length = int(len(string) * percentage)
+    return string[:length]
+
+def get_from_substring(string, percentage):
+    length = int(len(string) * percentage)
+    return string[length:]
 
 def translate_srt(outSrtCnPath, outSrtEnPath):
     # translator = Translator(to_lang="zh")
@@ -110,6 +119,8 @@ def translate_srt(outSrtCnPath, outSrtEnPath):
                     # 第一行
                     line1Per = curLineCharCount.total()/(curLineCharCount.total()+nextLineCharCount.total())
                     translationLine1 = get_substring(translation, line1Per)
+                    api_logger.info(sub.content)
+                    api_logger.info(translationLine1)
                     print(
                         f"{sub.index}\n"
                         f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
@@ -123,6 +134,8 @@ def translate_srt(outSrtCnPath, outSrtEnPath):
                     curHandleLine = index
                     sub = subList[index]
                     translationLine1 = get_from_substring(translation, line1Per)
+                    api_logger.info(sub.content)
+                    api_logger.info(translationLine1)
                     print(
                         f"{sub.index}\n"
                         f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
