@@ -43,7 +43,7 @@ with open(outPath, "w", encoding="utf-8") as outFile:
         for sub in subs:
             translation = translator.translate(sub.content)
             print(translation)
-            print(f"start second:{sub.start.total_seconds()} end:{sub.end.total_seconds()}")
+            # print(f"start second:{sub.start.total_seconds()} end:{sub.end.total_seconds()}")
             print(
                 f"{sub.index}\n"
                 f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
