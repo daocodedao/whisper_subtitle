@@ -17,17 +17,18 @@ import soundfile as sf
 from scipy.io import wavfile
 
 
+videoDir = "/Users/linzhiji/Downloads/kRr9LQ7mZ_A/"
+videoId = "kRr9LQ7mZ_A"
+videoPath=f"{videoDir}{videoId}.mp4"
+videoMutePath=f"{videoDir}{videoId}_mute.mp4"
+videoCnPath=f"{videoDir}{videoId}-cn.mp4"
 
-videoPath="./sample/simple5.mp4"
-videoMutePath="./sample/simple5_mute.mp4"
-videoCnPath="./sample/simple5-cn.mp4"
-
-outSrtEnPath="./sample/simple5-en.srt"
-outSrtCnPath="./sample/simple5-cn.srt"
+outSrtEnPath=f"{videoDir}{videoId}-en.srt"
+outSrtCnPath=f"{videoDir}{videoId}-cn.srt"
 language="en"
 
-combine_mp3_path = "./sample/simple5-combine.mp3"
-combine_mp3_speed_path = "./sample/simple5-combine-speed.mp3"
+combine_mp3_path = f"{videoDir}{videoId}-combine.mp3"
+combine_mp3_speed_path = f"{videoDir}{videoId}-combine-speed.mp3"
 
 
 def speed_change(input_file, output_file, speedRate:float = 1.0):
@@ -78,7 +79,9 @@ for audioFile in wav_files:
         silence_duration = (sub.start.total_seconds() - totalGenDuration)*1000
         api_logger.info(f"需要加入静音音频， 时长：{silence_duration}毫秒")
         second_of_silence = AudioSegment.silent(duration=silence_duration)
-        scombined = combined + second_of_silence
+        api_logger.info(f"加入前时长：{combined.__len__()}")
+        combined = combined + second_of_silence
+        api_logger.info(f"加入后时长：{combined.__len__()}")
 
     totalSrtDuraton = totalSrtDuraton + timeDiff
     totalGenDuration = totalGenDuration + genAudioDuration
