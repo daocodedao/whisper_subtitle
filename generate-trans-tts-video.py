@@ -128,7 +128,7 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
     # translator = Translator(to_lang="zh")
     # outPath='./sample/simple5-cn.srt'
 
-    maxCnSubtitleLen = 22
+    maxCnSubtitleLen = 20
     if not isVerticle:
         maxCnSubtitleLen = 40
 
@@ -347,7 +347,6 @@ result = subprocess.check_output(command, shell=True)
 api_logger.info("5---------视频加上中文TTS")
 curVideoPath = videoMutePath
 add_cn_tts(outSrtCnPath, curVideoPath, videoDir, processId)
-
 
 
 api_logger.info("6---------视频加上中文字幕")

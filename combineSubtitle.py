@@ -37,8 +37,6 @@ def check_video_verticle(filepath):
         return False
 
     
- 
-    
     # return display_mode
 
 
