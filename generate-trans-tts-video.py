@@ -275,7 +275,7 @@ except Exception as e:
     exit(1)
 
 api_logger.info("3---------中文SRT转TTS")
-command = f"/data/work/GPT-SoVITS/start-gen-voice-local.sh -l 'zh'  -s '{outSrtCnPath}' "
+command = f"/data/work/GPT-SoVITS/start-gen-voice-local.sh -l 'zh'  -r 'lida' -s '{outSrtCnPath}' "
 api_logger.info(f"命令：")
 api_logger.info(command)
 result = subprocess.check_output(command, shell=True)
