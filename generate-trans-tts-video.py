@@ -245,11 +245,14 @@ program.add_argument('-v', '--video', help='videoPath',
                      dest='videoPath', type=str, default='')
 program.add_argument('-i', '--processId', help='process Id',
                      dest='processId', type=str, default='')
+program.add_argument('-r', '--role', help='role',
+                     dest='role', type=str, default='he')
 args = program.parse_args()
 
 
 videoPath = args.videoPath
 processId = args.processId
+role = args.role
 
 api_logger.info(f"videoPath: {videoPath} processId:{processId}")
 
@@ -275,7 +278,7 @@ except Exception as e:
     exit(1)
 
 api_logger.info("3---------中文SRT转TTS")
-command = f"/data/work/GPT-SoVITS/start-gen-voice-local.sh -l 'zh'  -r 'lida' -s '{outSrtCnPath}' "
+command = f"/data/work/GPT-SoVITS/start-gen-voice-local.sh -l 'zh'  -r {role} -s '{outSrtCnPath}' "
 api_logger.info(f"命令：")
 api_logger.info(command)
 result = subprocess.check_output(command, shell=True)

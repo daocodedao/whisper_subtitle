@@ -13,9 +13,10 @@ source venv/bin/activate
 helpFunction()
 {
    echo ""
-   echo "Usage: $0  -v videoPath -i processId"
+   echo "Usage: $0  -v videoPath -i processId -r role"
    echo -e "\t-v video path"
    echo -e "\t-i process id"
+   echo -e "\t-r role"
    exit 1 # Exit script after printing help
 }
 
@@ -30,18 +31,19 @@ sudo kill -9 $TAILPID
 fi
 
 
-while getopts "v:i:" opt
+while getopts "v:i:r:" opt
 do
    case "$opt" in
       v ) videoPath="$OPTARG" ;;
       i ) processId="$OPTARG" ;;
+      r ) role="$OPTARG" ;;
       ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
    esac
 done
 
 [[ -z  $videoPath ]] &&  echo -e "${RED}videoPath is empty ${NOCOLOR}" &&  exit 1
 [[ -z  $processId ]] &&  echo -e "${RED}processId is empty ${NOCOLOR}" &&  exit 1
+[[ -z  $role ]] && role="he"
 
-
-echo -e "${YELLOW}python3 $jobName  -v \"$videoPath\"   -i \"$processId\" ${NOCOLOR}"
-python3 $jobName  -v "$videoPath" -i "$processId"
+echo -e "${YELLOW}python3 $jobName  -v \"$videoPath\"   -i \"$processId\"  -r \"$role\" ${NOCOLOR}"
+python3 $jobName  -v "$videoPath" -i "$processId" -r "$role"
