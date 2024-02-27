@@ -128,9 +128,9 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
     # translator = Translator(to_lang="zh")
     # outPath='./sample/simple5-cn.srt'
 
-    maxCnSubtitleLen = 26
+    maxCnSubtitleLen = 22
     if not isVerticle:
-        maxCnSubtitleLen = 50
+        maxCnSubtitleLen = 40
 
     with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
         with open(outSrtEnPath, 'r') as srcFile:
