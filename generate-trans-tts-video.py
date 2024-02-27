@@ -17,6 +17,7 @@ from utils.translateFB import *
 from combineSubtitle import *
 from whisper.utils import get_writer
 from collections import Counter
+import math
 
 
 def format_timestamp(seconds: float, always_include_hours: bool = False):
@@ -83,9 +84,54 @@ def get_from_substring(string, percentage):
     length = int(len(string) * percentage)
     return string[length:]
 
-def translate_srt(outSrtCnPath, outSrtEnPath):
+
+def split_cnsubtitle(str1: str, maxlen=22) -> str:
+    """
+    拆分字幕中长度超过maxlen个字的中文字幕，超过后是均分两份，每份字符数 int(总字符数/份数+0.5)。
+
+    默认Srt.CHINESE_SUBTITLE_LENGTH，22个字符
+
+    最多拆为5行。
+
+    如：字符共23个,按默认22字符拆分，则拆分为2行，然后均分2份，int(23/2+0.5)=12，第一行12个字符，第二行23-12=11个字符。
+
+    如：字符共50个,按默认22字符拆分，则拆分为3行，然后均分int(50/3+0.5)=17，第一二行17个字符，第三行50-17-17=16个字符。
+
+    以\n为折行。
+
+    Arguments:
+        str1 -- 待拆分的字符串
+
+    Returns:
+        拆分结果
+    """
+    if not str1:
+        return str1
+    ret = str1
+    strlen = len(str1)
+    splite_count = math.ceil(strlen / maxlen)
+    splite_len = math.ceil(strlen / splite_count)
+    if splite_count == 1:
+            ret = str1
+    elif splite_count == 2:
+            ret = f"{str1[0:splite_len]}\n{str1[splite_len:]}"
+    elif splite_count == 3:
+            ret = f"{str1[0:splite_len]}\n{str1[splite_len:splite_len*2]}\n{str1[splite_len*2:]}"
+    elif splite_count == 4:
+            ret = f"{str1[0:splite_len]}\n{str1[splite_len:splite_len*2]}\n{str1[splite_len*2:splite_len*3]}\n{str1[splite_len*3:]}"
+    elif splite_count == 5:
+            ret = f"{str1[0:splite_len]}\n{str1[splite_len:splite_len*2]}\n{str1[splite_len*2:splite_len*3]}\n{str1[splite_len*3:splite_len*4]}\n{str1[splite_len*4:]}"
+
+    return ret
+
+def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
     # translator = Translator(to_lang="zh")
     # outPath='./sample/simple5-cn.srt'
+
+    maxCnSubtitleLen = 22
+    if not isVerticle:
+        maxCnSubtitleLen = 35
+
     with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
         with open(outSrtEnPath, 'r') as srcFile:
             # 读取文件内容
@@ -121,6 +167,7 @@ def translate_srt(outSrtCnPath, outSrtEnPath):
                     translationLine1 = get_substring(translation, line1Per)
                     api_logger.info(sub.content)
                     api_logger.info(translationLine1)
+                    translationLine1 = split_cnsubtitle(translationLine1, maxCnSubtitleLen)
                     print(
                         f"{sub.index}\n"
                         f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
@@ -136,6 +183,7 @@ def translate_srt(outSrtCnPath, outSrtEnPath):
                     translationLine1 = get_from_substring(translation, line1Per)
                     api_logger.info(sub.content)
                     api_logger.info(translationLine1)
+                    translationLine1 = split_cnsubtitle(translationLine1, maxCnSubtitleLen)
                     print(
                         f"{sub.index}\n"
                         f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
@@ -150,7 +198,7 @@ def translate_srt(outSrtCnPath, outSrtEnPath):
                     translation = translate_en_to_zh(sub.content)
                     api_logger.info(sub.content)
                     api_logger.info(translation)
-                    # api_logger.info(f"start second:{sub.start.total_seconds()} end:{sub.end.total_seconds()}")
+                    translation = split_cnsubtitle(translation, maxCnSubtitleLen)
                     print(
                         f"{sub.index}\n"
                         f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
@@ -266,6 +314,9 @@ videoCnSubtitlePath = os.path.join(videoDir, f"{processId}-cn-subtitle.mp4")
 outSrtEnPath = os.path.join(videoDir, f"{processId}-en.srt")
 outSrtCnPath = os.path.join(videoDir, f"{processId}-cn.srt")
 
+isVerticle = False
+if check_video_verticle(videoPath):
+    isVerticle = True     
 
 api_logger.info("1---------视频生成英文SRT")
 result, json_object = whisper_transcribe_en(videoPath)
@@ -273,7 +324,7 @@ whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
 
 api_logger.info("2---------翻译中文SRT")
 try:
-    translate_srt(outSrtCnPath, outSrtEnPath)
+    translate_srt(outSrtCnPath, outSrtEnPath, isVerticle)
 except Exception as e:
     api_logger.error(f"翻译失败：{e}")
     exit(1)
