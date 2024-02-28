@@ -16,3 +16,5 @@ safetensors
 sentencepiece
 protobuf
 opencv-python
+torchvision
+torchaudio
