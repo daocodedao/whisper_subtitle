@@ -12,7 +12,7 @@ pythonPath={$workdir}{$venvBinDir}python
 echo "Python path:  $pythonPath"
 
 echo "${YELLOW}source venv/bin/activate${NOCOLOR}"
-source venv/bin/activate
+source {$venvBinDir}activate
 
 helpFunction()
 {
