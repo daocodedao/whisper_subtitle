@@ -1,11 +1,15 @@
 #!/bin/bash
 # 翻译英文视频 为 中文视频
 
-workdir=/data/work/aishowos/whisper_subtitle
+workdir=/data/work/aishowos/whisper_subtitle/
 cd $workdir
 
 . colors.sh
 
+
+venvBinDir=venv/bin/
+pythonPath={$workdir}{$venvBinDir}python
+echo "Python path:  $pythonPath"
 
 echo "${YELLOW}source venv/bin/activate${NOCOLOR}"
 source venv/bin/activate
@@ -45,5 +49,5 @@ done
 [[ -z  $processId ]] &&  echo -e "${RED}processId is empty ${NOCOLOR}" &&  exit 1
 [[ -z  $role ]] && role="he"
 
-echo -e "${YELLOW}python3 $jobName  -v \"$videoPath\"   -i \"$processId\"  -r \"$role\" ${NOCOLOR}"
-python3 $jobName  -v "$videoPath" -i "$processId" -r "$role"
+echo -e "${YELLOW}{$workdir}{$venvBinDir}python3 $jobName  -v \"$videoPath\"   -i \"$processId\"  -r \"$role\" ${NOCOLOR}"
+{$workdir}{$venvBinDir}python3 $jobName  -v "$videoPath" -i "$processId" -r "$role"
