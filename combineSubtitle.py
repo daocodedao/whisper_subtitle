@@ -2,6 +2,8 @@ import subprocess
 from utils.logger_settings import api_logger
 import os
 import cv2
+import pysrt
+from pysrt import SubRipFile, SubRipItem
 
 
 def check_video_verticle(filepath):
@@ -60,3 +62,19 @@ def combinSubtitle(outPutMp4, subtitleDstPath, outPutSubtitleMp4):
     result = subprocess.check_output(ffcommand, shell=True)
 
 # ffmpeg -y -i english.mp4 -vf "subtitles=english.srt:force_style='Alignment=1,OutlineColour=&H100000000,BorderStyle=3,Outline=1,Shadow=0,FontName=Arial,FontSize=24,MarginL=40,MarginR=140,MarginV=10'"  -c:v libx264 -crf 23 -c:a copy output_video.mp4
+
+def recomposeEnSrt(srcSrtFilePath, outSrtFilePath):
+    subs = pysrt.open(srcSrtFilePath)
+    stack = []
+    for sub in subs:
+        if stack and stack[-1].text[-1].isalpha():
+            head = stack.pop()
+            tail = sub
+            new_text = head.text + ' ' + tail.text
+            merged_sub = SubRipItem(len(stack) + 1, head.start, tail.end, new_text)
+            stack.append(merged_sub)
+        else:
+            sub.index = len(stack) + 1
+            stack.append(sub)
+    new_subs = SubRipFile(items=stack)
+    new_subs.save(outSrtFilePath, encoding='utf-8')

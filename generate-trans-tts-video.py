@@ -41,7 +41,11 @@ def format_timestamp(seconds: float, always_include_hours: bool = False):
 def whisper_transcribe_en(file="{}/audio.mp3".format(dir)):
     '''transcribe audio to text using whisper'''
     model = whisper.load_model("base")
-    result = model.transcribe(file, fp16=False, language="English", word_timestamps=True)
+    init_prompt = "Umm, let me think like, hmm... Okay, here's what I'm, like, thinking."
+    
+    result = model.transcribe(file, fp16=False, language="English", word_timestamps=True, initial_prompt=init_prompt)
+    # result = model.transcribe(file, fp16=False, language="English", word_timestamps=True)
+    
     json_object = json.dumps(result, indent=4)
     return result, json_object
 
