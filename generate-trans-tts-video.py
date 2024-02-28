@@ -41,7 +41,7 @@ def format_timestamp(seconds: float, always_include_hours: bool = False):
 def whisper_transcribe_en(file="{}/audio.mp3".format(dir)):
     '''transcribe audio to text using whisper'''
     model = whisper.load_model("base")
-    result = model.transcribe(file, fp16=False, language="English")
+    result = model.transcribe(file, fp16=False, language="English", word_timestamps=True)
     json_object = json.dumps(result, indent=4)
     return result, json_object
 
@@ -125,12 +125,6 @@ def split_cnsubtitle(str1: str, maxlen=22) -> str:
     return ret
 
 def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
-    # translator = Translator(to_lang="zh")
-    # outPath='./sample/simple5-cn.srt'
-
-    # maxCnSubtitleLen = 20
-    # if not isVerticle:
-    #     maxCnSubtitleLen = 40
 
     with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
         with open(outSrtEnPath, 'r') as srcFile:
@@ -158,8 +152,8 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
                     nextLineCharCount = Counter(nextLineContent)
                     waitTran = curLineContent + " " + nextLineContent
                     translation = translate_en_to_zh(waitTran)
-                    api_logger.info(waitTran)
-                    api_logger.info(translation)
+                    api_logger.info(f">>>>{waitTran}")
+                    api_logger.info(f">>>>{translation}")
 
                     # 准备写2行
                     # 第一行
@@ -167,7 +161,6 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
                     translationLine1 = get_substring(translation, line1Per)
                     api_logger.info(sub.content)
                     api_logger.info(translationLine1)
-                    # translationLine1 = split_cnsubtitle(translationLine1, maxCnSubtitleLen)
                     print(
                         f"{sub.index}\n"
                         f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
@@ -183,7 +176,6 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
                     translationLine1 = get_from_substring(translation, line1Per)
                     api_logger.info(sub.content)
                     api_logger.info(translationLine1)
-                    # translationLine1 = split_cnsubtitle(translationLine1, maxCnSubtitleLen)
                     print(
                         f"{sub.index}\n"
                         f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
