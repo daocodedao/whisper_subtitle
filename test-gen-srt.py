@@ -58,7 +58,9 @@ def whisper_result_to_srt(whisper_result, outPath="", language: str = "cn"):
 def whisper_transcribe_en(file="{}/audio.mp3".format(dir)):
     '''transcribe audio to text using whisper'''
     model = whisper.load_model("base")
-    result = model.transcribe(file, fp16=False, language="English")
+    # result = model.transcribe(file, fp16=False, language="English")
+    init_prompt = "Umm, let me think like, like, thinking."
+    result = model.transcribe(file, fp16=False, language="English", word_timestamps=True, initial_prompt=init_prompt)
     json_object = json.dumps(result, indent=4)
     return result, json_object
 
@@ -145,22 +147,22 @@ def translate_srt(outSrtCnPath, outSrtEnPath):
 
 
 
-videoPath="./sample/simple5.mp4"
+videoPath="/Users/linzhiji/Downloads/7TWKKwwF30/7TWKKwwF30.mp4"
 videoDir = os.path.dirname(videoPath)
-processId="simple5"
+processId="7TWKKwwF30"
 outSrtEnPath = os.path.join(videoDir, f"{processId}-en.srt")
 outSrtCnPath = os.path.join(videoDir, f"{processId}-cn.srt")
 language = "en"
 
-# api_logger.info("1---------视频生成英文SRT")
-# result, json_object = whisper_transcribe_en(videoPath)
-# whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
+api_logger.info("1---------视频生成英文SRT")
+result, json_object = whisper_transcribe_en(videoPath)
+whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
 
 
 
-api_logger.info("2---------翻译中文SRT")
-try:
-    translate_srt(outSrtCnPath, outSrtEnPath)
-except Exception as e:
-    api_logger.error(f"翻译失败：{e}")
-    exit(1)
+# api_logger.info("2---------翻译中文SRT")
+# try:
+#     translate_srt(outSrtCnPath, outSrtEnPath)
+# except Exception as e:
+#     api_logger.error(f"翻译失败：{e}")
+#     exit(1)
