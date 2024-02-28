@@ -8,11 +8,11 @@ cd $workdir
 
 
 venvBinDir=venv/bin/
-pythonPath={$workdir}{$venvBinDir}python
+pythonPath=${workdir}${venvBinDir}python
 echo "Python path:  $pythonPath"
 
-echo "${YELLOW}source venv/bin/activate${NOCOLOR}"
-source {$venvBinDir}activate
+echo "${YELLOW}source ${venvBinDir}activate${NOCOLOR}"
+source ${venvBinDir}activate
 
 helpFunction()
 {
@@ -49,5 +49,5 @@ done
 [[ -z  $processId ]] &&  echo -e "${RED}processId is empty ${NOCOLOR}" &&  exit 1
 [[ -z  $role ]] && role="he"
 
-echo -e "${YELLOW}{$workdir}{$venvBinDir}python3 $jobName  -v \"$videoPath\"   -i \"$processId\"  -r \"$role\" ${NOCOLOR}"
-{$workdir}{$venvBinDir}python3 $jobName  -v "$videoPath" -i "$processId" -r "$role"
+echo -e "${YELLOW}${pythonPath} $jobName  -v \"$videoPath\"   -i \"$processId\"  -r \"$role\" ${NOCOLOR}"
+${pythonPath} $jobName  -v "$videoPath" -i "$processId" -r "$role"
