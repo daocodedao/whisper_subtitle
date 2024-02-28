@@ -42,6 +42,8 @@ def whisper_transcribe_en(file="{}/audio.mp3".format(dir)):
     '''transcribe audio to text using whisper'''
     model = whisper.load_model("base")
     # init_prompt = "Umm, let me think like, hmm... Okay, here's what I'm, like, thinking."
+    # https://github.com/openai/whisper/discussions/625
+    # init_prompt punctuator punctuation
     init_prompt = "Umm, let me think like, like, thinking."
     result = model.transcribe(file, fp16=False, language="English", word_timestamps=True, initial_prompt=init_prompt)
     # result = model.transcribe(file, fp16=False, language="English", word_timestamps=True)
