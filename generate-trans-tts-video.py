@@ -43,9 +43,9 @@ def format_timestamp(seconds: float, always_include_hours: bool = False):
 def whisper_transcribe_en(file="{}/audio.mp3".format(dir)):
     '''transcribe audio to text using whisper'''
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'mps') 
+    # device = torch.device('cuda' if torch.cuda.is_available() else 'mps') 
 
-    model = whisper.load_model("medium", download_root=download_root, device=device)
+    model = whisper.load_model("medium", download_root=download_root, device='cuda')
     # init_prompt = "Umm, let me think like, hmm... Okay, here's what I'm, like, thinking."
     # https://github.com/openai/whisper/discussions/625
     # init_prompt punctuator punctuation
