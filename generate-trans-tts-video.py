@@ -128,9 +128,9 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
     # translator = Translator(to_lang="zh")
     # outPath='./sample/simple5-cn.srt'
 
-    maxCnSubtitleLen = 20
-    if not isVerticle:
-        maxCnSubtitleLen = 40
+    # maxCnSubtitleLen = 20
+    # if not isVerticle:
+    #     maxCnSubtitleLen = 40
 
     with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
         with open(outSrtEnPath, 'r') as srcFile:
@@ -167,7 +167,7 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
                     translationLine1 = get_substring(translation, line1Per)
                     api_logger.info(sub.content)
                     api_logger.info(translationLine1)
-                    translationLine1 = split_cnsubtitle(translationLine1, maxCnSubtitleLen)
+                    # translationLine1 = split_cnsubtitle(translationLine1, maxCnSubtitleLen)
                     print(
                         f"{sub.index}\n"
                         f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
@@ -183,7 +183,7 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
                     translationLine1 = get_from_substring(translation, line1Per)
                     api_logger.info(sub.content)
                     api_logger.info(translationLine1)
-                    translationLine1 = split_cnsubtitle(translationLine1, maxCnSubtitleLen)
+                    # translationLine1 = split_cnsubtitle(translationLine1, maxCnSubtitleLen)
                     print(
                         f"{sub.index}\n"
                         f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
@@ -198,7 +198,7 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
                     translation = translate_en_to_zh(sub.content)
                     api_logger.info(sub.content)
                     api_logger.info(translation)
-                    translation = split_cnsubtitle(translation, maxCnSubtitleLen)
+                    # translation = split_cnsubtitle(translation, maxCnSubtitleLen)
                     print(
                         f"{sub.index}\n"
                         f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
@@ -208,6 +208,29 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
                         flush=True,
                     )
 
+def relayout_cn_tts(outSrtCnPath, isVerticle = True):
+    maxCnSubtitleLen = 20
+    if not isVerticle:
+        maxCnSubtitleLen = 40
+    subList = []
+    with open(outSrtCnPath, 'r') as srcFile:
+        # 读取文件内容
+        content = srcFile.read()
+        subs = srt.parse(content)
+        for sub in subs:
+            subList.append(sub)
+    
+    with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
+        for sub in subList:
+            translation = sub.content
+            translation = split_cnsubtitle(translation, maxCnSubtitleLen)
+            print(
+            f"{sub.index}\n"
+            f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+            f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+            f"{translation}",
+            file=outFile,
+            flush=True,)
 
 
 def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, processId):
@@ -324,6 +347,7 @@ whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
 
 api_logger.info("2---------翻译中文SRT")
 try:
+    # 字幕不要在这个函数里换行，会影响语音TTS
     translate_srt(outSrtCnPath, outSrtEnPath, isVerticle)
 except Exception as e:
     api_logger.error(f"翻译失败：{e}")
@@ -351,6 +375,9 @@ add_cn_tts(outSrtCnPath, curVideoPath, videoDir, processId)
 
 api_logger.info("6---------视频加上中文字幕")
 curVideoPath = videoCnPath
+if language == 'zh':
+    api_logger.info("中文字幕重新调整行数")
+    relayout_cn_tts(outSrtCnPath, isVerticle)
 combinSubtitle(curVideoPath, outSrtCnPath, videoCnSubtitlePath)
 
 
