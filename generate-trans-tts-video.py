@@ -378,9 +378,9 @@ add_cn_tts(outSrtCnPath, curVideoPath, videoDir, processId)
 
 api_logger.info("6---------视频加上中文字幕")
 curVideoPath = videoCnPath
-if language == 'zh':
-    api_logger.info("中文字幕重新调整行数")
-    relayout_cn_tts(outSrtCnPath, isVerticle)
+# if language == 'zh':
+api_logger.info("中文字幕重新调整行数")
+relayout_cn_tts(outSrtCnPath, isVerticle)
 combinSubtitle(curVideoPath, outSrtCnPath, videoCnSubtitlePath)
 
 
