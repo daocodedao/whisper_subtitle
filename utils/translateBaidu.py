@@ -44,9 +44,8 @@ def translate_en_to_zh(srcText):
     r = requests.post(url, params=payload, headers=headers)
     result = r.json()
 
-    # Show response
-    messge = json.dumps(result, indent=4, ensure_ascii=False)
-
-    return messge
+    messgeJson = result['trans_result'][0]
+    message =  messgeJson['dst']
+    return message
 
         
