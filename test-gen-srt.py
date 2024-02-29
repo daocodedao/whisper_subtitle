@@ -60,7 +60,7 @@ def whisper_transcribe_en(file="{}/audio.mp3".format(dir), download_root = "./mo
     model = whisper.load_model("medium", download_root=download_root, device='cuda')
 
     # result = model.transcribe(file, fp16=False, language="English")
-    init_prompt = "Umm, let me think like, like, thinking."
+    init_prompt = "I have some advice for you. multiple sentences help establish a pattern. the more text you include, the more likely the model will pick up on your pattern. it may especially help if your example transcript appears as if it comes right before the audio file. in this case, that could mean mentioning the contacts i stick in my eyes."
     result = model.transcribe(file, fp16=False, language="English", word_timestamps=True, initial_prompt=init_prompt)
     json_object = json.dumps(result, indent=4)
     return result, json_object
