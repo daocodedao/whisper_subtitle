@@ -55,7 +55,7 @@ def whisper_result_to_srt(whisper_result, outPath="", language: str = "cn"):
     return
 
 
-def whisper_transcribe_en(file="{}/audio.mp3".format(dir)):
+def whisper_transcribe_en(file="{}/audio.mp3".format(dir), download_root = "./models/"):
     '''transcribe audio to text using whisper'''
     model = whisper.load_model("medium", download_root=download_root, device='cuda')
 

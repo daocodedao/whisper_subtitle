@@ -20,7 +20,7 @@ from collections import Counter
 import math
 import torch
 
-download_root = "./models/"
+
 
 def format_timestamp(seconds: float, always_include_hours: bool = False):
     '''format timestamp to SRT format'''
@@ -40,7 +40,7 @@ def format_timestamp(seconds: float, always_include_hours: bool = False):
     return f"{hours_marker}{minutes:02d}:{seconds:02d}.{milliseconds:03d}"
 
 
-def whisper_transcribe_en(file="{}/audio.mp3".format(dir)):
+def whisper_transcribe_en(file="{}/audio.mp3".format(dir), download_root = "./models/"):
     '''transcribe audio to text using whisper'''
     api_logger.info(f"生成字幕：file={file}")
     # device = torch.device('cuda' if torch.cuda.is_available() else 'mps') 

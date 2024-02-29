@@ -26,7 +26,7 @@ def get_working_dir():
     return working_dir
 
 
-def whisper_transcribe_auto_lang(file="{}/audio.mp3".format(dir)):
+def whisper_transcribe_auto_lang(file="{}/audio.mp3".format(dir), download_root = "./models/"):
     '''transcribe audio to text using whisper'''
     model = whisper.load_model("medium", download_root=download_root, device='cuda')
     result = model.transcribe(file, fp16=False)
@@ -34,7 +34,7 @@ def whisper_transcribe_auto_lang(file="{}/audio.mp3".format(dir)):
     return result, json_object
 
 
-def whisper_transcribe_en(file="{}/audio.mp3".format(dir)):
+def whisper_transcribe_en(file="{}/audio.mp3".format(dir), download_root = "./models/"):
     '''transcribe audio to text using whisper'''
     model = whisper.load_model("medium", download_root=download_root, device='cuda')
     result = model.transcribe(file, fp16=False, language="English")
