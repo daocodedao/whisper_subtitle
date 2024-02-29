@@ -28,7 +28,7 @@ def get_working_dir():
 
 def whisper_transcribe_auto_lang(file="{}/audio.mp3".format(dir)):
     '''transcribe audio to text using whisper'''
-    model = whisper.load_model("base")
+    model = whisper.load_model("medium", download_root=download_root, device='cuda')
     result = model.transcribe(file, fp16=False)
     json_object = json.dumps(result, indent=4)
     return result, json_object
@@ -36,7 +36,7 @@ def whisper_transcribe_auto_lang(file="{}/audio.mp3".format(dir)):
 
 def whisper_transcribe_en(file="{}/audio.mp3".format(dir)):
     '''transcribe audio to text using whisper'''
-    model = whisper.load_model("base")
+    model = whisper.load_model("medium", download_root=download_root, device='cuda')
     result = model.transcribe(file, fp16=False, language="English")
     json_object = json.dumps(result, indent=4)
     return result, json_object
@@ -44,7 +44,8 @@ def whisper_transcribe_en(file="{}/audio.mp3".format(dir)):
 
 def whisper_transcribe_zh(file="{}/audio.mp3".format(dir), initial_prompt="以下是普通话的句子。"):
     '''transcribe audio to text using whisper'''
-    model = whisper.load_model(name="base", download_root=download_root)
+    model = whisper.load_model("medium", download_root=download_root, device='cuda')
+
     # 简体
     result = model.transcribe(file, fp16=False, language="Chinese", initial_prompt=initial_prompt)
     # 繁体

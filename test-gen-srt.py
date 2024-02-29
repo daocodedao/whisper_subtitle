@@ -57,7 +57,8 @@ def whisper_result_to_srt(whisper_result, outPath="", language: str = "cn"):
 
 def whisper_transcribe_en(file="{}/audio.mp3".format(dir)):
     '''transcribe audio to text using whisper'''
-    model = whisper.load_model("base")
+    model = whisper.load_model("medium", download_root=download_root, device='cuda')
+
     # result = model.transcribe(file, fp16=False, language="English")
     init_prompt = "Umm, let me think like, like, thinking."
     result = model.transcribe(file, fp16=False, language="English", word_timestamps=True, initial_prompt=init_prompt)
