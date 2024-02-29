@@ -258,8 +258,7 @@ def split_by_punctuations(instr, punctuations: list[str] = [",",".","?"]):
 
 # 重新组合 英文字幕，这一行末尾不是英文标点符号，就到下一行去拿内容到这行
 def recom_en_srt(inSrcFilePath, outSrcFilePath):
-     # translator = Translator(to_lang="zh")
-    # outPath='./sample/simple5-cn.srt'
+
     with open(outSrcFilePath, "w", encoding="utf-8") as outFile:
         with open(inSrcFilePath, 'r') as srcFile:
             # 读取文件内容
