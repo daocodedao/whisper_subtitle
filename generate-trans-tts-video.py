@@ -431,7 +431,7 @@ api_logger.info("1---------视频生成英文SRT")
 result, json_object = whisper_transcribe_en(videoPath)
 whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
 api_logger.info("整理英文SRT")
-recom_en_srt(inSrcFilePath=outSrtCnPath, outSrcFilePath=outSrtEnReComposePath)
+recom_en_srt(inSrcFilePath=outSrtEnPath, outSrcFilePath=outSrtEnReComposePath)
 
 
 api_logger.info("2---------翻译中文SRT")
