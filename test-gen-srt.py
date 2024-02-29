@@ -75,6 +75,29 @@ def get_from_substring(string, percentage):
     length = int(len(string) * percentage)
     return string[length:]
 
+def split_by_punctuations(instr, punctuations: list[str] = [",",".","?"]):
+    line1Str = ""
+    line2Str = instr
+
+    if instr is None or len(instr) == 0:
+        return line1Str, line2Str
+    
+    lastChar = instr[len(instr) - 1]
+    for punctuation in punctuations:
+        if punctuation in instr :
+            position = instr.find(punctuation)
+            if position == len(instr) - 1:
+                continue
+
+            line1Str = instr[:position+1]
+            line2Str = instr[position+2:]
+            return line1Str, line2Str
+            
+
+
+    return line1Str, line2Str
+
+
 def translate_srt(outSrtCnPath, outSrtEnPath):
     # translator = Translator(to_lang="zh")
     # outPath='./sample/simple5-cn.srt'
@@ -99,9 +122,10 @@ def translate_srt(outSrtCnPath, outSrtEnPath):
 
                 # 结尾不是标点符号, 准备连续操作两行
                 if len(curLineContent) > 0 and lastChar not in append_punctuations and index + 1 < len(subList):
-                    curLineCharCount = Counter(curLineContent)
                     nextLineContent = subList[index + 1].content
-                    nextLineCharCount = Counter(nextLineContent)
+
+
+
                     waitTran = curLineContent + " " + nextLineContent
                     translation = translate_en_to_zh(waitTran)
                     api_logger.info(waitTran)
@@ -148,7 +172,67 @@ def translate_srt(outSrtCnPath, outSrtEnPath):
                         flush=True,
                     )
 
+def recom_en_srt(inSrcFilePath, outSrcFilePath):
+     # translator = Translator(to_lang="zh")
+    # outPath='./sample/simple5-cn.srt'
+    with open(outSrcFilePath, "w", encoding="utf-8") as outFile:
+        with open(inSrcFilePath, 'r') as srcFile:
+            # 读取文件内容
+            content = srcFile.read()
+            subs = srt.parse(content)
+            subList = []
+            for sub in subs:
+                subList.append(sub)
 
+            curHandleLine = -1
+            for index in range(0, len(subList)):
+                if index == curHandleLine:
+                    continue
+                sub = subList[index]
+                append_punctuations: str = "?.,"
+                # 最后一个字符不是标点符号
+                curLineContent = sub.content
+                lastChar = curLineContent[len(curLineContent) - 1]
+                # 结尾不是标点符号, 准备连续操作两行
+                if len(curLineContent) > 0 and lastChar not in append_punctuations and index + 1 < len(subList):
+                    nextLineContent = subList[index + 1].content
+                    line1,line2 = split_by_punctuations(nextLineContent)
+                    line1 = curLineContent + " " + line1
+
+                    # 准备写2行
+                    # 第一行
+                    api_logger.info(line1)
+                    print(
+                        f"{sub.index}\n"
+                        f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+                        f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+                        f"{line1}",
+                        file=outFile,
+                        flush=True,
+                    )
+
+                    index = index + 1
+                    sub = subList[index]
+                    api_logger.info(line2)
+                    print(
+                        f"{sub.index}\n"
+                        f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+                        f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+                        f"{line2}",
+                        file=outFile,
+                        flush=True,
+                    )
+                            
+                else:
+                    api_logger.info(sub.content)
+                    print(
+                        f"{sub.index}\n"
+                        f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+                        f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+                        f"{sub.content}",
+                        file=outFile,
+                        flush=True,
+                    )
 
 videoPath="/data/work/translate/p0X4mhxQpjU/p0X4mhxQpjU.mp4"
 videoDir = os.path.dirname(videoPath)
@@ -160,7 +244,7 @@ language = "en"
 api_logger.info("1---------视频生成英文SRT")
 result, json_object = whisper_transcribe_en(videoPath)
 whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
-
+recom_en_srt(outSrtEnPath)
 
 
 # api_logger.info("2---------翻译中文SRT")
