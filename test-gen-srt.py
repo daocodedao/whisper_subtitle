@@ -147,9 +147,9 @@ def translate_srt(outSrtCnPath, outSrtEnPath):
 
 
 
-videoPath="/Users/linzhiji/Downloads/7TWKKwwF30/7TWKKwwF30.mp4"
+videoPath="/Users/linzhiji/Downloads/p0X4mhxQpjU/p0X4mhxQpjU.mp4"
 videoDir = os.path.dirname(videoPath)
-processId="7TWKKwwF30"
+processId="p0X4mhxQpjU"
 outSrtEnPath = os.path.join(videoDir, f"{processId}-en.srt")
 outSrtCnPath = os.path.join(videoDir, f"{processId}-cn.srt")
 language = "en"

@@ -42,7 +42,7 @@ def format_timestamp(seconds: float, always_include_hours: bool = False):
 
 def whisper_transcribe_en(file="{}/audio.mp3".format(dir)):
     '''transcribe audio to text using whisper'''
-
+    api_logger.info(f"生成字幕：file={file}")
     # device = torch.device('cuda' if torch.cuda.is_available() else 'mps') 
 
     model = whisper.load_model("medium", download_root=download_root, device='cuda')
@@ -58,6 +58,7 @@ def whisper_transcribe_en(file="{}/audio.mp3".format(dir)):
 
 
 def whisper_result_to_srt(whisper_result, outPath="", language: str = "cn"):
+    
     '''converts whisper result to SRT format'''
     if len(outPath) == 0:
         file_name = Path(videoPath).stem
