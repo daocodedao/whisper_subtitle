@@ -46,10 +46,10 @@ def whisper_transcribe_en(file="{}/audio.mp3".format(dir)):
     # device = torch.device('cuda' if torch.cuda.is_available() else 'mps') 
 
     model = whisper.load_model("medium", download_root=download_root, device='cuda')
-    # init_prompt = "Umm, let me think like, hmm... Okay, here's what I'm, like, thinking."
+    init_prompt = "Umm, let me think like, hmm... Okay, here's what I'm, like, thinking."
     # https://github.com/openai/whisper/discussions/625
     # init_prompt punctuator punctuation
-    init_prompt = "Umm, let me think like, like, thinking."
+    # init_prompt = "Umm, let me think like, like, thinking."
     result = model.transcribe(file, fp16=False, language="English", word_timestamps=True, initial_prompt=init_prompt)
     # result = model.transcribe(file, fp16=False, language="English", word_timestamps=True)
     
