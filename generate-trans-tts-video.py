@@ -236,6 +236,89 @@ def relayout_cn_tts(outSrtCnPath, isVerticle = True):
             file=outFile,
             flush=True,)
 
+def split_by_punctuations(instr, punctuations: list[str] = [",",".","?"]):
+    line1Str = ""
+    line2Str = instr
+
+    if instr is None or len(instr) == 0:
+        return line1Str, line2Str
+    
+    for punctuation in punctuations:
+        if punctuation in instr :
+            position = instr.find(punctuation)
+            if position == len(instr) - 1:
+                continue
+
+            line1Str = instr[:position+1]
+            line2Str = instr[position+2:]
+            return line1Str, line2Str
+            
+    return line1Str, line2Str
+
+
+# 重新组合 英文字幕，这一行末尾不是英文标点符号，就到下一行去拿内容到这行
+def recom_en_srt(inSrcFilePath, outSrcFilePath):
+     # translator = Translator(to_lang="zh")
+    # outPath='./sample/simple5-cn.srt'
+    with open(outSrcFilePath, "w", encoding="utf-8") as outFile:
+        with open(inSrcFilePath, 'r') as srcFile:
+            # 读取文件内容
+            content = srcFile.read()
+            subs = srt.parse(content)
+            subList = []
+            for sub in subs:
+                subList.append(sub)
+
+            curHandleLine = -1
+            for index in range(0, len(subList)):
+                if index == curHandleLine:
+                    continue
+                sub = subList[index]
+                append_punctuations: str = "?.,"
+                # 最后一个字符不是标点符号
+                curLineContent = sub.content
+                lastChar = curLineContent[len(curLineContent) - 1]
+                # 结尾不是标点符号, 准备连续操作两行
+                if len(curLineContent) > 0 and lastChar not in append_punctuations and index + 1 < len(subList):
+                    nextLineContent = subList[index + 1].content
+                    line1,line2 = split_by_punctuations(nextLineContent)
+                    line1 = curLineContent + " " + line1
+
+                    # 准备写2行
+                    # 第一行
+                    api_logger.info(line1)
+                    print(
+                        f"{sub.index}\n"
+                        f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+                        f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+                        f"{line1}",
+                        file=outFile,
+                        flush=True,
+                    )
+
+                    index = index + 1
+                    sub = subList[index]
+                    api_logger.info(line2)
+                    curHandleLine = index
+                    print(
+                        f"{sub.index}\n"
+                        f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+                        f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+                        f"{line2}",
+                        file=outFile,
+                        flush=True,
+                    )
+                            
+                else:
+                    api_logger.info(sub.content)
+                    print(
+                        f"{sub.index}\n"
+                        f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+                        f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+                        f"{sub.content}",
+                        file=outFile,
+                        flush=True,
+                    )
 
 def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, processId):
 
@@ -299,7 +382,6 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, processId):
 
     file_handle = combined.export(combine_mp3_path, format="mp3")
 
-    
     combine_mp3_duration = Util.getMediaDuration(combine_mp3_path)
     video_duration = Util.getMediaDuration(videoMutePath)
     api_logger.info(f"判断是否需要变速, combine_mp3_duration={combine_mp3_duration} video_duration={video_duration}")
@@ -339,6 +421,7 @@ videoMutePath = os.path.join(videoDir, f"{processId}-mute.mp4")
 videoCnPath = os.path.join(videoDir, f"{processId}-cn.mp4")
 videoCnSubtitlePath = os.path.join(videoDir, f"{processId}-cn-subtitle.mp4")
 outSrtEnPath = os.path.join(videoDir, f"{processId}-en.srt")
+outSrtEnReComposePath = os.path.join(videoDir, f"{processId}-en-recompse.srt")
 outSrtCnPath = os.path.join(videoDir, f"{processId}-cn.srt")
 
 isVerticle = False
@@ -348,11 +431,14 @@ if check_video_verticle(videoPath):
 api_logger.info("1---------视频生成英文SRT")
 result, json_object = whisper_transcribe_en(videoPath)
 whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
+api_logger.info("整理英文SRT")
+recom_en_srt(inSrcFilePath=outSrtCnPath, outSrcFilePath=outSrtEnReComposePath)
+
 
 api_logger.info("2---------翻译中文SRT")
 try:
     # 字幕不要在这个函数里换行，会影响语音TTS
-    translate_srt(outSrtCnPath, outSrtEnPath, isVerticle)
+    translate_srt(outSrtCnPath, outSrtEnReComposePath, isVerticle)
 except Exception as e:
     api_logger.error(f"翻译失败：{e}")
     exit(1)

@@ -82,7 +82,6 @@ def split_by_punctuations(instr, punctuations: list[str] = [",",".","?"]):
     if instr is None or len(instr) == 0:
         return line1Str, line2Str
     
-    lastChar = instr[len(instr) - 1]
     for punctuation in punctuations:
         if punctuation in instr :
             position = instr.find(punctuation)
@@ -93,8 +92,6 @@ def split_by_punctuations(instr, punctuations: list[str] = [",",".","?"]):
             line2Str = instr[position+2:]
             return line1Str, line2Str
             
-
-
     return line1Str, line2Str
 
 
