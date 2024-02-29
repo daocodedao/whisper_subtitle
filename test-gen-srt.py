@@ -244,7 +244,8 @@ language = "en"
 api_logger.info("1---------视频生成英文SRT")
 result, json_object = whisper_transcribe_en(videoPath)
 whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
-recom_en_srt(outSrtEnPath, outSrtEnPath)
+outSrtEnRePath = os.path.join(videoDir, f"{processId}-en-re.srt")
+recom_en_srt(outSrtEnPath, outSrtEnRePath)
 
 
 # api_logger.info("2---------翻译中文SRT")
