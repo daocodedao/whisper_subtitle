@@ -1,6 +1,13 @@
 
 import requests
 import socket
+from tans_base import *
+
+
+
+
+
+
 
 def translate_en_to_zh(srcText):
     
@@ -46,6 +53,7 @@ def translate_en_to_zh(srcText):
 
     messgeJson = result['trans_result'][0]
     message =  messgeJson['dst']
+    message = replaceSpecialWordEnToZh(message)
     return message
 
         
