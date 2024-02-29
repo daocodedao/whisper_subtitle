@@ -12,7 +12,7 @@ from combineSubtitle import *
 import re
 from collections import Counter
 
-def format_timestamp(seconds: float, always_include_hours: bool = False):
+def format_timestamp(seconds:float, always_include_hours: bool = False):
     '''format timestamp to SRT format'''
     assert seconds >= 0, "non-negative timestamp expected"
     milliseconds = round(seconds * 1000.0)
