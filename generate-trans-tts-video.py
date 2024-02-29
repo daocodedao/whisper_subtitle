@@ -13,7 +13,7 @@ import librosa
 from scipy.io import wavfile
 import argparse
 from utils.Tos import TosService
-from utils.translateFB import *
+from utils.translateBaidu import *
 from combineSubtitle import *
 from whisper.utils import get_writer
 from collections import Counter

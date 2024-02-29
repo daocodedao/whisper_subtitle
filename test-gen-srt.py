@@ -7,7 +7,7 @@ import os
 from typing import Iterator, TextIO
 from pathlib import Path
 import srt
-from utils.translateFB import *
+from utils.translateBaidu import *
 from combineSubtitle import *
 import re
 from collections import Counter
