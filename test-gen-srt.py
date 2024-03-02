@@ -99,6 +99,7 @@ def split_by_punctuations(instr, punctuations: list[str] = [",",".","?"]):
 def recom_en_srt(inSrcFilePath, outSrcFilePath):
      # translator = Translator(to_lang="zh")
     # outPath='./sample/simple5-cn.srt'
+    isModified = False
     with open(outSrcFilePath, "w", encoding="utf-8") as outFile:
         with open(inSrcFilePath, 'r') as srcFile:
             # 读取文件内容
@@ -119,9 +120,16 @@ def recom_en_srt(inSrcFilePath, outSrcFilePath):
                 lastChar = curLineContent[len(curLineContent) - 1]
                 # 结尾不是标点符号, 准备连续操作两行
                 if len(curLineContent) > 0 and lastChar not in append_punctuations and index + 1 < len(subList):
+                    isModified = True
                     nextLineContent = subList[index + 1].content
                     line1,line2 = split_by_punctuations(nextLineContent)
-                    line1 = curLineContent + " " + line1
+                    if len(line1) > 0:
+                        line1 = curLineContent + " " + line1
+                    else:
+                        line1 = curLineContent
+                        isModified = False
+
+
 
                     # 准备写2行
                     # 第一行
@@ -158,10 +166,27 @@ def recom_en_srt(inSrcFilePath, outSrcFilePath):
                         file=outFile,
                         flush=True,
                     )
+    
+    return isModified
 
-videoPath="/data/work/translate/p0X4mhxQpjU/p0X4mhxQpjU.mp4"
+def loopHandleEn_srt(inSrcFilePath, outSrcFilePath):
+    while(True):
+        isModified = recom_en_srt(inSrcFilePath, outSrcFilePath)
+        if not isModified:
+            break
+        # 打开文件a并读取其内容
+        with open(outSrcFilePath, 'r') as file_a:
+            content_a = file_a.read()
+
+        # 打开文件b并写入内容_a
+        with open(inSrcFilePath, 'w') as file_b:
+            file_b.write(content_a)
+
+
+# videoPath="/data/work/translate/p0X4mhxQpjU/p0X4mhxQpjU.mp4"
+videoPath="sample/wbHUdEeVeDU.mp4"
 videoDir = os.path.dirname(videoPath)
-processId="p0X4mhxQpjU"
+processId="wbHUdEeVeDU"
 outSrtEnPath = os.path.join(videoDir, f"{processId}-en.srt")
 outSrtCnPath = os.path.join(videoDir, f"{processId}-cn.srt")
 language = "en"
@@ -170,7 +195,7 @@ api_logger.info("1---------视频生成英文SRT")
 # result, json_object = whisper_transcribe_en(videoPath)
 # whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
 outSrtEnRePath = os.path.join(videoDir, f"{processId}-en-re.srt")
-recom_en_srt(outSrtEnPath, outSrtEnRePath)
+loopHandleEn_srt(outSrtEnPath, outSrtEnRePath)
 
 
 # api_logger.info("2---------翻译中文SRT")
