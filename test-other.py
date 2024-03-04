@@ -18,7 +18,7 @@ from scipy.io import wavfile
 
 
 # videoDir = "/Users/linzhiji/Downloads/Abt7FwZwY/"
-videoDir = "/data/work/translate/Downloads/Abt7FwZwY/"
+videoDir = "/data/work/translate/Abt7FwZwY/"
 
 
 videoId = "Abt7FwZwY"
