@@ -161,6 +161,7 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
 
         with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
             for index in range(0, len(subList)):
+                sub = subList[index]
                 print(
                     f"{sub.index}\n"
                     f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
