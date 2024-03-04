@@ -143,10 +143,32 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
         zhContent = translate_srt_en_to_zh(content)
         api_logger.info("字幕文件翻译成中文")
         api_logger.info(zhContent)
+        # with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
+        #     outFile.write(zhContent)
+        subs = srt.parse(content)
+        subList = []
+        for sub in subs:
+            subList.append(sub)
+
+        zhSubs = srt.parse(zhContent)
+        zhSubList = []
+        for zhSub in zhSubs:
+            zhSubList.append(zhSub)
+        
+        if len(subList) != len(zhSubList):
+            api_logger.error("字幕文件翻译成中文错误，两个字幕行数不一样")
+            exit(1)
+
         with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
-            outFile.write(zhContent)
-
-
+            for index in range(0, len(subList)):
+                print(
+                    f"{sub.index}\n"
+                    f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+                    f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+                    f"{zhSubList[index]}",
+                    file=outFile,
+                    flush=True,
+                )
 
     # with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
     #     with open(outSrtEnPath, 'r') as srcFile:
