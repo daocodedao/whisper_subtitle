@@ -172,7 +172,7 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
         
 
         with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
-            for index in range(0, len(subList)):
+            for index in range(0, len(zhSubList)):
                 enSub = subList[index]
                 zhSub = zhSubList[index]
                 print(
