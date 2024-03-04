@@ -13,7 +13,7 @@ import librosa
 from scipy.io import wavfile
 import argparse
 from utils.Tos import TosService
-from utils.translateBaidu import *
+from utils.translateQwen import *
 from combineSubtitle import *
 from whisper.utils import get_writer
 from collections import Counter
@@ -138,79 +138,87 @@ def split_cnsubtitle(str1: str, maxlen=22) -> str:
 
 def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
 
-    with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
-        with open(outSrtEnPath, 'r') as srcFile:
-            # 读取文件内容
-            content = srcFile.read()
-            subs = srt.parse(content)
-            subList = []
-            for sub in subs:
-                subList.append(sub)
+    with open(outSrtEnPath, 'r') as srcFile:
+        content = srcFile.read()
+        zhContent = translate_srt_en_to_zh(content)
+        with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
+            outFile.write(zhContent)
 
-            curHandleLine = -1
-            for index in range(0, len(subList)):
-                if index == curHandleLine:
-                    continue
-                sub = subList[index]
-                append_punctuations: str = "?.,"
-                # 最后一个字符不是标点符号
-                curLineContent = sub.content
-                lastChar = curLineContent[len(curLineContent) - 1]
 
-                # 结尾不是标点符号, 准备连续操作两行
-                if len(curLineContent) > 0 and lastChar not in append_punctuations and index + 1 < len(subList):
-                    curLineCharCount = Counter(curLineContent)
-                    nextLineContent = subList[index + 1].content
-                    nextLineCharCount = Counter(nextLineContent)
-                    waitTran = curLineContent + " " + nextLineContent
-                    translation = translate_en_to_zh(waitTran)
-                    api_logger.info(f">>>>{waitTran}")
-                    api_logger.info(f">>>>{translation}")
 
-                    # 准备写2行
-                    # 第一行
-                    line1Per = curLineCharCount.total()/(curLineCharCount.total()+nextLineCharCount.total())
-                    translationLine1 = get_substring(translation, line1Per)
-                    api_logger.info(sub.content)
-                    api_logger.info(translationLine1)
-                    print(
-                        f"{sub.index}\n"
-                        f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
-                        f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
-                        f"{translationLine1}",
-                        file=outFile,
-                        flush=True,
-                    )
+    # with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
+    #     with open(outSrtEnPath, 'r') as srcFile:
+    #         # 读取文件内容
+    #         content = srcFile.read()
+    #         subs = srt.parse(content)
+    #         subList = []
+    #         for sub in subs:
+    #             subList.append(sub)
 
-                    index = index + 1
-                    curHandleLine = index
-                    sub = subList[index]
-                    translationLine1 = get_from_substring(translation, line1Per)
-                    api_logger.info(sub.content)
-                    api_logger.info(translationLine1)
-                    print(
-                        f"{sub.index}\n"
-                        f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
-                        f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
-                        f"{translationLine1}",
-                        file=outFile,
-                        flush=True,
-                    )
+    #         curHandleLine = -1
+    #         for index in range(0, len(subList)):
+    #             if index == curHandleLine:
+    #                 continue
+    #             sub = subList[index]
+    #             append_punctuations: str = "?.,"
+    #             # 最后一个字符不是标点符号
+    #             curLineContent = sub.content
+    #             lastChar = curLineContent[len(curLineContent) - 1]
+
+    #             # 结尾不是标点符号, 准备连续操作两行
+    #             if len(curLineContent) > 0 and lastChar not in append_punctuations and index + 1 < len(subList):
+    #                 curLineCharCount = Counter(curLineContent)
+    #                 nextLineContent = subList[index + 1].content
+    #                 nextLineCharCount = Counter(nextLineContent)
+    #                 waitTran = curLineContent + " " + nextLineContent
+    #                 translation = translate_en_to_zh(waitTran)
+    #                 api_logger.info(f">>>>{waitTran}")
+    #                 api_logger.info(f">>>>{translation}")
+
+    #                 # 准备写2行
+    #                 # 第一行
+    #                 line1Per = curLineCharCount.total()/(curLineCharCount.total()+nextLineCharCount.total())
+    #                 translationLine1 = get_substring(translation, line1Per)
+    #                 api_logger.info(sub.content)
+    #                 api_logger.info(translationLine1)
+    #                 print(
+    #                     f"{sub.index}\n"
+    #                     f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+    #                     f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+    #                     f"{translationLine1}",
+    #                     file=outFile,
+    #                     flush=True,
+    #                 )
+
+    #                 index = index + 1
+    #                 curHandleLine = index
+    #                 sub = subList[index]
+    #                 translationLine1 = get_from_substring(translation, line1Per)
+    #                 api_logger.info(sub.content)
+    #                 api_logger.info(translationLine1)
+    #                 print(
+    #                     f"{sub.index}\n"
+    #                     f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+    #                     f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+    #                     f"{translationLine1}",
+    #                     file=outFile,
+    #                     flush=True,
+    #                 )
                             
-                else:
-                    # index = index + 1
-                    translation = translate_en_to_zh(sub.content)
-                    api_logger.info(sub.content)
-                    api_logger.info(translation)
-                    # translation = split_cnsubtitle(translation, maxCnSubtitleLen)
-                    print(
-                        f"{sub.index}\n"
-                        f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
-                        f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
-                        f"{translation}",
-                        file=outFile,
-                        flush=True,
-                    )
+    #             else:
+    #                 # index = index + 1
+    #                 translation = translate_en_to_zh(sub.content)
+    #                 api_logger.info(sub.content)
+    #                 api_logger.info(translation)
+    #                 # translation = split_cnsubtitle(translation, maxCnSubtitleLen)
+    #                 print(
+    #                     f"{sub.index}\n"
+    #                     f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+    #                     f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+    #                     f"{translation}",
+    #                     file=outFile,
+    #                     flush=True,
+    #                 )
 
 def relayout_cn_tts(outSrtCnPath, isVerticle = True):
     maxCnSubtitleLen = 20

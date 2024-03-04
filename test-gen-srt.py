@@ -97,7 +97,7 @@ def split_by_punctuations(instr, punctuations: list[str] = [",",".","?"]):
 
 
 def recom_en_srt(inSrcFilePath, outSrcFilePath):
-     # translator = Translator(to_lang="zh")
+    # translator = Translator(to_lang="zh")
     # outPath='./sample/simple5-cn.srt'
     isModified = False
     with open(outSrcFilePath, "w", encoding="utf-8") as outFile:

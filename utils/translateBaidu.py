@@ -20,10 +20,6 @@ def replaceSpecialWordEnToZh(srcStr:str = None):
 
 
 
-
-
-
-
 def translate_en_to_zh(srcText):
     
    # -*- coding: utf-8 -*-
