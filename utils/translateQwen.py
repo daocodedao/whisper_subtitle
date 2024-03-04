@@ -58,7 +58,7 @@ def translate_en_to_zh(inSrc):
         # api_logger.info(response.text)
         return ""
 
-def translate_srt_en_to_zh(inSrc):
+def translate_srt_en_to_zh(inSrc, inNewTransLate=True):
     # url = "http://39.105.194.16:9191/v1/chat/completions/"  # 替换为您要发送请求的URL
     data = {
             "systemRole": "system",
