@@ -159,7 +159,7 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
                 for zhSub in zhSubs:
                     zhSubList.append(zhSub)
                 
-                if len(subList) == len(zhSubList):
+                if len(subList) >= len(zhSubList):
                     # api_logger.error("字幕文件翻译成中文错误，两个字幕行数不一样")
                     break
             except Exception as e:
