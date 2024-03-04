@@ -91,7 +91,10 @@ def split_by_punctuations(instr, punctuations: list[str] = [",",".","?"]):
             line1Str = instr[:position+1]
             line2Str = instr[position+2:]
             return line1Str, line2Str
-            
+
+    # 第二行没有找到标点符号，整体挪到上一行
+    line1Str = instr
+    line2Str = ""        
     return line1Str, line2Str
 
 
@@ -110,6 +113,7 @@ def recom_en_srt(inSrcFilePath, outSrcFilePath):
                 subList.append(sub)
 
             curHandleLine = -1
+            lineIdx = 1
             for index in range(0, len(subList)):
                 if index == curHandleLine:
                     continue
@@ -122,7 +126,7 @@ def recom_en_srt(inSrcFilePath, outSrcFilePath):
                 if len(curLineContent) > 0 and lastChar not in append_punctuations and index + 1 < len(subList):
                     isModified = True
                     nextLineContent = subList[index + 1].content
-                    line1,line2 = split_by_punctuations(nextLineContent)
+                    line1, line2 = split_by_punctuations(nextLineContent)
                     if len(line1) > 0:
                         line1 = curLineContent + " " + line1
                     else:
@@ -130,42 +134,60 @@ def recom_en_srt(inSrcFilePath, outSrcFilePath):
                         isModified = False
 
 
+                    if len(line2) > 0:
+                        # 准备写2行
+                        # 第一行
+                        api_logger.info(line1)
+                        print(
+                            f"{lineIdx}\n"
+                            f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+                            f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+                            f"{line1}",
+                            file=outFile,
+                            flush=True,
+                        )
+                        lineIdx = lineIdx + 1
 
-                    # 准备写2行
-                    # 第一行
-                    api_logger.info(line1)
-                    print(
-                        f"{sub.index}\n"
-                        f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
-                        f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
-                        f"{line1}",
-                        file=outFile,
-                        flush=True,
-                    )
+                        index = index + 1
+                        sub = subList[index]
+                        api_logger.info(line2)
+                        curHandleLine = index
+                        print(
+                            f"{lineIdx}\n"
+                            f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+                            f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+                            f"{line2}",
+                            file=outFile,
+                            flush=True,
+                        )
+                        lineIdx = lineIdx + 1
+                    else:
+                        index = index + 1
+                        curHandleLine = index
 
-                    index = index + 1
-                    sub = subList[index]
-                    api_logger.info(line2)
-                    curHandleLine = index
-                    print(
-                        f"{sub.index}\n"
-                        f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
-                        f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
-                        f"{line2}",
-                        file=outFile,
-                        flush=True,
-                    )
+                        nextLineSub = subList[index]
+                        curLineEndTime = nextLineSub.end.total_seconds()
+                        
+                        print(
+                            f"{lineIdx}\n"
+                            f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+                            f"{format_timestamp(curLineEndTime, always_include_hours=True)}\n"
+                            f"{line1}",
+                            file=outFile,
+                            flush=True,
+                        )
                             
                 else:
                     api_logger.info(sub.content)
                     print(
-                        f"{sub.index}\n"
+                        f"{lineIdx}\n"
                         f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
                         f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
                         f"{sub.content}",
                         file=outFile,
                         flush=True,
                     )
+                    lineIdx = lineIdx + 1
     
     return isModified
 

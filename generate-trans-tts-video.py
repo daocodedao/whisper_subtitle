@@ -370,6 +370,7 @@ def recom_en_srt(inSrcFilePath, outSrcFilePath):
                         lineIdx = lineIdx + 1
                     else:
                         index = index + 1
+                        curHandleLine = index
                         nextLineSub = subList[index]
                         curLineEndTime = nextLineSub.end.total_seconds()
                         
