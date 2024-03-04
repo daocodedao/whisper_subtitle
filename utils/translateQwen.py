@@ -67,7 +67,7 @@ def translate_srt_en_to_zh(inSrc):
             "userContent":"Trump was always bothered by how Trump Tower fell 41 feet short of the General Motors building two blocks north."
     }
 
-    systemContent = f"你是字幕翻译助手，将后续的文字块翻译成中文，输入的文字块每3行是一个整体，第一行是次序行，比如1,2,3，第二行是时间行，包括开始时间和结束时间，比如 0:00:09.180 --> 0:00:14.640，第三行是等待翻译的内容。\n输出内容次序行和时间行必须和输入块保持内容一致，行数一致，输出格式为，第一行是次序，第二行是开始时间和结束时间，第三行是翻译出的内容"
+    systemContent = f"你是字幕翻译助手，将后续的文字块翻译成中文，输入的文字块每3行是一个整体，第一行是次序行，比如1,2,3，第二行是时间行，包括开始时间和结束时间，比如 0:00:09.180 --> 0:00:14.640，第三行是等待翻译的内容。\n输出内容次序行和时间行必须和输入块保持内容一致，行数一致，输出格式为，第一行是次序，第二行是开始时间和结束时间，第三行是翻译出的内容。不要输出额外的解释的内容。"
 
 
     # data["systemContent"] = systemContent
