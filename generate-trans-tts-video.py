@@ -344,6 +344,7 @@ def recom_en_srt(inSrcFilePath, outSrcFilePath):
                     if len(line2) > 0:
                         # 准备写2行
                         # 第一行
+                        api_logger.info(lineIdx)
                         api_logger.info(line1)
                         print(
                             f"{lineIdx}\n"
@@ -357,6 +358,7 @@ def recom_en_srt(inSrcFilePath, outSrcFilePath):
 
                         index = index + 1
                         sub = subList[index]
+                        api_logger.info(lineIdx)
                         api_logger.info(line2)
                         curHandleLine = index
                         print(
@@ -373,7 +375,8 @@ def recom_en_srt(inSrcFilePath, outSrcFilePath):
                         curHandleLine = index
                         nextLineSub = subList[index]
                         curLineEndTime = nextLineSub.end.total_seconds()
-                        
+                        api_logger.info(lineIdx)
+                        api_logger.info(line1)
                         print(
                             f"{lineIdx}\n"
                             f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
@@ -384,6 +387,7 @@ def recom_en_srt(inSrcFilePath, outSrcFilePath):
                         )
                             
                 else:
+                    api_logger.info(lineIdx)
                     api_logger.info(sub.content)
                     print(
                         f"{lineIdx}\n"
