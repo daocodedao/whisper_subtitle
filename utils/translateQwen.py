@@ -13,10 +13,7 @@ def getNetworkIp():
 serverUrl = "http://39.105.194.16:9191/v1/chat/completions/"
 localIp = getNetworkIp()
 print(f"localIp:{localIp}")
-if "192.168.0.69" in localIp:
-    # s 机房 /data/work/aishowos/bitwit-bot/start-translate-server.sh
-    serverUrl = "http://127.0.0.1:9191/v1/chat/completions/"
-elif "192.168.0" in localIp:
+if "192.168.0" in localIp:
     serverUrl = "http://192.168.0.67:9191/v1/chat/completions/"
 
 
