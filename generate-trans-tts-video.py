@@ -538,31 +538,48 @@ except Exception as e:
     exit(1)
 
 api_logger.info("3---------中文SRT转TTS")
-command = f"/data/work/GPT-SoVITS/start-gen-voice-local.sh -l 'zh'  -r {role} -s '{outSrtCnPath}' "
-api_logger.info(f"命令：")
-api_logger.info(command)
-result = subprocess.check_output(command, shell=True)
+try:
+    command = f"/data/work/GPT-SoVITS/start-gen-voice-local.sh -l 'zh'  -r {role} -s '{outSrtCnPath}' "
+    api_logger.info(f"命令：")
+    api_logger.info(command)
+    result = subprocess.check_output(command, shell=True)
+except Exception as e:
+    api_logger.error(f"中文SRT转TTS失败：{e}")
+    exit(1)
 
 
 api_logger.info("4---------原视频静音")
-curVideoPath = videoPath
-command = f"ffmpeg -y -i '{curVideoPath}' -c copy -an {videoMutePath}"
-api_logger.info(f"命令：")
-api_logger.info(command)
-result = subprocess.check_output(command, shell=True)
+try:
+    curVideoPath = videoPath
+    command = f"ffmpeg -y -i '{curVideoPath}' -c copy -an {videoMutePath}"
+    api_logger.info(f"命令：")
+    api_logger.info(command)
+    result = subprocess.check_output(command, shell=True)
+except Exception as e:
+    api_logger.error(f"原视频静音失败：{e}")
+    exit(1)
 
 
 api_logger.info("5---------视频加上中文TTS")
-curVideoPath = videoMutePath
-add_cn_tts(outSrtCnPath, curVideoPath, videoDir, processId)
+try:
+    curVideoPath = videoMutePath
+    add_cn_tts(outSrtCnPath, curVideoPath, videoDir, processId)
+except Exception as e:
+    api_logger.error(f"视频加上中文TTS失败：{e}")
+    exit(1)
+
 
 
 api_logger.info("6---------视频加上中文字幕")
-curVideoPath = videoCnPath
-# if language == 'zh':
-api_logger.info("中文字幕重新调整行数")
-relayout_cn_tts(outSrtCnPath, isVerticle)
-combinSubtitle(curVideoPath, outSrtCnPath, videoCnSubtitlePath)
+try:
+    curVideoPath = videoCnPath
+    # if language == 'zh':
+    api_logger.info("中文字幕重新调整行数")
+    relayout_cn_tts(outSrtCnPath, isVerticle)
+    combinSubtitle(curVideoPath, outSrtCnPath, videoCnSubtitlePath)
+except Exception as e:
+    api_logger.error(f"视频加上中文字幕失败：{e}")
+    exit(1)
 
 
 api_logger.info("7---------上传到腾讯云")
