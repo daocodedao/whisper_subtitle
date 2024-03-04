@@ -148,16 +148,20 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
         zhSubList = []
         for i in range(0,3):
             zhSubList = []
-            api_logger.info(f"准备第{i}次翻译")
-            zhContent = translate_srt_en_to_zh(content)
-            api_logger.info(zhContent)
-            zhSubs = srt.parse(zhContent)
-            for zhSub in zhSubs:
-                zhSubList.append(zhSub)
-            
-            if len(subList) == len(zhSubList):
-                # api_logger.error("字幕文件翻译成中文错误，两个字幕行数不一样")
-                break
+            try:
+                api_logger.info(f"准备第{i}次翻译")
+                zhContent = translate_srt_en_to_zh(content)
+                api_logger.info(zhContent)
+                zhSubs = srt.parse(zhContent)
+                for zhSub in zhSubs:
+                    zhSubList.append(zhSub)
+                
+                if len(subList) == len(zhSubList):
+                    # api_logger.error("字幕文件翻译成中文错误，两个字幕行数不一样")
+                    break
+            except Exception as e:
+                api_logger.error(f"翻译失败：{e}")
+                # exit(1)
         if i == 3:
             api_logger.error("连续3次，字幕文件翻译成中文错误，两个字幕行数不一样")
             exit(1)
