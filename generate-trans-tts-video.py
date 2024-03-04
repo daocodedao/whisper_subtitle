@@ -161,12 +161,13 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
 
         with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
             for index in range(0, len(subList)):
-                sub = subList[index]
+                enSub = subList[index]
+                zhSub = zhSubList[index]
                 print(
-                    f"{sub.index}\n"
-                    f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
-                    f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
-                    f"{zhSubList[index]}",
+                    f"{enSub.index}\n"
+                    f"{format_timestamp(enSub.start.total_seconds(), always_include_hours=True)} --> "
+                    f"{format_timestamp(enSub.end.total_seconds(), always_include_hours=True)}\n"
+                    f"{zhSub.content}",
                     file=outFile,
                     flush=True,
                 )
@@ -403,8 +404,7 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, processId):
     totalSrtDuraton = 0
     totalGenDuration = 0
     for audioFile in wav_files:
-        file_name_without_ext = os.path.splitext(
-            os.path.basename(audioFile))[0]
+        file_name_without_ext = os.path.splitext(os.path.basename(audioFile))[0]
         index = int(file_name_without_ext) - 1
         if index >= len(subList):
             continue
