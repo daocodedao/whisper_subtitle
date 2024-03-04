@@ -16,6 +16,7 @@ from utils.Tos import TosService
 from utils.translateQwen import *
 from combineSubtitle import *
 import math
+from utils.replaceKeyword import *
 
 
 
@@ -166,9 +167,10 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
 
                 preTrans = ""
                 for index in range(0, len(subList)):
-                   preTrans =  f"{preTrans}"f"{enSub.index}\n"f"{format_timestamp(enSub.start.total_seconds(), always_include_hours=True)} --> "f"{format_timestamp(enSub.end.total_seconds(), always_include_hours=True)}\n"f"{zhSub.content}"
+                   enSub = subList[index]
+                   preTrans =  f"{preTrans}{enSub.index}\n{format_timestamp(enSub.start.total_seconds(), always_include_hours=True)} --> {format_timestamp(enSub.end.total_seconds(), always_include_hours=True)}\n{enSub.content}\n"
                    if (index + 1) % 15 == 0 or index == len(subList)-1:
-                    zhContent = translate_srt_en_to_zh(content)
+                    zhContent = translate_srt_en_to_zh(preTrans)
                     api_logger.info(zhContent)
                     zhSubs = srt.parse(zhContent)
                     for zhSub in zhSubs:
@@ -189,11 +191,15 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
             for index in range(0, len(zhSubList)):
                 enSub = subList[index]
                 zhSub = zhSubList[index]
+
+                zhContent = zhSub.content
+                zhContent = replaceSentenceWithKeyword(zhContent)
+
                 print(
                     f"{enSub.index}\n"
                     f"{format_timestamp(enSub.start.total_seconds(), always_include_hours=True)} --> "
                     f"{format_timestamp(enSub.end.total_seconds(), always_include_hours=True)}\n"
-                    f"{zhSub.content}",
+                    f"{zhContent}",
                     file=outFile,
                     flush=True,
                 )
