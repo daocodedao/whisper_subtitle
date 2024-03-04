@@ -170,7 +170,10 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
                    enSub = subList[index]
                    preTrans =  f"{preTrans}{enSub.index}\n{format_timestamp(enSub.start.total_seconds(), always_include_hours=True)} --> {format_timestamp(enSub.end.total_seconds(), always_include_hours=True)}\n{enSub.content}\n"
                    if (index + 1) % 15 == 0 or index == len(subList)-1:
+                    api_logger.info("准备分组翻译")
+                    api_logger.info(preTrans)
                     zhContent = translate_srt_en_to_zh(preTrans)
+                    api_logger.info("分组翻译结果")
                     api_logger.info(zhContent)
                     zhSubs = srt.parse(zhContent)
                     for zhSub in zhSubs:
