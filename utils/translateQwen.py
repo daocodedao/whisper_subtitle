@@ -10,6 +10,16 @@ def getNetworkIp():
     s.connect(('<broadcast>', 0))
     return s.getsockname()[0]
 
+serverUrl = "http://39.105.194.16:9191/v1/chat/completions/"
+localIp = getNetworkIp()
+print(f"localIp:{localIp}")
+if "192.168.0.69" in localIp:
+    # s 机房 /data/work/aishowos/bitwit-bot/start-translate-server.sh
+    serverUrl = "http://127.0.0.1:9191/v1/chat/completions/"
+elif "192.168.0" in localIp:
+    serverUrl = "http://192.168.0.67:9191/v1/chat/completions/"
+
+
 def replaceSpecialWordEnToZh(srcStr:str = None):
     if srcStr is None:
         return ""
@@ -23,7 +33,7 @@ def replaceSpecialWordEnToZh(srcStr:str = None):
     return srcStr
 
 def translate_en_to_zh(inSrc):
-    url = "http://39.105.194.16:9191/v1/chat/completions/"  # 替换为您要发送请求的URL
+    # url = "http://39.105.194.16:9191/v1/chat/completions/"  # 替换为您要发送请求的URL
     data = {
             "systemRole": "system",
             "systemContent": "You are a helpful assistant.",
@@ -37,7 +47,7 @@ def translate_en_to_zh(inSrc):
     data["systemContent"] = systemContent
     data["userContent"] = inSrc
 
-    response = requests.post(url, json=data)
+    response = requests.post(serverUrl, json=data)
 
     if response.status_code == 200:
         # api_logger.info("请求成功")
@@ -52,7 +62,7 @@ def translate_en_to_zh(inSrc):
         return ""
 
 def translate_srt_en_to_zh(inSrc):
-    url = "http://39.105.194.16:9191/v1/chat/completions/"  # 替换为您要发送请求的URL
+    # url = "http://39.105.194.16:9191/v1/chat/completions/"  # 替换为您要发送请求的URL
     data = {
             "systemRole": "system",
             "systemContent": "You are a helpful assistant.",
@@ -67,7 +77,7 @@ def translate_srt_en_to_zh(inSrc):
     data["systemContent"] = systemContent
     data["userContent"] = inSrc
 
-    response = requests.post(url, json=data)
+    response = requests.post(serverUrl, json=data)
 
     if response.status_code == 200:
         # api_logger.info("请求成功")
