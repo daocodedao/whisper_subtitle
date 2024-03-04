@@ -533,11 +533,12 @@ videoDir = os.path.dirname(videoPath)
 ttsDir = os.path.join(videoDir, "tts")
 videoMutePath = os.path.join(videoDir, f"{processId}-mute.mp4")
 videoCnPath = os.path.join(videoDir, f"{processId}-cn.mp4")
-videoTtsCnPath = os.path.join(videoDir, f"{processId}-tts-cn.mp4")
 videoCnSubtitlePath = os.path.join(videoDir, f"{processId}-cn-subtitle.mp4")
+
 outSrtEnPath = os.path.join(videoDir, f"{processId}-en.srt")
 outSrtEnReComposePath = os.path.join(videoDir, f"{processId}-en-recompse.srt")
 outSrtCnPath = os.path.join(videoDir, f"{processId}-cn.srt")
+outSrtTtsCnPath = os.path.join(videoDir, f"{processId}-tts-cn.srt")
 
 isVerticle = False
 if check_video_verticle(videoPath):
@@ -595,8 +596,9 @@ try:
     curVideoPath = videoCnPath
     language="chinese"
     result, json_object = whisper_transcribe_cn(curVideoPath)
-    whisper_result_to_srt(result, outPath=videoTtsCnPath, language=language)
-    combinSubtitle(curVideoPath, videoTtsCnPath, videoCnSubtitlePath)
+    whisper_result_to_srt(result, outPath=outSrtTtsCnPath, language=language)
+    relayout_cn_tts(outSrtTtsCnPath, isVerticle)
+    combinSubtitle(curVideoPath, outSrtTtsCnPath, videoCnSubtitlePath)
     
     # # if language == 'zh':
     # api_logger.info("中文字幕重新调整行数")
