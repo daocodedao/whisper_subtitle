@@ -141,6 +141,8 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
     with open(outSrtEnPath, 'r') as srcFile:
         content = srcFile.read()
         zhContent = translate_srt_en_to_zh(content)
+        api_logger.info("字幕文件翻译成中文")
+        api_logger.info(zhContent)
         with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
             outFile.write(zhContent)
 
