@@ -11,10 +11,10 @@ def getNetworkIp():
     return s.getsockname()[0]
 
 serverUrl = "http://39.105.194.16:9191/v1/chat/completions/"
-localIp = getNetworkIp()
-print(f"localIp:{localIp}")
-if "192.168.0" in localIp:
-    serverUrl = "http://192.168.0.67:9191/v1/chat/completions/"
+# localIp = getNetworkIp()
+# print(f"localIp:{localIp}")
+# if "192.168.0" in localIp:
+#     serverUrl = "http://192.168.0.67:9191/v1/chat/completions/"
 
 
 def replaceSpecialWordEnToZh(srcStr:str = None):
