@@ -399,6 +399,7 @@ def recom_en_srt(inSrcFilePath, outSrcFilePath):
 
 def loopHandleEn_srt(inSrcFilePath, outSrcFilePath):
     while(True):
+        api_logger.info("整理英文SRT")
         isModified = recom_en_srt(inSrcFilePath, outSrcFilePath)
         if not isModified:
             break
@@ -520,7 +521,7 @@ if check_video_verticle(videoPath):
 api_logger.info("1---------视频生成英文SRT")
 result, json_object = whisper_transcribe_en(videoPath)
 whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
-api_logger.info("整理英文SRT")
+
 loopHandleEn_srt(inSrcFilePath=outSrtEnPath, outSrcFilePath=outSrtEnReComposePath)
 
 
