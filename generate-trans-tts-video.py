@@ -15,10 +15,8 @@ import argparse
 from utils.Tos import TosService
 from utils.translateQwen import *
 from combineSubtitle import *
-from whisper.utils import get_writer
-from collections import Counter
 import math
-import torch
+
 
 
 
@@ -56,6 +54,18 @@ def whisper_transcribe_en(file="{}/audio.mp3".format(dir), download_root = "./mo
     json_object = json.dumps(result, indent=4)
     return result, json_object
 
+def whisper_transcribe_cn(file="{}/audio.mp3".format(dir), download_root = "./models/"):
+    '''transcribe audio to text using whisper'''
+    api_logger.info(f"生成中文字幕：file={file}")
+    # device = torch.device('cuda' if torch.cuda.is_available() else 'mps') 
+
+    model = whisper.load_model("medium", download_root=download_root, device='cuda')
+    init_prompt = "你好，需要生成中文字幕。"
+
+    result = model.transcribe(file, fp16=False, language="Chinese", word_timestamps=True, initial_prompt=init_prompt)
+    
+    json_object = json.dumps(result, indent=4)
+    return result, json_object
 
 def whisper_result_to_srt(whisper_result, outPath="", language: str = "cn"):
     
@@ -174,8 +184,6 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
         if i == 3:
             api_logger.error("连续3次，字幕文件翻译成中文错误，两个字幕行数不一样")
             exit(1)
-
-        
 
         with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
             for index in range(0, len(zhSubList)):
@@ -519,6 +527,7 @@ videoDir = os.path.dirname(videoPath)
 ttsDir = os.path.join(videoDir, "tts")
 videoMutePath = os.path.join(videoDir, f"{processId}-mute.mp4")
 videoCnPath = os.path.join(videoDir, f"{processId}-cn.mp4")
+videoTtsCnPath = os.path.join(videoDir, f"{processId}-tts-cn.mp4")
 videoCnSubtitlePath = os.path.join(videoDir, f"{processId}-cn-subtitle.mp4")
 outSrtEnPath = os.path.join(videoDir, f"{processId}-en.srt")
 outSrtEnReComposePath = os.path.join(videoDir, f"{processId}-en-recompse.srt")
@@ -531,7 +540,6 @@ if check_video_verticle(videoPath):
 api_logger.info("1---------视频生成英文SRT")
 result, json_object = whisper_transcribe_en(videoPath)
 whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
-
 loopHandleEn_srt(inSrcFilePath=outSrtEnPath, outSrcFilePath=outSrtEnReComposePath)
 
 
@@ -579,10 +587,15 @@ except Exception as e:
 api_logger.info("6---------视频加上中文字幕")
 try:
     curVideoPath = videoCnPath
-    # if language == 'zh':
-    api_logger.info("中文字幕重新调整行数")
-    relayout_cn_tts(outSrtCnPath, isVerticle)
-    combinSubtitle(curVideoPath, outSrtCnPath, videoCnSubtitlePath)
+    language="chinese"
+    result, json_object = whisper_transcribe_cn(curVideoPath)
+    whisper_result_to_srt(result, outPath=videoTtsCnPath, language=language)
+    combinSubtitle(curVideoPath, videoTtsCnPath, videoCnSubtitlePath)
+    
+    # # if language == 'zh':
+    # api_logger.info("中文字幕重新调整行数")
+    # relayout_cn_tts(outSrtCnPath, isVerticle)
+    # combinSubtitle(curVideoPath, outSrtCnPath, videoCnSubtitlePath)
 except Exception as e:
     api_logger.error(f"视频加上中文字幕失败：{e}")
     exit(1)
