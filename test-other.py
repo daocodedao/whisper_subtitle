@@ -17,8 +17,11 @@ import soundfile as sf
 from scipy.io import wavfile
 
 
-videoDir = "/Users/linzhiji/Downloads/kRr9LQ7mZ_A/"
-videoId = "kRr9LQ7mZ_A"
+# videoDir = "/Users/linzhiji/Downloads/Abt7FwZwY/"
+videoDir = "/data/work/translate/Downloads/Abt7FwZwY/"
+
+
+videoId = "Abt7FwZwY"
 videoPath=f"{videoDir}{videoId}.mp4"
 videoMutePath=f"{videoDir}{videoId}-mute.mp4"
 videoCnPath=f"{videoDir}{videoId}-cn.mp4"
