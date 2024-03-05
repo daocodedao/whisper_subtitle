@@ -20,3 +20,4 @@ torchvision
 torchaudio
 funasr
 modelscope
+hdbscan
