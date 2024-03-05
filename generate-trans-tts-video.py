@@ -17,7 +17,7 @@ from utils.translateQwen import *
 from combineSubtitle import *
 import math
 from utils.replaceKeyword import *
-
+from utilAsr import start_zh_asr_to_srt
 
 
 
@@ -438,11 +438,10 @@ def loopHandleEn_srt(inSrcFilePath, outSrcFilePath):
         with open(inSrcFilePath, 'w') as file_b:
             file_b.write(content_a)
 
-def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, processId):
+def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3SpeedPath):
 
     ttsDir = os.path.join(videoDir, "tts")
-    combine_mp3_path = os.path.join(videoDir, f"{processId}.mp3")
-    combine_mp3_speed_path = os.path.join(videoDir, f"{processId}-speed.mp3")
+
 
     wav_files = [f for f in os.listdir(ttsDir) if f.endswith(".wav")]
     if(len(wav_files) == 0):
@@ -497,18 +496,18 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, processId):
         else:
             combined = combined + sound
 
-    file_handle = combined.export(combine_mp3_path, format="mp3")
+    file_handle = combined.export(combineMp3Path, format="mp3")
 
-    combine_mp3_duration = Util.getMediaDuration(combine_mp3_path)
+    combine_mp3_duration = Util.getMediaDuration(combineMp3Path)
     video_duration = Util.getMediaDuration(videoMutePath)
     api_logger.info(f"判断是否需要变速, combine_mp3_duration={combine_mp3_duration} video_duration={video_duration}")
     if combine_mp3_duration > video_duration:
         api_logger.info(f"视频需要变速, {combine_mp3_duration/video_duration}")
-        speed_change(combine_mp3_path, combine_mp3_speed_path,
+        speed_change(combineMp3Path, combineMp3SpeedPath,
                      combine_mp3_duration/video_duration)
-        combine_mp3_path = combine_mp3_speed_path
+        combineMp3Path = combineMp3SpeedPath
 
-    cmd = f'ffmpeg -y -i {videoMutePath} -i {combine_mp3_path} -c:v copy -c:a aac {videoCnPath}'
+    cmd = f'ffmpeg -y -i {videoMutePath} -i {combineMp3Path} -c:v copy -c:a aac {videoCnPath}'
     subprocess.call(cmd, shell=True)
     api_logger.info(f'完成任务: {videoCnPath}')
 
@@ -538,10 +537,14 @@ videoMutePath = os.path.join(videoDir, f"{processId}-mute.mp4")
 videoCnPath = os.path.join(videoDir, f"{processId}-cn.mp4")
 videoCnSubtitlePath = os.path.join(videoDir, f"{processId}-cn-subtitle.mp4")
 
+combineMp3Path = os.path.join(videoDir, f"{processId}.mp3")
+combineMp3SpeedPath = os.path.join(videoDir, f"{processId}-speed.mp3")
+
 outSrtEnPath = os.path.join(videoDir, f"{processId}-en.srt")
 outSrtEnReComposePath = os.path.join(videoDir, f"{processId}-en-recompse.srt")
 outSrtCnPath = os.path.join(videoDir, f"{processId}-cn.srt")
 outSrtTtsCnPath = os.path.join(videoDir, f"{processId}-tts-cn.srt")
+outSrtAsrCnPath = os.path.join(videoDir, f"{processId}-asr-cn.srt")
 
 isVerticle = False
 if check_video_verticle(videoPath):
@@ -587,7 +590,7 @@ except Exception as e:
 api_logger.info("5---------视频加上中文TTS")
 try:
     curVideoPath = videoMutePath
-    add_cn_tts(outSrtCnPath, curVideoPath, videoDir, processId)
+    add_cn_tts(outSrtCnPath, curVideoPath, videoDir, processId, combineMp3Path, combineMp3SpeedPath)
 except Exception as e:
     api_logger.error(f"视频加上中文TTS失败：{e}")
     exit(1)
@@ -603,10 +606,17 @@ try:
     # relayout_cn_tts(outSrtTtsCnPath, isVerticle)
     # combinSubtitle(curVideoPath, outSrtTtsCnPath, videoCnSubtitlePath)
     
-    # # if language == 'zh':
+
+    api_logger.info("根据音频生成中文字幕")
+    start_zh_asr_to_srt(combineMp3Path, outSrtAsrCnPath)
     api_logger.info("中文字幕重新调整行数")
-    relayout_cn_tts(outSrtCnPath, isVerticle)
-    combinSubtitle(curVideoPath, outSrtCnPath, videoCnSubtitlePath)
+    relayout_cn_tts(outSrtAsrCnPath, isVerticle)
+    api_logger.info("合并字幕到视频")
+    combinSubtitle(curVideoPath, outSrtAsrCnPath, videoCnSubtitlePath)
+
+    # api_logger.info("中文字幕重新调整行数")
+    # relayout_cn_tts(outSrtCnPath, isVerticle)
+    # combinSubtitle(curVideoPath, outSrtCnPath, videoCnSubtitlePath)
 except Exception as e:
     api_logger.error(f"视频加上中文字幕失败：{e}")
     exit(1)
