@@ -66,7 +66,7 @@ def write_srt(transcript: Iterator[dict], file: TextIO, language:str="zh"):
         api_logger.info(lineStr)
         # if language == 'zh':
         #     lineStr = split_cnsubtitle(lineStr)
-        api_logger.info(lineStr)
+        # api_logger.info(lineStr)
         print(
             f"{i}\n"
             f"{format_timestamp(segment['start'], always_include_hours=True)} --> "
