@@ -441,8 +441,6 @@ def loopHandleEn_srt(inSrcFilePath, outSrcFilePath):
 def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3SpeedPath):
 
     ttsDir = os.path.join(videoDir, "tts")
-
-
     wav_files = [f for f in os.listdir(ttsDir) if f.endswith(".wav")]
     if(len(wav_files) == 0):
         api_logger.error("srt没有生成音频文件")
