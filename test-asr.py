@@ -4,10 +4,10 @@ from funasr import AutoModel
 from utils.logger_settings import api_logger
 from typing import Iterator, TextIO
 
-def format_timestamp(seconds: float, always_include_hours: bool = False):
+def format_timestamp(milliseconds: float, always_include_hours: bool = False):
     '''format timestamp to SRT format'''
-    assert seconds >= 0, "non-negative timestamp expected"
-    milliseconds = round(seconds * 1000.0)
+    # assert seconds >= 0, "non-negative timestamp expected"
+    # milliseconds = round(seconds * 1000.0)
 
     hours = milliseconds // 3_600_000
     milliseconds -= hours * 3_600_000
