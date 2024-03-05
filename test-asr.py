@@ -17,4 +17,6 @@ res = model.generate(input=audioPath,
 #                      data_type=("sound", "text"))
 
 for item in res:
+    print("item:")
     print(item)
+    print("\n\n\n")
