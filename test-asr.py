@@ -5,7 +5,7 @@ model = AutoModel(model="paraformer-zh",  vad_model="fsmn-vad",  punc_model="ct-
                   # spk_model="cam++", 
                   )
 audioPath="./sample/simple5-combine.mp3"
-text_file="./out/simple5-combine.mp3"
+text_file="./out/simple5-combine.txt"
 # res = model.generate(input=audioPath, 
 #                      batch_size_s=300, 
 #                      hotword='魔搭')
