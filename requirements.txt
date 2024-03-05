@@ -18,3 +18,4 @@ protobuf
 opencv-python
 torchvision
 torchaudio
+funasr
