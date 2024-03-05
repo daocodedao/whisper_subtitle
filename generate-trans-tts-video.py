@@ -590,7 +590,7 @@ except Exception as e:
 api_logger.info("5---------视频加上中文TTS")
 try:
     curVideoPath = videoMutePath
-    add_cn_tts(outSrtCnPath, curVideoPath, videoDir, processId, combineMp3Path, combineMp3SpeedPath)
+    add_cn_tts(outSrtCnPath, curVideoPath, videoDir, combineMp3Path, combineMp3SpeedPath)
 except Exception as e:
     api_logger.error(f"视频加上中文TTS失败：{e}")
     exit(1)
