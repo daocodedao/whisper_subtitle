@@ -21,5 +21,7 @@ res = model.generate(input=audioPath,
 
 for item in res:
     print("item:")
-    print(item)
-    print("\n\n\n")
+    # print(item)
+    for sent in item["sentence_info"]:
+        print(sent)
+        print("\n\n\n")
