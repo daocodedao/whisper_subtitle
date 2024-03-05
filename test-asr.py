@@ -60,7 +60,8 @@ res = model.generate(input=audioPath,
 for item in res:
     print("item:")
     # print(item)
-    write_srt(item["sentence_info"], )
+    with open(srt_file, "w", encoding="utf-8") as srt:
+        write_srt(item["sentence_info"], srt)
     # for sent in item["sentence_info"]:
     #     print(sent)
     #     print("\n\n\n")
