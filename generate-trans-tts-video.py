@@ -598,15 +598,15 @@ api_logger.info("6---------视频加上中文字幕")
 try:
     curVideoPath = videoCnPath
     language="chinese"
-    result, json_object = whisper_transcribe_cn(curVideoPath)
-    whisper_result_to_srt(result, outPath=outSrtTtsCnPath, language=language)
-    relayout_cn_tts(outSrtTtsCnPath, isVerticle)
-    combinSubtitle(curVideoPath, outSrtTtsCnPath, videoCnSubtitlePath)
+    # result, json_object = whisper_transcribe_cn(curVideoPath)
+    # whisper_result_to_srt(result, outPath=outSrtTtsCnPath, language=language)
+    # relayout_cn_tts(outSrtTtsCnPath, isVerticle)
+    # combinSubtitle(curVideoPath, outSrtTtsCnPath, videoCnSubtitlePath)
     
     # # if language == 'zh':
-    # api_logger.info("中文字幕重新调整行数")
-    # relayout_cn_tts(outSrtCnPath, isVerticle)
-    # combinSubtitle(curVideoPath, outSrtCnPath, videoCnSubtitlePath)
+    api_logger.info("中文字幕重新调整行数")
+    relayout_cn_tts(outSrtCnPath, isVerticle)
+    combinSubtitle(curVideoPath, outSrtCnPath, videoCnSubtitlePath)
 except Exception as e:
     api_logger.error(f"视频加上中文字幕失败：{e}")
     exit(1)
