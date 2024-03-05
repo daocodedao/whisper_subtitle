@@ -5,7 +5,10 @@ from funasr import AutoModel
 
 audioPath="./sample/simple5-combine.mp3"
 text_file="./out/simple5-combine.txt"
-model = AutoModel(model="paraformer-zh",  vad_model="fsmn-vad",  punc_model="ct-punc-c", 
+model = AutoModel(model="paraformer-zh",  
+                  vad_model="fsmn-vad",  
+                  punc_model="ct-punc-c", 
+                  sentence_timestamp=True
                   # spk_model="cam++", 
                   )
 res = model.generate(input=audioPath, 
