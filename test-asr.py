@@ -21,7 +21,7 @@ def format_timestamp(seconds: float, always_include_hours: bool = False):
     hours_marker = f"{hours}:" if always_include_hours or hours > 0 else ""
     return f"{hours_marker}{minutes:02d}:{seconds:02d}.{milliseconds:03d}"
 
-def write_srt(transcript: Iterator[dict], file: TextIO, language:str):
+def write_srt(transcript: Iterator[dict], file: TextIO, language:str="zh"):
     api_logger.info("write transcript to SRT file")
     for i, segment in enumerate(transcript, start=1):
         lineStr = segment['text'].strip().replace('-->', '->')
