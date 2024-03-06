@@ -18,6 +18,7 @@ from combineSubtitle import *
 import math
 from utils.replaceKeyword import *
 from utilAsr import start_zh_asr_to_srt
+import pysrt
 
 
 
@@ -150,151 +151,92 @@ def split_cnsubtitle(str1: str, maxlen=22) -> str:
 
     return ret
 
-def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
 
+def translate_list_remote(preTrans:str, preTransEnSubList):
+    # 尝试3次
+    subZhList = []
+    for i in range(0,3):
+        subZhList = []
+        try:
+            zhContent = translate_srt_en_to_zh(preTrans)
+            api_logger.info("分组翻译结果")
+            api_logger.info(zhContent)
+
+            # 检查返回的翻译Srt是否正确
+            checkSubs = pysrt.from_string(zhContent)
+            if len(checkSubs) == 0 or (len(preTransEnSubList) != 1 and len(checkSubs) == 1):
+                api_logger.error("本次分组翻译返回结果错误")
+                continue
+
+            zhSubs = srt.parse(zhContent)
+            for zhSub in zhSubs:
+                subZhList.append(zhSub)
+            
+            # 分组翻译成功后，直接更新中文的时间戳，避免累积太多，视频最后都是静音
+            if len(preTransEnSubList) >= len(subZhList):
+                for index in range(0, len(subZhList)):
+                    enSub = preTransEnSubList[index]
+                    zhSub = subZhList[index]
+                    zhSub.start = enSub.start
+                    zhSub.end = enSub.end
+
+                api_logger.info("分组翻译成功，继续下一组")
+                break
+
+        except Exception as e:
+            api_logger.error(f"翻译失败：{e}")
+
+    if i == 3:
+        api_logger.error("连续3次，字幕文件翻译成中文错误!")
+        exit(1)
+    
+    return subZhList
+
+
+def writeSublistToFile(zhAllSubList, outSrtCnPath):
+    with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
+        for index in range(0, len(zhAllSubList)):
+            zhSub = zhAllSubList[index]
+
+            zhContent = zhSub.content
+            zhContent = replaceSentenceWithKeyword(zhContent)
+
+            print(
+                f"{index}\n"
+                f"{format_timestamp(zhSub.start.total_seconds(), always_include_hours=True)} --> "
+                f"{format_timestamp(zhSub.end.total_seconds(), always_include_hours=True)}\n"
+                f"{zhContent}",
+                file=outFile,
+                flush=True,
+            )
+
+def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
+    enAllSubList=[]
     with open(outSrtEnPath, 'r') as srcFile:
         content = srcFile.read()
         subs = srt.parse(content)
-        subList = []
         for sub in subs:
-            subList.append(sub)
+            enAllSubList.append(sub)
 
-        zhSubList = []
-        for i in range(0,3):
-            zhSubList = []
-            try:
-                api_logger.info(f"准备第{i}次翻译")
+    zhAllSubList = []
+    preTrans = ""
+    enSubnList = []
+    for index in range(0, len(enAllSubList)):
+        enSub = enAllSubList[index]
+        enSubnList.append(enSub)
+        preTrans =  f"{preTrans}{enSub.index}\n{format_timestamp(enSub.start.total_seconds(), always_include_hours=True)} --> {format_timestamp(enSub.end.total_seconds(), always_include_hours=True)}\n{enSub.content}\n"
+        if (index + 1) % 15 == 0 or index == len(enAllSubList)-1:
+            api_logger.info("准备分组翻译")
+            api_logger.info(preTrans)
+            subZhList = translate_list_remote(preTrans, enSubnList)
+            zhAllSubList.append(subZhList)
+            enSubnList=[]
+            # 分组翻译重试3次
+            
 
-                preTrans = ""
-                subZhList = []
-                subEnList = []
-                for index in range(0, len(subList)):
-                   enSub = subList[index]
-                   subZhList.append(enSub)
-                   preTrans =  f"{preTrans}{enSub.index}\n{format_timestamp(enSub.start.total_seconds(), always_include_hours=True)} --> {format_timestamp(enSub.end.total_seconds(), always_include_hours=True)}\n{enSub.content}\n"
-                   if (index + 1) % 15 == 0 or index == len(subList)-1:
-                    api_logger.info("准备分组翻译")
-                    api_logger.info(preTrans)
-                    zhContent = translate_srt_en_to_zh(preTrans)
-                    api_logger.info("分组翻译结果")
-                    api_logger.info(zhContent)
-                    zhSubs = srt.parse(zhContent)
-                    for zhSub in zhSubs:
-                        zhSubList.append(zhSub)
-                        subZhList.append(zhSub)
-                    
-                    # 分组翻译成功后，直接更新中文的时间戳，避免累积太多，视频最后都是静音
-                    if len(subEnList) >= len(subZhList):
-                        for index in range(0, len(subZhList)):
-                            enSub = subEnList[index]
-                            zhSub = subZhList[index]
-                            zhSub.start = enSub.start
-                            zhSub.end = enSub.end
+    writeSublistToFile(zhAllSubList, outSrtCnPath)
 
-                    subZhList = []
-                    subEnList = []
-                    preTrans = ""
-
-                if len(subList) >= len(zhSubList):
-                    # api_logger.error("字幕文件翻译成中文错误，两个字幕行数不一样")
-                    break
-            except Exception as e:
-                api_logger.error(f"翻译失败：{e}")
-                # exit(1)
-        if i == 3:
-            api_logger.error("连续3次，字幕文件翻译成中文错误，两个字幕行数不一样")
-            exit(1)
-
-        with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
-            for index in range(0, len(zhSubList)):
-                enSub = subList[index]
-                zhSub = zhSubList[index]
-
-                zhContent = zhSub.content
-                zhContent = replaceSentenceWithKeyword(zhContent)
-
-                print(
-                    f"{index}\n"
-                    f"{format_timestamp(zhSub.start.total_seconds(), always_include_hours=True)} --> "
-                    f"{format_timestamp(zhSub.end.total_seconds(), always_include_hours=True)}\n"
-                    f"{zhContent}",
-                    file=outFile,
-                    flush=True,
-                )
-
-    # with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
-    #     with open(outSrtEnPath, 'r') as srcFile:
-    #         # 读取文件内容
-    #         content = srcFile.read()
-    #         subs = srt.parse(content)
-    #         subList = []
-    #         for sub in subs:
-    #             subList.append(sub)
-
-    #         curHandleLine = -1
-    #         for index in range(0, len(subList)):
-    #             if index == curHandleLine:
-    #                 continue
-    #             sub = subList[index]
-    #             append_punctuations: str = "?.,"
-    #             # 最后一个字符不是标点符号
-    #             curLineContent = sub.content
-    #             lastChar = curLineContent[len(curLineContent) - 1]
-
-    #             # 结尾不是标点符号, 准备连续操作两行
-    #             if len(curLineContent) > 0 and lastChar not in append_punctuations and index + 1 < len(subList):
-    #                 curLineCharCount = Counter(curLineContent)
-    #                 nextLineContent = subList[index + 1].content
-    #                 nextLineCharCount = Counter(nextLineContent)
-    #                 waitTran = curLineContent + " " + nextLineContent
-    #                 translation = translate_en_to_zh(waitTran)
-    #                 api_logger.info(f">>>>{waitTran}")
-    #                 api_logger.info(f">>>>{translation}")
-
-    #                 # 准备写2行
-    #                 # 第一行
-    #                 line1Per = curLineCharCount.total()/(curLineCharCount.total()+nextLineCharCount.total())
-    #                 translationLine1 = get_substring(translation, line1Per)
-    #                 api_logger.info(sub.content)
-    #                 api_logger.info(translationLine1)
-    #                 print(
-    #                     f"{sub.index}\n"
-    #                     f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
-    #                     f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
-    #                     f"{translationLine1}",
-    #                     file=outFile,
-    #                     flush=True,
-    #                 )
-
-    #                 index = index + 1
-    #                 curHandleLine = index
-    #                 sub = subList[index]
-    #                 translationLine1 = get_from_substring(translation, line1Per)
-    #                 api_logger.info(sub.content)
-    #                 api_logger.info(translationLine1)
-    #                 print(
-    #                     f"{sub.index}\n"
-    #                     f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
-    #                     f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
-    #                     f"{translationLine1}",
-    #                     file=outFile,
-    #                     flush=True,
-    #                 )
-                            
-    #             else:
-    #                 # index = index + 1
-    #                 translation = translate_en_to_zh(sub.content)
-    #                 api_logger.info(sub.content)
-    #                 api_logger.info(translation)
-    #                 # translation = split_cnsubtitle(translation, maxCnSubtitleLen)
-    #                 print(
-    #                     f"{sub.index}\n"
-    #                     f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
-    #                     f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
-    #                     f"{translation}",
-    #                     file=outFile,
-    #                     flush=True,
-    #                 )
+    
 
 def relayout_cn_tts(outSrtCnPath, isVerticle = True):
     maxCnSubtitleLen = 20
