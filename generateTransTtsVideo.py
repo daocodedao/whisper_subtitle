@@ -198,17 +198,34 @@ def translate_srt(outSrtCnPath, inSrtFilePath, isVerticle = True):
     zhAllSubList = []
     preTrans = ""
     enSubnList = []
+    # 待翻译的英文字幕是否已经满了15个
+    isFullNumberTranslate = False
+    enPunctuations: str = "?."
+
     for index in range(0, len(enAllSubList)):
         enSub = enAllSubList[index]
+        curLineEnContent = enSub.content
         enSubnList.append(enSub)
         preTrans =  f"{preTrans}{enSub.index}\n{Util.format_timestamp(enSub.start.total_seconds(), always_include_hours=True)} --> {Util.format_timestamp(enSub.end.total_seconds(), always_include_hours=True)}\n{enSub.content}\n"
-        if (index + 1) % 15 == 0 or index == len(enAllSubList)-1:
+        
+        if isFullNumberTranslate or (index + 1) % 15 == 0 or index == len(enAllSubList)-1:
+            isFullNumberTranslate = True
+
+            if len(curLineEnContent) > 0:
+                lastChar = curLineEnContent[len(curLineEnContent) - 1]
+                # 结尾不是标点符号, 准备操作
+                if lastChar not in enPunctuations and index + 1 <= len(enAllSubList): 
+                    api_logger.info("末尾不是.?, 继续取下一行")
+                    continue
+
+
             api_logger.info("准备分组翻译")
             api_logger.info(preTrans)
             subZhList = translate_list_remote(preTrans, enSubnList)
             zhAllSubList = zhAllSubList + subZhList
             enSubnList=[]
             preTrans=""
+            isFullNumberTranslate = False
             # 分组翻译重试3次
     
     writeSublistToFile(zhAllSubList, outSrtCnPath)
