@@ -187,6 +187,7 @@ def translate_list_remote(preTrans:str, preTransEnSubList):
         except Exception as e:
             api_logger.error(f"翻译失败：{e}")
 
+    print(f"请求翻译次数{i}")
     if i == 3:
         api_logger.error("连续3次，字幕文件翻译成中文错误!")
         exit(1)
