@@ -165,7 +165,7 @@ def translate_list_remote(preTrans:str, preTransEnSubList):
             # 检查返回的翻译Srt是否正确
             checkSubs = pysrt.from_string(zhContent)
             if len(checkSubs) == 0 or (len(preTransEnSubList) != 1 and len(checkSubs) == 1):
-                print(checkSubs)
+                api_logger.error(checkSubs)
                 api_logger.error("本次分组翻译返回结果错误")
                 continue
 
