@@ -195,10 +195,10 @@ def translate_list_remote(preTrans:str, preTransEnSubList):
 
 
 def writeSublistToFile(zhAllSubList, outSrtCnPath):
+    api_logger.info(f"写回文件：{outSrtCnPath}")
     with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
         for index in range(0, len(zhAllSubList)):
             zhSub = zhAllSubList[index]
-
             zhContent = zhSub.content
             zhContent = replaceSentenceWithKeyword(zhContent)
 
@@ -230,15 +230,13 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
             api_logger.info("准备分组翻译")
             api_logger.info(preTrans)
             subZhList = translate_list_remote(preTrans, enSubnList)
-            zhAllSubList.append(subZhList)
+            zhAllSubList = zhAllSubList + subZhList
             enSubnList=[]
             # 分组翻译重试3次
-            
-
+    
     writeSublistToFile(zhAllSubList, outSrtCnPath)
 
     
-
 def relayout_cn_tts(outSrtCnPath, isVerticle = True):
     maxCnSubtitleLen = 20
     if not isVerticle:
