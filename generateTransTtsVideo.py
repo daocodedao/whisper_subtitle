@@ -208,6 +208,7 @@ def translate_srt(outSrtCnPath, inSrtFilePath, isVerticle = True):
             subZhList = translate_list_remote(preTrans, enSubnList)
             zhAllSubList = zhAllSubList + subZhList
             enSubnList=[]
+            preTrans=""
             # 分组翻译重试3次
     
     writeSublistToFile(zhAllSubList, outSrtCnPath)
