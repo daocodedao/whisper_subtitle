@@ -4,24 +4,8 @@ from utils.translateBaidu import *
 import srt
 from utils.translateQwen import *
 from utils.replaceKeyword import *
+from utils.util import Util
 
-
-def format_timestamp(seconds: float, always_include_hours: bool = False):
-    '''format timestamp to SRT format'''
-    assert seconds >= 0, "non-negative timestamp expected"
-    milliseconds = round(seconds * 1000.0)
-
-    hours = milliseconds // 3_600_000
-    milliseconds -= hours * 3_600_000
-
-    minutes = milliseconds // 60_000
-    milliseconds -= minutes * 60_000
-
-    seconds = milliseconds // 1_000
-    milliseconds -= seconds * 1_000
-
-    hours_marker = f"{hours}:" if always_include_hours or hours > 0 else ""
-    return f"{hours_marker}{minutes:02d}:{seconds:02d}.{milliseconds:03d}"
 
 
 
@@ -43,7 +27,7 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
                 preTrans = ""
                 for index in range(0, len(subList)):
                    enSub = subList[index]
-                   preTrans =  f"{preTrans}{enSub.index}\n{format_timestamp(enSub.start.total_seconds(), always_include_hours=True)} --> {format_timestamp(enSub.end.total_seconds(), always_include_hours=True)}\n{enSub.content}\n"
+                   preTrans =  f"{preTrans}{enSub.index}\n{Util.format_timestamp(enSub.start.total_seconds(), always_include_hours=True)} --> {Util.format_timestamp(enSub.end.total_seconds(), always_include_hours=True)}\n{enSub.content}\n"
                    if (index + 1) % 15 == 0 or index == len(subList)-1:
                     zhContent = translate_srt_en_to_zh(preTrans)
                     api_logger.info(zhContent)
@@ -72,8 +56,8 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
 
                 print(
                     f"{enSub.index}\n"
-                    f"{format_timestamp(enSub.start.total_seconds(), always_include_hours=True)} --> "
-                    f"{format_timestamp(enSub.end.total_seconds(), always_include_hours=True)}\n"
+                    f"{Util.format_timestamp(enSub.start.total_seconds(), always_include_hours=True)} --> "
+                    f"{Util.format_timestamp(enSub.end.total_seconds(), always_include_hours=True)}\n"
                     f"{zhContent}",
                     file=outFile,
                     flush=True,

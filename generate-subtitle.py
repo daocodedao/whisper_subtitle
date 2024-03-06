@@ -10,6 +10,7 @@ from combineSubtitle import *
 from utils.logger_settings import api_logger
 import re
 import math
+from utils.util import Util
 
 download_root = "./models/"
 
@@ -61,22 +62,6 @@ def whisper_result_preview_json(json_object):
     return
 
 
-def format_timestamp(seconds: float, always_include_hours: bool = False):
-    '''format timestamp to SRT format'''
-    assert seconds >= 0, "non-negative timestamp expected"
-    milliseconds = round(seconds * 1000.0)
-
-    hours = milliseconds // 3_600_000
-    milliseconds -= hours * 3_600_000
-
-    minutes = milliseconds // 60_000
-    milliseconds -= minutes * 60_000
-
-    seconds = milliseconds // 1_000
-    milliseconds -= seconds * 1_000
-
-    hours_marker = f"{hours}:" if always_include_hours or hours > 0 else ""
-    return f"{hours_marker}{minutes:02d}:{seconds:02d}.{milliseconds:03d}"
 
 
 def split_cnsubtitle(str1: str, maxlen=22) -> str:
@@ -128,8 +113,8 @@ def write_srt(transcript: Iterator[dict], file: TextIO, language:str):
         api_logger.info(lineStr)
         print(
             f"{i}\n"
-            f"{format_timestamp(segment['start'], always_include_hours=True)} --> "
-            f"{format_timestamp(segment['end'], always_include_hours=True)}\n"
+            f"{Util.format_timestamp(segment['start'], always_include_hours=True)} --> "
+            f"{Util.format_timestamp(segment['end'], always_include_hours=True)}\n"
             f"{lineStr}",
             file=file,
             flush=True,

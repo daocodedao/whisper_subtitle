@@ -25,7 +25,7 @@ helpFunction()
 }
 
 
-jobName=generate-trans-tts-video.py 
+jobName=generateTransTtsVideo.py 
 echo "${YELLOW}check $jobName pid${NOCOLOR}"
 echo "ps aux | grep "$jobName" | grep -v grep  | awk '{print $2}'"
 TAILPID=`ps aux | grep "$jobName" | grep -v grep | awk '{print $2}'`  

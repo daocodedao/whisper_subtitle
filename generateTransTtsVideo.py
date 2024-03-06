@@ -18,26 +18,7 @@ from combineSubtitle import *
 import math
 from utils.replaceKeyword import *
 from utilAsr import start_zh_asr_to_srt
-import pysrt
-
-
-
-def format_timestamp(seconds: float, always_include_hours: bool = False):
-    '''format timestamp to SRT format'''
-    assert seconds >= 0, "non-negative timestamp expected"
-    milliseconds = round(seconds * 1000.0)
-
-    hours = milliseconds // 3_600_000
-    milliseconds -= hours * 3_600_000
-
-    minutes = milliseconds // 60_000
-    milliseconds -= minutes * 60_000
-
-    seconds = milliseconds // 1_000
-    milliseconds -= seconds * 1_000
-
-    hours_marker = f"{hours}:" if always_include_hours or hours > 0 else ""
-    return f"{hours_marker}{minutes:02d}:{seconds:02d}.{milliseconds:03d}"
+from utils.util import Util
 
 
 def whisper_transcribe_en(file="{}/audio.mp3".format(dir), download_root = "./models/"):
@@ -85,13 +66,13 @@ def write_srt(transcript: Iterator[dict], file: TextIO, language: str):
     for i, segment in enumerate(transcript, start=1):
         lineStr = segment['text'].strip().replace('-->', '->')
         api_logger.info(f"{i}\n"
-            f"{format_timestamp(segment['start'], always_include_hours=True)} --> "
-            f"{format_timestamp(segment['end'], always_include_hours=True)}\n"
+            f"{Util.format_timestamp(segment['start'], always_include_hours=True)} --> "
+            f"{Util.format_timestamp(segment['end'], always_include_hours=True)}\n"
             f"{lineStr}")
         print(
             f"{i}\n"
-            f"{format_timestamp(segment['start'], always_include_hours=True)} --> "
-            f"{format_timestamp(segment['end'], always_include_hours=True)}\n"
+            f"{Util.format_timestamp(segment['start'], always_include_hours=True)} --> "
+            f"{Util.format_timestamp(segment['end'], always_include_hours=True)}\n"
             f"{lineStr}",
             file=file,
             flush=True,
@@ -162,22 +143,17 @@ def translate_list_remote(preTrans:str, preTransEnSubList):
             api_logger.info("分组翻译结果")
             api_logger.info(zhContent)
 
-            # 检查返回的翻译Srt是否正确
-            checkSubs = pysrt.from_string(zhContent)
-            if len(checkSubs) == 0 or (len(preTransEnSubList) != 1 and len(checkSubs) == 1):
-                api_logger.error(checkSubs)
-                api_logger.error("本次分组翻译返回结果错误")
-                continue
-
             zhSubs = srt.parse(zhContent)
-            for zhSub in zhSubs:
-                subZhList.append(zhSub)
+            subZhList = list(zhSubs)
             
             # 分组翻译成功后，直接更新中文的时间戳，避免累积太多，视频最后都是静音
-            if len(preTransEnSubList) >= len(subZhList):
+            if len(preTransEnSubList) >= len(subZhList) and len(subZhList) > 0:
                 for index in range(0, len(subZhList)):
                     enSub = preTransEnSubList[index]
                     zhSub = subZhList[index]
+                    if len(zhSub.proprietary) > 0:
+                        api_logger.error(f"翻译错误，proprietary有内容: {zhSub.proprietary}")
+
                     zhSub.start = enSub.start
                     zhSub.end = enSub.end
 
@@ -185,15 +161,15 @@ def translate_list_remote(preTrans:str, preTransEnSubList):
                 break
 
         except Exception as e:
+            subZhList=[]
             api_logger.error(f"翻译失败：{e}")
 
-    print(f"请求翻译次数{i}")
-    if i == 3:
+    # print(f"请求翻译次数{i}")
+    if len(subZhList) == 0:
         api_logger.error("连续3次，字幕文件翻译成中文错误!")
         exit(1)
     
     return subZhList
-
 
 def writeSublistToFile(zhAllSubList, outSrtCnPath):
     api_logger.info(f"写回文件：{outSrtCnPath}")
@@ -205,20 +181,19 @@ def writeSublistToFile(zhAllSubList, outSrtCnPath):
 
             print(
                 f"{index}\n"
-                f"{format_timestamp(zhSub.start.total_seconds(), always_include_hours=True)} --> "
-                f"{format_timestamp(zhSub.end.total_seconds(), always_include_hours=True)}\n"
+                f"{Util.format_timestamp(zhSub.start.total_seconds(), always_include_hours=True)} --> "
+                f"{Util.format_timestamp(zhSub.end.total_seconds(), always_include_hours=True)}\n"
                 f"{zhContent}",
                 file=outFile,
                 flush=True,
             )
 
-def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
+def translate_srt(outSrtCnPath, inSrtFilePath, isVerticle = True):
     enAllSubList=[]
-    with open(outSrtEnPath, 'r') as srcFile:
+    with open(inSrtFilePath, 'r') as srcFile:
         content = srcFile.read()
         subs = srt.parse(content)
-        for sub in subs:
-            enAllSubList.append(sub)
+        enAllSubList = list(subs)
 
     zhAllSubList = []
     preTrans = ""
@@ -226,7 +201,7 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
     for index in range(0, len(enAllSubList)):
         enSub = enAllSubList[index]
         enSubnList.append(enSub)
-        preTrans =  f"{preTrans}{enSub.index}\n{format_timestamp(enSub.start.total_seconds(), always_include_hours=True)} --> {format_timestamp(enSub.end.total_seconds(), always_include_hours=True)}\n{enSub.content}\n"
+        preTrans =  f"{preTrans}{enSub.index}\n{Util.format_timestamp(enSub.start.total_seconds(), always_include_hours=True)} --> {Util.format_timestamp(enSub.end.total_seconds(), always_include_hours=True)}\n{enSub.content}\n"
         if (index + 1) % 15 == 0 or index == len(enAllSubList)-1:
             api_logger.info("准备分组翻译")
             api_logger.info(preTrans)
@@ -236,7 +211,6 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
             # 分组翻译重试3次
     
     writeSublistToFile(zhAllSubList, outSrtCnPath)
-
     
 def relayout_cn_tts(outSrtCnPath, isVerticle = True):
     maxCnSubtitleLen = 20
@@ -247,8 +221,7 @@ def relayout_cn_tts(outSrtCnPath, isVerticle = True):
         # 读取文件内容
         content = srcFile.read()
         subs = srt.parse(content)
-        for sub in subs:
-            subList.append(sub)
+        subList = list(subs)
     
     with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
         for sub in subList:
@@ -256,8 +229,8 @@ def relayout_cn_tts(outSrtCnPath, isVerticle = True):
             translation = split_cnsubtitle(translation, maxCnSubtitleLen)
             print(
             f"{sub.index}\n"
-            f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
-            f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+            f"{Util.format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+            f"{Util.format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
             f"{translation}",
             file=outFile,
             flush=True,)
@@ -295,9 +268,7 @@ def recom_en_srt(inSrcFilePath, outSrcFilePath):
             # 读取文件内容
             content = srcFile.read()
             subs = srt.parse(content)
-            subList = []
-            for sub in subs:
-                subList.append(sub)
+            subList = list(subs)
 
             curHandleLine = -1
             lineIdx = 1
@@ -328,8 +299,8 @@ def recom_en_srt(inSrcFilePath, outSrcFilePath):
                         api_logger.info(line1)
                         print(
                             f"{lineIdx}\n"
-                            f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
-                            f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+                            f"{Util.format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+                            f"{Util.format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
                             f"{line1}",
                             file=outFile,
                             flush=True,
@@ -343,8 +314,8 @@ def recom_en_srt(inSrcFilePath, outSrcFilePath):
                         curHandleLine = index
                         print(
                             f"{lineIdx}\n"
-                            f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
-                            f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+                            f"{Util.format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+                            f"{Util.format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
                             f"{line2}",
                             file=outFile,
                             flush=True,
@@ -359,8 +330,8 @@ def recom_en_srt(inSrcFilePath, outSrcFilePath):
                         api_logger.info(line1)
                         print(
                             f"{lineIdx}\n"
-                            f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
-                            f"{format_timestamp(curLineEndTime, always_include_hours=True)}\n"
+                            f"{Util.format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+                            f"{Util.format_timestamp(curLineEndTime, always_include_hours=True)}\n"
                             f"{line1}",
                             file=outFile,
                             flush=True,
@@ -371,8 +342,8 @@ def recom_en_srt(inSrcFilePath, outSrcFilePath):
                     api_logger.info(sub.content)
                     print(
                         f"{lineIdx}\n"
-                        f"{format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
-                        f"{format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
+                        f"{Util.format_timestamp(sub.start.total_seconds(), always_include_hours=True)} --> "
+                        f"{Util.format_timestamp(sub.end.total_seconds(), always_include_hours=True)}\n"
                         f"{sub.content}",
                         file=outFile,
                         flush=True,
@@ -410,9 +381,8 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3
         # 读取文件内容
         content = srcFile.read()
         subs = srt.parse(content)
-        for sub in subs:
-            subList.append(sub)
-
+        subList = list(subs)
+        
     # print(len(subList))
     # index = 0
     combined = None
