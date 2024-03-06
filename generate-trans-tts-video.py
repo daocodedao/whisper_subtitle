@@ -166,8 +166,11 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
                 api_logger.info(f"准备第{i}次翻译")
 
                 preTrans = ""
+                subZhList = []
+                subEnList = []
                 for index in range(0, len(subList)):
                    enSub = subList[index]
+                   subZhList.append(enSub)
                    preTrans =  f"{preTrans}{enSub.index}\n{format_timestamp(enSub.start.total_seconds(), always_include_hours=True)} --> {format_timestamp(enSub.end.total_seconds(), always_include_hours=True)}\n{enSub.content}\n"
                    if (index + 1) % 15 == 0 or index == len(subList)-1:
                     api_logger.info("准备分组翻译")
@@ -178,6 +181,18 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
                     zhSubs = srt.parse(zhContent)
                     for zhSub in zhSubs:
                         zhSubList.append(zhSub)
+                        subZhList.append(zhSub)
+                    
+                    # 分组翻译成功后，直接更新中文的时间戳，避免累积太多，视频最后都是静音
+                    if len(subEnList) >= len(subZhList):
+                        for index in range(0, len(subZhList)):
+                            enSub = subEnList[index]
+                            zhSub = subZhList[index]
+                            zhSub.start = enSub.start
+                            zhSub.end = enSub.end
+
+                    subZhList = []
+                    subEnList = []
                     preTrans = ""
 
                 if len(subList) >= len(zhSubList):
@@ -199,9 +214,9 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
                 zhContent = replaceSentenceWithKeyword(zhContent)
 
                 print(
-                    f"{enSub.index}\n"
-                    f"{format_timestamp(enSub.start.total_seconds(), always_include_hours=True)} --> "
-                    f"{format_timestamp(enSub.end.total_seconds(), always_include_hours=True)}\n"
+                    f"{index}\n"
+                    f"{format_timestamp(zhSub.start.total_seconds(), always_include_hours=True)} --> "
+                    f"{format_timestamp(zhSub.end.total_seconds(), always_include_hours=True)}\n"
                     f"{zhContent}",
                     file=outFile,
                     flush=True,
