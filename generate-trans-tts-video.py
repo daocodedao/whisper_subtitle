@@ -618,16 +618,16 @@ try:
     # relayout_cn_tts(outSrtTtsCnPath, isVerticle)
     # combinSubtitle(curVideoPath, outSrtTtsCnPath, videoCnSubtitlePath)
     
-    api_logger.info("根据音频生成中文字幕")
-    start_zh_asr_to_srt(combineMp3Path, outSrtAsrCnPath)
-    api_logger.info("中文字幕重新调整行数")
-    relayout_cn_tts(outSrtAsrCnPath, isVerticle)
-    api_logger.info("合并字幕到视频")
-    combinSubtitle(curVideoPath, outSrtAsrCnPath, videoCnSubtitlePath)
-
+    # api_logger.info("根据音频生成中文字幕")
+    # start_zh_asr_to_srt(combineMp3Path, outSrtAsrCnPath)
     # api_logger.info("中文字幕重新调整行数")
-    # relayout_cn_tts(outSrtCnPath, isVerticle)
-    # combinSubtitle(curVideoPath, outSrtCnPath, videoCnSubtitlePath)
+    # relayout_cn_tts(outSrtAsrCnPath, isVerticle)
+    # api_logger.info("合并字幕到视频")
+    # combinSubtitle(curVideoPath, outSrtAsrCnPath, videoCnSubtitlePath)
+
+    api_logger.info("中文字幕重新调整行数")
+    relayout_cn_tts(outSrtCnPath, isVerticle)
+    combinSubtitle(curVideoPath, outSrtCnPath, videoCnSubtitlePath)
 except Exception as e:
     api_logger.error(f"视频加上中文字幕失败：{e}")
     exit(1)
