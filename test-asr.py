@@ -4,6 +4,8 @@ from funasr import AutoModel
 from utils.logger_settings import api_logger
 from typing import Iterator, TextIO
 import srt
+from pydub import AudioSegment
+
 
 def format_timestamp(milliseconds: float, always_include_hours: bool = False):
     '''format timestamp to SRT format'''
@@ -61,9 +63,12 @@ def convertSrtToTxt(inSrtFilePath, outTxtFilePath):
         # subList = []
         with open(outTxtFilePath, 'w', encoding='utf-8') as outFile:
             for sub in subs:
-                outFile.write(sub.content + '\n')
+                outFile.write(sub.content)
             # subList.append(sub)
 
+def convertMp3ToWav(inFilePath, outFilePath):
+    sound = AudioSegment.from_mp3(inFilePath)
+    sound.export(outFilePath, format="wav")
 
 def predictionTimestamp(audioPath, srtFilePath):
     model = AutoModel(model="fa-zh")
@@ -71,9 +76,11 @@ def predictionTimestamp(audioPath, srtFilePath):
     # text_file = f"{model.model_path}/example/text.txt"
     txtFilePath = "./sample/simple5-cn.txt"
     convertSrtToTxt(srtFilePath, txtFilePath)
-    res = model.generate(input=(audioPath, txtFilePath), data_type=("sound", "text"))
+    convertMp3ToWav(audioPath, wavPath)
+    res = model.generate(input=(wavPath, txtFilePath), data_type=("sound", "text"))
     print(res)
 
 audioPath="./sample/simple5-combine.mp3"
 srtPath="./sample/simple5-cn.srt"
+wavPath="./sample/simple5.wav"
 predictionTimestamp(audioPath, srtPath)

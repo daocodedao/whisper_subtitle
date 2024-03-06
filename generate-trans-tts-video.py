@@ -594,7 +594,6 @@ except Exception as e:
     exit(1)
 
 
-
 api_logger.info("6---------视频加上中文字幕")
 try:
     curVideoPath = videoCnPath
@@ -604,7 +603,6 @@ try:
     # relayout_cn_tts(outSrtTtsCnPath, isVerticle)
     # combinSubtitle(curVideoPath, outSrtTtsCnPath, videoCnSubtitlePath)
     
-
     api_logger.info("根据音频生成中文字幕")
     start_zh_asr_to_srt(combineMp3Path, outSrtAsrCnPath)
     api_logger.info("中文字幕重新调整行数")

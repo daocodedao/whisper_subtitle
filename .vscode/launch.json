@@ -9,8 +9,10 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
+            "purpose": ["debug-test"],
+            "justMyCode": false,
             "console": "integratedTerminal",
-            "justMyCode": false
+            
         }
     ]
 }
