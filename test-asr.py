@@ -3,6 +3,7 @@ from funasr import AutoModel
 # use vad, punc, spk or not as you need
 from utils.logger_settings import api_logger
 from typing import Iterator, TextIO
+import srt
 
 def format_timestamp(milliseconds: float, always_include_hours: bool = False):
     '''format timestamp to SRT format'''
@@ -38,8 +39,6 @@ def write_srt(transcript: Iterator[dict], file: TextIO, language:str="zh"):
             flush=True,
         )
 
-
-
 def start_zh_asr(audioPath, srt_file):
 
     model = AutoModel(model="paraformer-zh",  
@@ -55,5 +54,26 @@ def start_zh_asr(audioPath, srt_file):
         with open(srt_file, "w", encoding="utf-8") as srt:
             write_srt(restItem["sentence_info"], srt)
 
+def convertSrtToTxt(inSrtFilePath, outTxtFilePath):
+     with open(inSrtFilePath, 'r') as srcFile:
+        content = srcFile.read()
+        subs = srt.parse(content)
+        # subList = []
+        with open(outTxtFilePath, 'w', encoding='utf-8') as outFile:
+            for sub in subs:
+                outFile.write(sub.content + '\n')
+            # subList.append(sub)
 
 
+def predictionTimestamp(audioPath, srtFilePath):
+    model = AutoModel(model="fa-zh")
+    # wav_file = f"{model.model_path}/example/asr_example.wav"
+    # text_file = f"{model.model_path}/example/text.txt"
+    txtFilePath = "./sample/simple5-cn.txt"
+    convertSrtToTxt(srtFilePath, txtFilePath)
+    res = model.generate(input=(audioPath, txtFilePath), data_type=("sound", "text"))
+    print(res)
+
+audioPath="./sample/simple5-combine.mp3"
+srtPath="./sample/simple5-cn.srt"
+predictionTimestamp(audioPath, srtPath)
