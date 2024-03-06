@@ -180,7 +180,7 @@ def writeSublistToFile(zhAllSubList, outSrtCnPath):
             zhContent = replaceSentenceWithKeyword(zhContent)
 
             print(
-                f"{index}\n"
+                f"{index + 1}\n"
                 f"{Util.format_timestamp(zhSub.start.total_seconds(), always_include_hours=True)} --> "
                 f"{Util.format_timestamp(zhSub.end.total_seconds(), always_include_hours=True)}\n"
                 f"{zhContent}",
@@ -382,7 +382,7 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3
         content = srcFile.read()
         subs = srt.parse(content)
         subList = list(subs)
-        
+
     # print(len(subList))
     # index = 0
     combined = None
