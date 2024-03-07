@@ -20,6 +20,7 @@ import math
 from utils.replaceKeyword import *
 from utilAsr import start_zh_asr_to_srt
 from utils.util import Util
+import time
 # import traceback
 
 def log_subprocess_output(pipe):
@@ -582,17 +583,22 @@ except Exception as e:
 api_logger.info("7---------视频加上背景音乐")
 try:
     curVideoPath = videoCnSubtitlePath
-    # start-urv.sh -s "/data/work/translate/eR4G4khR6r8/eR4G4khR6r8.mp4" -i eR4G4khR6r8 -n "/data/work/translate/eR4G4khR6r8/eR4G4khR6r8-ins.wav"
-    api_logger.info("获取背景音乐")
-    command = f"/data/work/GPT-SoVITS/start-urv.sh -s '{srcAudioPath}' -i {processId} -n {audioInsPath}"
-    api_logger.info(f"命令：")
-    api_logger.info(command)
-    process = Popen(command, stdout=PIPE, stderr=STDOUT)
-    with process.stdout:
-        log_subprocess_output(process.stdout)
-        exitcode = process.wait() # 0 means succes
 
-    api_logger.info(f'完成音频urv任务: {audioInsPath}')
+    for tryIndex in range(0,5):
+        try:
+            api_logger.info("获取背景音乐")
+            command = f"/data/work/GPT-SoVITS/start-urv.sh -s '{srcAudioPath}' -i {processId} -n {audioInsPath}"
+            api_logger.info(f"命令：")
+            api_logger.info(command)
+            process = Popen(command, stdout=PIPE, stderr=STDOUT)
+            with process.stdout:
+                log_subprocess_output(process.stdout)
+                exitcode = process.wait() # 0 means succes
+
+            api_logger.info(f'完成音频urv任务: {audioInsPath}')
+        except Exception as e:
+            api_logger.error(f"第{tryIndex}次，获取背景音乐失败：{e} 休息2秒后重试")
+            time.sleep(2)
 
     if os.path.exists(curVideoPath):
         api_logger.info(f"添加背景音乐 {curVideoPath}")
