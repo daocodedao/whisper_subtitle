@@ -505,7 +505,8 @@ if check_video_verticle(videoPath):
 api_logger.info("1---------视频生成英文SRT")
 
 api_logger.info(f"从视频剥离音频文件 {srcAudioPath}")
-command = f"ffmpeg -y -i {videoPath} -vn -acodec copy {srcAudioPath}"
+command = f"ffmpeg -i {videoPath} -vn -acodec pcm_f32le -ar 44100 -ac 2 srcAudioPath"
+# command = f"ffmpeg -y -i {videoPath} -vn -acodec copy {srcAudioPath}"
 result = subprocess.check_output(command, shell=True)
 
 api_logger.info(f"生成字幕 {outSrtEnPath}")
