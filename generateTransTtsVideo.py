@@ -21,6 +21,8 @@ from utils.replaceKeyword import *
 from utilAsr import start_zh_asr_to_srt
 from utils.util import Util
 import time
+import sys
+
 # import traceback
 
 def log_subprocess_output(pipe):
@@ -589,13 +591,18 @@ try:
     for tryIndex in range(0,5):
         try:
             api_logger.info("获取背景音乐")
-            command = f"/data/work/GPT-SoVITS/start-urv.sh -s '{srcAudioPath}' -i {processId} -n {audioInsPath}"
+            command = f"/data/work/GPT-SoVITS/start-urv.sh -s '{srcAudioPath}' -i {processId} -n '{audioInsPath}'"
             api_logger.info(f"命令：")
             api_logger.info(command)
             process = Popen(command, stdout=PIPE, stderr=STDOUT)
             with process.stdout:
-                log_subprocess_output(process.stdout)
-                exitcode = process.wait() # 0 means succes
+                for line in process.stdout:
+                    sys.stdout.write(line)
+                    api_logger.info(line)
+                exitcode = process.wait()
+
+                # log_subprocess_output(process.stdout)
+                # exitcode = process.wait() # 0 means succes
 
             api_logger.info(f'完成音频urv任务: {audioInsPath}')
         except Exception as e:
