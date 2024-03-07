@@ -25,9 +25,11 @@ import sys
 
 # import traceback
 
-def log_subprocess_output(pipe):
-    for line in iter(pipe.readline, b''): # b'\n'-separated lines
-        api_logger.info('got line from subprocess: %r', line)
+def log_subprocess_output(inStr):
+    if len(inStr) > 0:
+        logStrList = inStr.split('\n')
+        for line in logStrList:
+            api_logger.info(line)
 
 def whisper_transcribe_en(file="{}/audio.mp3".format(dir), download_root = "./models/"):
     '''transcribe audio to text using whisper'''
@@ -511,7 +513,7 @@ command = f"ffmpeg -y -i {videoPath} -vn -acodec pcm_f32le -ar 44100 -ac 2 {srcA
 api_logger.info(command)
 # command = f"ffmpeg -y -i {videoPath} -vn -acodec copy {srcAudioPath}"
 result = subprocess.check_output(command, shell=True)
-
+log_subprocess_output(result)
 api_logger.info(f"生成字幕 {outSrtEnPath}")
 result, json_object = whisper_transcribe_en(videoPath)
 whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
@@ -533,6 +535,7 @@ try:
     api_logger.info(command)
     # api_logger.info(traceback.format_exc())
     result = subprocess.check_output(command, shell=True)
+    log_subprocess_output(result)
 except Exception as e:
     api_logger.error(f"中文SRT转TTS失败：{e}")
     exit(1)
@@ -545,6 +548,7 @@ try:
     api_logger.info(f"命令：")
     api_logger.info(command)
     result = subprocess.check_output(command, shell=True)
+    log_subprocess_output(result)
     # api_logger.info(traceback.format_exc())
 except Exception as e:
     api_logger.error(f"原视频静音失败：{e}")
@@ -596,8 +600,9 @@ try:
             api_logger.info(command)
 
             result = subprocess.check_output(command, shell=True)
-            api_logger.info(result)
+            log_subprocess_output(result)
             api_logger.info(f'完成音频urv任务: {audioInsPath}')
+            break
         except Exception as e:
             api_logger.error(f"第{tryIndex}次，获取背景音乐失败：{e} 休息2秒后重试")
             time.sleep(2)
@@ -609,7 +614,7 @@ try:
         api_logger.info(f"命令：")
         api_logger.info(command)
         result = subprocess.check_output(command, shell=True)
-        api_logger.info(result)
+        log_subprocess_output(result)
         api_logger.info(f'完成背景音乐合并任务: {videoCnSubtitleBgPath}')
         
         curVideoPath = videoCnSubtitleBgPath
