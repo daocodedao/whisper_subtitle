@@ -591,19 +591,12 @@ try:
     for tryIndex in range(0,5):
         try:
             api_logger.info("获取背景音乐")
-            command = f"/data/work/GPT-SoVITS/start-urv.sh -s '{srcAudioPath}' -i {processId} -n '{audioInsPath}'"
+            command = f"/data/work/GPT-SoVITS/start-urv.sh -s {srcAudioPath} -i {processId} -n {audioInsPath}"
             api_logger.info(f"命令：")
             api_logger.info(command)
-            process = Popen(command, stdout=PIPE, stderr=STDOUT)
-            with process.stdout:
-                for line in process.stdout:
-                    sys.stdout.write(line)
-                    api_logger.info(line)
-                exitcode = process.wait()
 
-                # log_subprocess_output(process.stdout)
-                # exitcode = process.wait() # 0 means succes
-
+            result = subprocess.check_output(command, shell=True)
+            api_logger.info(result)
             api_logger.info(f'完成音频urv任务: {audioInsPath}')
         except Exception as e:
             api_logger.error(f"第{tryIndex}次，获取背景音乐失败：{e} 休息2秒后重试")
@@ -615,10 +608,8 @@ try:
         # command = f'ffmpeg -y -i {curVideoPath} -i {audioInsPath} -c copy -map 0:v:0 -map 1:a:0 {videoCnSubtitleBgPath}'
         api_logger.info(f"命令：")
         api_logger.info(command)
-        process = Popen(command, stdout=PIPE, stderr=STDOUT)
-        with process.stdout:
-            log_subprocess_output(process.stdout)
-            exitcode = process.wait() # 0 means succes
+        result = subprocess.check_output(command, shell=True)
+        api_logger.info(result)
         api_logger.info(f'完成背景音乐合并任务: {videoCnSubtitleBgPath}')
         
         curVideoPath = videoCnSubtitleBgPath
