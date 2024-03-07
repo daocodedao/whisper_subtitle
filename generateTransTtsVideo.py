@@ -599,12 +599,10 @@ except Exception as e:
     exit(1)
 
 
-
+curVideoPath = videoCnSubtitlePath
 if isAddBgMusic:
     api_logger.info("7---------视频加上背景音乐")
     try:
-        curVideoPath = videoCnSubtitlePath
-
         for tryIndex in range(0,5):
             try:
                 api_logger.info(f"第{tryIndex}获取背景音乐")
@@ -635,7 +633,8 @@ if isAddBgMusic:
     except Exception as e:
         api_logger.error(f"视频加上背景音乐失败：{e}")
         # exit(1)
-
+else:
+    api_logger.info("7---------视频无需加上背景音乐")
 
 
 api_logger.info("8---------上传到腾讯云")
