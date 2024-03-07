@@ -616,7 +616,6 @@ try:
         result = subprocess.check_output(command, shell=True)
         log_subprocess_output(result)
         api_logger.info(f'完成背景音乐合并任务: {videoCnSubtitleBgPath}')
-        
         curVideoPath = videoCnSubtitleBgPath
     else:
         api_logger.error(f"背景音乐 {audioInsPath} 不存在")
