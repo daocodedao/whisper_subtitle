@@ -578,6 +578,7 @@ api_logger.info("7---------视频加上背景音乐")
 try:
     curVideoPath = videoCnSubtitlePath
     # start-urv.sh -s "/data/work/translate/eR4G4khR6r8/eR4G4khR6r8.mp4" -i eR4G4khR6r8 -n "/data/work/translate/eR4G4khR6r8/eR4G4khR6r8-ins.wav"
+    api_logger.info("获取背景音乐")
     command = f"/data/work/GPT-SoVITS/start-urv.sh -s '{srcAudioPath}' -i {processId} -n {audioInsPath}"
     api_logger.info(f"命令：")
     api_logger.info(command)
@@ -587,7 +588,9 @@ try:
     api_logger.info(f'完成音频urv任务: {audioInsPath}')
 
     if os.path.exists(curVideoPath):
-        command = f'ffmpeg -y -i {curVideoPath} -i {audioInsPath} -c copy -map 0:v:0 -map 1:a:0 {videoCnSubtitleBgPath}'
+        api_logger.info(f"添加背景音乐 {curVideoPath}")
+        command = f"ffmpeg -y -i {curVideoPath}  -i {audioInsPath} -c:v copy -filter_complex '[0:a]aformat=fltp:44100:stereo,apad[0a];[1]aformat=fltp:44100:stereo,volume=0.6[1a];[0a][1a]amerge[a]' -map 0:v -map '[a]' -ac 2 {videoCnSubtitleBgPath}"
+        # command = f'ffmpeg -y -i {curVideoPath} -i {audioInsPath} -c copy -map 0:v:0 -map 1:a:0 {videoCnSubtitleBgPath}'
         api_logger.info(f"命令：")
         api_logger.info(command)
         # result = subprocess.call(command, shell=True)
