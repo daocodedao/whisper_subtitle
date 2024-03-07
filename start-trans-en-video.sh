@@ -17,10 +17,11 @@ source ${venvBinDir}activate
 helpFunction()
 {
    echo ""
-   echo "Usage: $0  -v videoPath -i processId -r role"
+   echo "Usage: $0  -v videoPath -i processId -r role -b add"
    echo -e "\t-v video path"
    echo -e "\t-i process id"
    echo -e "\t-r role"
+   echo -e "\t-b is add bgMusic"
    exit 1 # Exit script after printing help
 }
 
@@ -35,12 +36,13 @@ sudo kill -9 $TAILPID
 fi
 
 
-while getopts "v:i:r:" opt
+while getopts "v:i:r:b:" opt
 do
    case "$opt" in
       v ) videoPath="$OPTARG" ;;
       i ) processId="$OPTARG" ;;
       r ) role="$OPTARG" ;;
+      b ) isAddBgMusic="$OPTARG" ;;
       ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
    esac
 done
@@ -48,6 +50,7 @@ done
 [[ -z  $videoPath ]] &&  echo -e "${RED}videoPath is empty ${NOCOLOR}" &&  exit 1
 [[ -z  $processId ]] &&  echo -e "${RED}processId is empty ${NOCOLOR}" &&  exit 1
 [[ -z  $role ]] && role="he"
+[[ -z  $isAddBgMusic ]] && role="add"
 
-echo -e "${YELLOW}${pythonPath} $jobName  -v \"$videoPath\"   -i \"$processId\"  -r \"$role\" ${NOCOLOR}"
-${pythonPath} $jobName  -v "$videoPath" -i "$processId" -r "$role"
+echo -e "${YELLOW}${pythonPath} $jobName  -v \"$videoPath\"   -i \"$processId\"  -r \"$role\" -b \"$isAddBgMusic\"  ${NOCOLOR}"
+${pythonPath} $jobName  -v "$videoPath" -i "$processId" -r "$role"  -b "$isAddBgMusic"
