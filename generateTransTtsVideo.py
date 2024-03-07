@@ -583,7 +583,7 @@ try:
     api_logger.info(f'完成音频urv任务: {audioVocalPath}')
 
     if os.path.exists(curVideoPath):
-        command = f'ffmpeg -y -i {curVideoPath} -i {audioVocalPath} -c:v copy -c:a aac {videoCnSubtitleBgPath}'
+        command = f'ffmpeg -y -i {curVideoPath} -i {audioVocalPath} -c copy -map 0:v:0 -map 1:a:0 {videoCnSubtitleBgPath}'
         api_logger.info(f"命令：")
         api_logger.info(command)
         result = subprocess.call(command, shell=True)
