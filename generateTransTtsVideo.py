@@ -2,6 +2,7 @@ import srt
 # from translate import Translator
 from utils.logger_settings import api_logger
 import subprocess
+from subprocess import Popen, PIPE, STDOUT 
 import whisper
 import json
 from pathlib import Path
@@ -19,7 +20,11 @@ import math
 from utils.replaceKeyword import *
 from utilAsr import start_zh_asr_to_srt
 from utils.util import Util
-import traceback
+# import traceback
+
+def log_subprocess_output(pipe):
+    for line in iter(pipe.readline, b''): # b'\n'-separated lines
+        api_logger.info('got line from subprocess: %r', line)
 
 def whisper_transcribe_en(file="{}/audio.mp3".format(dir), download_root = "./models/"):
     '''transcribe audio to text using whisper'''
@@ -535,7 +540,7 @@ try:
     api_logger.info(f"命令：")
     api_logger.info(command)
     result = subprocess.check_output(command, shell=True)
-    api_logger.info(traceback.format_exc())
+    # api_logger.info(traceback.format_exc())
 except Exception as e:
     api_logger.error(f"原视频静音失败：{e}")
     exit(1)
@@ -582,9 +587,11 @@ try:
     command = f"/data/work/GPT-SoVITS/start-urv.sh -s '{srcAudioPath}' -i {processId} -n {audioInsPath}"
     api_logger.info(f"命令：")
     api_logger.info(command)
-    # result = subprocess.check_output(command, shell=True)
-    os.system(command)
-    api_logger.info(traceback.format_exc())
+    process = Popen(command, stdout=PIPE, stderr=STDOUT)
+    with process.stdout:
+        log_subprocess_output(process.stdout)
+        exitcode = process.wait() # 0 means succes
+
     api_logger.info(f'完成音频urv任务: {audioInsPath}')
 
     if os.path.exists(curVideoPath):
@@ -593,9 +600,10 @@ try:
         # command = f'ffmpeg -y -i {curVideoPath} -i {audioInsPath} -c copy -map 0:v:0 -map 1:a:0 {videoCnSubtitleBgPath}'
         api_logger.info(f"命令：")
         api_logger.info(command)
-        # result = subprocess.call(command, shell=True)
-        os.system(command)
-        api_logger.info(traceback.format_exc())
+        process = Popen(command, stdout=PIPE, stderr=STDOUT)
+        with process.stdout:
+            log_subprocess_output(process.stdout)
+            exitcode = process.wait() # 0 means succes
         api_logger.info(f'完成背景音乐合并任务: {videoCnSubtitleBgPath}')
         
         curVideoPath = videoCnSubtitleBgPath
