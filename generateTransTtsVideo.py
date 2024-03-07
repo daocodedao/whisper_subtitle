@@ -600,7 +600,7 @@ try:
             api_logger.error(f"第{tryIndex}次，获取背景音乐失败：{e} 休息2秒后重试")
             time.sleep(2)
 
-    if os.path.exists(curVideoPath):
+    if os.path.exists(audioInsPath):
         api_logger.info(f"添加背景音乐 {curVideoPath}")
         command = f"ffmpeg -y -i {curVideoPath}  -i {audioInsPath} -c:v copy -filter_complex '[0:a]aformat=fltp:44100:stereo,apad[0a];[1]aformat=fltp:44100:stereo,volume=0.6[1a];[0a][1a]amerge[a]' -map 0:v -map '[a]' -ac 2 {videoCnSubtitleBgPath}"
         # command = f'ffmpeg -y -i {curVideoPath} -i {audioInsPath} -c copy -map 0:v:0 -map 1:a:0 {videoCnSubtitleBgPath}'
@@ -613,6 +613,8 @@ try:
         api_logger.info(f'完成背景音乐合并任务: {videoCnSubtitleBgPath}')
         
         curVideoPath = videoCnSubtitleBgPath
+    else:
+        api_logger.error(f"背景音乐 {audioInsPath} 不存在")
 except Exception as e:
     api_logger.error(f"视频加上背景音乐失败：{e}")
     # exit(1)
