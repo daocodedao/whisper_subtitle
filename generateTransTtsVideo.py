@@ -26,8 +26,8 @@ import sys
 # import traceback
 
 def log_subprocess_output(inStr):
-    inStr = inStr.decode("cp850")
     if len(inStr) > 0:
+        inStr = inStr.decode("cp850")
         logStrList = inStr.split('\n')
         for line in logStrList:
             api_logger.info(line)
@@ -599,11 +599,11 @@ try:
             command = f"/data/work/GPT-SoVITS/start-urv.sh -s {srcAudioPath} -i {processId} -n {audioInsPath}"
             api_logger.info(f"命令：")
             api_logger.info(command)
-
             result = subprocess.check_output(command, shell=True)
             log_subprocess_output(result)
-            api_logger.info(f'完成音频urv任务: {audioInsPath}')
-            break
+            if os.path.exists(audioInsPath):
+                api_logger.info(f'完成音频urv任务: {audioInsPath}')
+                break
         except Exception as e:
             api_logger.error(f"第{tryIndex}次，获取背景音乐失败：{e} 休息2秒后重试")
             time.sleep(2)
