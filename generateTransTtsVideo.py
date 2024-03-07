@@ -158,16 +158,21 @@ def translate_list_remote(preTrans:str, preTransEnSubList):
             subZhList = list(zhSubs)
             
             # 分组翻译成功后，直接更新中文的时间戳，避免累积太多，视频最后都是静音
+            isTranlateError = False
             if len(preTransEnSubList) >= len(subZhList) and len(subZhList) > 0:
                 for index in range(0, len(subZhList)):
                     enSub = preTransEnSubList[index]
                     zhSub = subZhList[index]
                     if len(zhSub.proprietary) > 0:
                         api_logger.error(f"翻译错误，proprietary有内容: {zhSub.proprietary}")
+                        isTranlateError = True
+                        continue
 
                     zhSub.start = enSub.start
                     zhSub.end = enSub.end
 
+                if isTranlateError:
+                    continue
                 api_logger.info("分组翻译成功")
                 break
 
@@ -595,7 +600,7 @@ try:
 
     for tryIndex in range(0,5):
         try:
-            api_logger.info("获取背景音乐")
+            api_logger.info(f"第{tryIndex}获取背景音乐")
             command = f"/data/work/GPT-SoVITS/start-urv.sh -s {srcAudioPath} -i {processId} -n {audioInsPath}"
             api_logger.info(f"命令：")
             api_logger.info(command)
