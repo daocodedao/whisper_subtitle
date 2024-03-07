@@ -502,8 +502,8 @@ api_logger.info("从视频剥离音频文件")
 command = f"ffmpeg -y -i {videoPath} -vn -acodec copy {srcAudioPath}"
 result = subprocess.check_output(command, shell=True)
 
-api_logger.info("音频文件生成字幕")
-result, json_object = whisper_transcribe_en(srcAudioPath)
+# api_logger.info("音频文件生成字幕")
+result, json_object = whisper_transcribe_en(videoPath)
 whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
 loopHandleEn_srt(inSrcFilePath=outSrtEnPath, outSrcFilePath=outSrtEnReComposePath)
 
