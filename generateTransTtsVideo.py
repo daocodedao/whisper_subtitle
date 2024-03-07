@@ -157,7 +157,7 @@ def translate_list_remote(preTrans:str, preTransEnSubList):
                     zhSub.start = enSub.start
                     zhSub.end = enSub.end
 
-                api_logger.info("分组翻译成功，继续下一组")
+                api_logger.info("分组翻译成功")
                 break
 
         except Exception as e:
@@ -479,9 +479,12 @@ ttsDir = os.path.join(videoDir, "tts")
 videoMutePath = os.path.join(videoDir, f"{processId}-mute.mp4")
 videoCnPath = os.path.join(videoDir, f"{processId}-cn.mp4")
 videoCnSubtitlePath = os.path.join(videoDir, f"{processId}-cn-subtitle.mp4")
+videoCnSubtitleBgPath = os.path.join(videoDir, f"{processId}-cn-subtitle-bg.mp4")
 
+srcAudioPath = os.path.join(videoDir, f"{processId}.wav")
 combineMp3Path = os.path.join(videoDir, f"{processId}.mp3")
 combineMp3SpeedPath = os.path.join(videoDir, f"{processId}-speed.mp3")
+audioVocalPath = os.path.join(videoDir, f"{processId}-vocal.wav")
 
 outSrtEnPath = os.path.join(videoDir, f"{processId}-en.srt")
 outSrtEnReComposePath = os.path.join(videoDir, f"{processId}-en-recompse.srt")
@@ -494,7 +497,13 @@ if check_video_verticle(videoPath):
     isVerticle = True     
 
 api_logger.info("1---------视频生成英文SRT")
-result, json_object = whisper_transcribe_en(videoPath)
+
+api_logger.info("从视频剥离音频文件")
+command = f"ffmpeg -y -i {videoPath} -vn -acodec copy {srcAudioPath}"
+result = subprocess.check_output(command, shell=True)
+
+api_logger.info("音频文件生成字幕")
+result, json_object = whisper_transcribe_en(srcAudioPath)
 whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
 loopHandleEn_srt(inSrcFilePath=outSrtEnPath, outSrcFilePath=outSrtEnReComposePath)
 
@@ -563,8 +572,32 @@ except Exception as e:
     exit(1)
 
 
-api_logger.info("7---------上传到腾讯云")
-curVideoPath = videoCnSubtitlePath
+api_logger.info("7---------视频加上背景音乐")
+try:
+    curVideoPath = videoCnSubtitlePath
+    # start-urv.sh -s "/data/work/translate/eR4G4khR6r8/eR4G4khR6r8.mp4" -i eR4G4khR6r8 -n "/data/work/translate/eR4G4khR6r8/eR4G4khR6r8-ins.wav"
+    command = f"/data/work/GPT-SoVITS/start-urv.sh -s '{srcAudioPath}' -i {processId} -n {audioVocalPath}"
+    api_logger.info(f"命令：")
+    api_logger.info(command)
+    result = subprocess.check_output(command, shell=True)
+    api_logger.info(f'完成音频urv任务: {audioVocalPath}')
+
+    if os.path.exists(curVideoPath):
+        command = f'ffmpeg -y -i {curVideoPath} -i {audioVocalPath} -c:v copy -c:a aac {videoCnSubtitleBgPath}'
+        api_logger.info(f"命令：")
+        api_logger.info(command)
+        result = subprocess.call(command, shell=True)
+        api_logger.info(f'完成背景音乐合并任务: {videoCnSubtitleBgPath}')
+        
+        curVideoPath = videoCnSubtitleBgPath
+except Exception as e:
+    api_logger.error(f"视频加上背景音乐失败：{e}")
+    # exit(1)
+
+
+
+api_logger.info("8---------上传到腾讯云")
+# curVideoPath = videoCnSubtitlePath
 bucketName = "magicphoto-1315251136"
 resultUrlPre = f"translate/video/{processId}/"
 videoCnName=os.path.basename(curVideoPath)
