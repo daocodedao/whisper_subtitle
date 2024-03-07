@@ -27,7 +27,7 @@ import sys
 
 def log_subprocess_output(inStr):
     if len(inStr) > 0:
-        inStr = inStr.decode("cp850")
+        inStr = inStr.decode(sys.stdout.encoding)
         logStrList = inStr.split('\n')
         for line in logStrList:
             api_logger.info(line)
