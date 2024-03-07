@@ -521,7 +521,7 @@ try:
     command = f"/data/work/GPT-SoVITS/start-gen-voice-local.sh -l 'zh'  -r {role} -s '{outSrtCnPath}' "
     api_logger.info(f"命令：")
     api_logger.info(command)
-    api_logger.info(traceback.format_exc())
+    # api_logger.info(traceback.format_exc())
     result = subprocess.check_output(command, shell=True)
 except Exception as e:
     api_logger.error(f"中文SRT转TTS失败：{e}")
@@ -581,7 +581,8 @@ try:
     command = f"/data/work/GPT-SoVITS/start-urv.sh -s '{srcAudioPath}' -i {processId} -n {audioInsPath}"
     api_logger.info(f"命令：")
     api_logger.info(command)
-    result = subprocess.check_output(command, shell=True)
+    # result = subprocess.check_output(command, shell=True)
+    os.system(command)
     api_logger.info(traceback.format_exc())
     api_logger.info(f'完成音频urv任务: {audioInsPath}')
 
@@ -589,7 +590,8 @@ try:
         command = f'ffmpeg -y -i {curVideoPath} -i {audioInsPath} -c copy -map 0:v:0 -map 1:a:0 {videoCnSubtitleBgPath}'
         api_logger.info(f"命令：")
         api_logger.info(command)
-        result = subprocess.call(command, shell=True)
+        # result = subprocess.call(command, shell=True)
+        os.system(command)
         api_logger.info(traceback.format_exc())
         api_logger.info(f'完成背景音乐合并任务: {videoCnSubtitleBgPath}')
         
