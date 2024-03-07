@@ -216,7 +216,7 @@ def translate_srt(outSrtCnPath, inSrtFilePath, isVerticle = True):
     enSubnList = []
     # 待翻译的英文字幕是否已经满了15个
     isFullNumberTranslate = False
-    enPunctuations: str = "?."
+    enPunctuations: str = "?.!"
     api_logger.info(f"字幕行数：{len(enAllSubList)}")
     for index in range(0, len(enAllSubList)):
         enSub = enAllSubList[index]
