@@ -26,6 +26,7 @@ import sys
 # import traceback
 
 def log_subprocess_output(inStr):
+    inStr = inStr.decode("cp850")
     if len(inStr) > 0:
         logStrList = inStr.split('\n')
         for line in logStrList:
