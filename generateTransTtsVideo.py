@@ -19,7 +19,7 @@ import math
 from utils.replaceKeyword import *
 from utilAsr import start_zh_asr_to_srt
 from utils.util import Util
-
+import traceback
 
 def whisper_transcribe_en(file="{}/audio.mp3".format(dir), download_root = "./models/"):
     '''transcribe audio to text using whisper'''
@@ -484,7 +484,7 @@ videoCnSubtitleBgPath = os.path.join(videoDir, f"{processId}-cn-subtitle-bg.mp4"
 srcAudioPath = os.path.join(videoDir, f"{processId}.wav")
 combineMp3Path = os.path.join(videoDir, f"{processId}.mp3")
 combineMp3SpeedPath = os.path.join(videoDir, f"{processId}-speed.mp3")
-audioVocalPath = os.path.join(videoDir, f"{processId}-vocal.wav")
+audioInsPath = os.path.join(videoDir, f"{processId}-ins.wav")
 
 outSrtEnPath = os.path.join(videoDir, f"{processId}-en.srt")
 outSrtEnReComposePath = os.path.join(videoDir, f"{processId}-en-recompse.srt")
@@ -521,6 +521,7 @@ try:
     command = f"/data/work/GPT-SoVITS/start-gen-voice-local.sh -l 'zh'  -r {role} -s '{outSrtCnPath}' "
     api_logger.info(f"命令：")
     api_logger.info(command)
+    api_logger.info(traceback.format_exc())
     result = subprocess.check_output(command, shell=True)
 except Exception as e:
     api_logger.error(f"中文SRT转TTS失败：{e}")
@@ -534,6 +535,7 @@ try:
     api_logger.info(f"命令：")
     api_logger.info(command)
     result = subprocess.check_output(command, shell=True)
+    api_logger.info(traceback.format_exc())
 except Exception as e:
     api_logger.error(f"原视频静音失败：{e}")
     exit(1)
@@ -576,17 +578,19 @@ api_logger.info("7---------视频加上背景音乐")
 try:
     curVideoPath = videoCnSubtitlePath
     # start-urv.sh -s "/data/work/translate/eR4G4khR6r8/eR4G4khR6r8.mp4" -i eR4G4khR6r8 -n "/data/work/translate/eR4G4khR6r8/eR4G4khR6r8-ins.wav"
-    command = f"/data/work/GPT-SoVITS/start-urv.sh -s '{srcAudioPath}' -i {processId} -n {audioVocalPath}"
+    command = f"/data/work/GPT-SoVITS/start-urv.sh -s '{srcAudioPath}' -i {processId} -n {audioInsPath}"
     api_logger.info(f"命令：")
     api_logger.info(command)
     result = subprocess.check_output(command, shell=True)
-    api_logger.info(f'完成音频urv任务: {audioVocalPath}')
+    api_logger.info(traceback.format_exc())
+    api_logger.info(f'完成音频urv任务: {audioInsPath}')
 
     if os.path.exists(curVideoPath):
-        command = f'ffmpeg -y -i {curVideoPath} -i {audioVocalPath} -c copy -map 0:v:0 -map 1:a:0 {videoCnSubtitleBgPath}'
+        command = f'ffmpeg -y -i {curVideoPath} -i {audioInsPath} -c copy -map 0:v:0 -map 1:a:0 {videoCnSubtitleBgPath}'
         api_logger.info(f"命令：")
         api_logger.info(command)
         result = subprocess.call(command, shell=True)
+        api_logger.info(traceback.format_exc())
         api_logger.info(f'完成背景音乐合并任务: {videoCnSubtitleBgPath}')
         
         curVideoPath = videoCnSubtitleBgPath
@@ -602,6 +606,7 @@ bucketName = "magicphoto-1315251136"
 resultUrlPre = f"translate/video/{processId}/"
 videoCnName=os.path.basename(curVideoPath)
 reusultUrl = f"{resultUrlPre}{videoCnName}"
+api_logger.info(f"上传视频 {curVideoPath}")
 if os.path.exists(curVideoPath):
     api_logger.info(f"上传视频到OSS，curVideoPath:{curVideoPath}, task.key:{reusultUrl}, task.bucketName:{bucketName}")
     TosService.upload_file(curVideoPath, reusultUrl, bucketName)
