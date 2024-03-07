@@ -621,7 +621,7 @@ if os.path.exists(curVideoPath):
     with open(dataFilePath, "w") as file:
         file.write(playUrl + "\n")
 else:
-    api_logger.error(f"上传文件失败")
+    api_logger.error(f"上传文件失败, {curVideoPath}不存在")
     exit(1)
 
 
