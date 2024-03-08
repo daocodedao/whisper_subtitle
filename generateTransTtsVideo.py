@@ -22,6 +22,7 @@ from utilAsr import start_zh_asr_to_srt
 from utils.util import Util
 import time
 import sys
+import datetime
 
 # import traceback
 
@@ -71,7 +72,6 @@ def whisper_result_to_srt(whisper_result, outPath="", language: str = "cn"):
         write_srt(whisper_result["segments"], file=srt, language=language)
     return
 
-
 def write_srt(transcript: Iterator[dict], file: TextIO, language: str):
     api_logger.info("write transcript to SRT file")
     for i, segment in enumerate(transcript, start=1):
@@ -89,7 +89,6 @@ def write_srt(transcript: Iterator[dict], file: TextIO, language: str):
             flush=True,
         )
 
-
 def speed_change(input_file, output_file, speedRate: float = 1.0):
     song, fs = librosa.load(input_file)
     song_2_times_faster = librosa.effects.time_stretch(song, rate=speedRate)
@@ -102,7 +101,6 @@ def get_substring(string, percentage):
 def get_from_substring(string, percentage):
     length = int(len(string) * percentage)
     return string[length:]
-
 
 def split_cnsubtitle(str1: str, maxlen=22) -> str:
     """
@@ -142,7 +140,6 @@ def split_cnsubtitle(str1: str, maxlen=22) -> str:
             ret = f"{str1[0:splite_len]}\n{str1[splite_len:splite_len*2]}\n{str1[splite_len*2:splite_len*3]}\n{str1[splite_len*3:splite_len*4]}\n{str1[splite_len*4:]}"
 
     return ret
-
 
 def translate_list_remote(preTrans:str, preTransEnSubList):
     # 尝试3次
@@ -290,7 +287,6 @@ def split_by_punctuations(instr, punctuations: list[str] = [",",".","?"]):
     line1Str = instr
     line2Str = ""        
     return line1Str, line2Str
-
 
 # 重新组合 英文字幕，这一行末尾不是英文标点符号，就到下一行去拿内容到这行
 def recom_en_srt(inSrcFilePath, outSrcFilePath):
@@ -470,6 +466,44 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3
     subprocess.call(cmd, shell=True)
     api_logger.info(f'完成任务: {videoCnPath}')
 
+def addCustomSrt(srcPath, videoPath):
+    subList = []
+    with open(srcPath, 'r') as srcFile:
+        # 读取文件内容
+        content = srcFile.read()
+        subs = srt.parse(content)
+        subList = list(subs)
+        if len(subList) == 0:
+            return 
+        
+    totalSub = len(subList)
+    lastSub = subList[totalSub - 1]
+    lastEndTime = lastSub.end.total_seconds()
+    videoDuration = Util.getMediaDuration(videoPath)
+
+    if videoDuration - lastEndTime > 2:
+        api_logger.info("可以添加自定义话术")
+
+        addSub = srt.Subtitle(index=totalSub + 1, 
+                                start=datetime.timedelta(seconds=lastSub.end.seconds, microseconds=lastSub.end.microseconds + 120*1000), 
+                                end=datetime.timedelta(seconds=lastSub.end.seconds + 1, microseconds=lastSub.end.seconds + 2000*1000 - 120*1000), 
+                                content='随手来个赞或关注吧', 
+                                proprietary='')
+
+        with open(srcPath, "a", encoding="utf-8") as outFile:
+            print(
+                f"\n"
+                f"{addSub.index}\n"
+                f"{Util.format_timestamp(addSub.start.total_seconds(), always_include_hours=True)} --> "
+                f"{Util.format_timestamp(addSub.end.total_seconds(), always_include_hours=True)}\n"
+                f"{addSub.content}",
+                file=outFile,
+                flush=True,)
+        
+    api_logger.info("添加自定义话术完成")
+
+
+
 api_logger.info("准备开始")
 
 program = argparse.ArgumentParser(
@@ -534,7 +568,10 @@ loopHandleEn_srt(inSrcFilePath=outSrtEnPath, outSrcFilePath=outSrtEnReComposePat
 api_logger.info("2---------翻译中文SRT")
 try:
     # 字幕不要在这个函数里换行，会影响语音TTS
+    api_logger.info("翻译中文字幕")
     translate_srt(outSrtCnPath, outSrtEnReComposePath, isVerticle)
+    api_logger.info("检测字幕与视频时间戳，看看是否能添加话术")
+    addCustomSrt(outSrtEnReComposePath, videoPath)
 except Exception as e:
     api_logger.error(f"翻译失败：{e}")
     exit(1)
