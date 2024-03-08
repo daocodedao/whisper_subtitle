@@ -436,7 +436,7 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3
         api_logger.info(f"当前字幕开始时间: {sub.start.total_seconds()} 已经合并的音频时长:{totalGenDuration}")
         # if sub.start.total_seconds() > totalGenDuration:
         # 大于5秒再加静音
-        if sub.start.total_seconds() - totalGenDuration > 5:
+        if sub.start.total_seconds() - totalGenDuration >= 5 and Util.lastCharIsCnClosePunctuations(sub.content):
             silence_duration = (sub.start.total_seconds() - totalGenDuration)*1000
             api_logger.info(f"需要加入静音音频， 时长：{silence_duration}毫秒")
             second_of_silence = AudioSegment.silent(duration=silence_duration)

@@ -234,3 +234,30 @@ class Util:
 
       hours_marker = f"{hours}:" if always_include_hours or hours > 0 else ""
       return f"{hours_marker}{minutes:02d}:{seconds:02d}.{milliseconds:03d}"
+  
+
+  # 最后一个字符是中文标点符号。？！
+  def lastCharIsCnClosePunctuations(inSrt):
+    cnPunctuations: str = ["。","？","！"]
+    ret = False
+    if len(inSrt) > 0:
+      lastChar = inSrt[len(inSrt) - 1]
+      for punctuation in cnPunctuations:
+        if lastChar == punctuation:
+           ret = True
+           break
+
+    return ret
+  
+  # 最后一个字符是中文标点符号.?!
+  def lastCharIsEnClosePunctuations(inSrt):
+    punctuations: str = [".","?","!"]
+    ret = False
+    if len(inSrt) > 0:
+      lastChar = inSrt[len(inSrt) - 1]
+      for punctuation in punctuations:
+        if lastChar == punctuation:
+           ret = True
+           break
+
+    return ret
