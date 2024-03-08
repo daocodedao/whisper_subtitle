@@ -501,8 +501,8 @@ def addCustomSrt(srcPath, videoPath):
                 f"{addSub.content}",
                 file=outFile,
                 flush=True,)
-        
-    api_logger.info("添加自定义话术完成")
+    else:
+        api_logger.info("无需添加话术")
 
 
 
