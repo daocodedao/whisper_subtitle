@@ -170,6 +170,7 @@ def translate_list_remote(preTrans:str, preTransEnSubList):
                     zhSub.end = enSub.end
 
                 if isTranlateError:
+                    subZhList=[]
                     continue
                 api_logger.info("分组翻译成功")
                 break
