@@ -145,6 +145,7 @@ def translate_list_remote(preTrans:str, preTransEnSubList):
     # 尝试3次
     subZhList = []
     for i in range(0,3):
+        api_logger.info(f"准备第{i}次翻译")
         subZhList = []
         try:
             zhContent = translate_srt_en_to_zh(preTrans)
@@ -163,7 +164,7 @@ def translate_list_remote(preTrans:str, preTransEnSubList):
                     if len(zhSub.proprietary) > 0:
                         api_logger.error(f"翻译错误，proprietary有内容: {zhSub.proprietary}")
                         isTranlateError = True
-                        continue
+                        break
 
                     zhSub.start = enSub.start
                     zhSub.end = enSub.end
