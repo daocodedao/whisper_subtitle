@@ -38,6 +38,18 @@
     {
         "key-word":"《代码报告》",
         "replace-word":"欢迎收看我们的视频"
+    },
+    {
+        "key-word":"订阅我们的频道",
+        "replace-word":"记得点赞，关注我们"
+    },
+    {
+        "key-word":"订阅我的频道",
+        "replace-word":"记得点赞，关注我们"
+    },
+    {
+        "key-word":"订阅我们频道",
+        "replace-word":"记得点赞，关注我们"
     }
     
 ]
