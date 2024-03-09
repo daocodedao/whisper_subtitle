@@ -50,6 +50,10 @@
     {
         "key-word":"订阅我们频道",
         "replace-word":"记得点赞，关注我们"
+    },
+    {
+        "key-word":"请订阅",
+        "replace-word":"记得点赞，关注我们"
     }
     
 ]
