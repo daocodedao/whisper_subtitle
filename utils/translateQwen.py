@@ -1,8 +1,9 @@
 
 import requests
 import socket
-from  utils.util import Util
+
 import json
+from logger_settings import api_logger
 
 def getNetworkIp():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -74,7 +75,7 @@ def translate_srt_en_to_zh(inSrc, inNewTransLate=True):
     data["systemContent"] = systemContent
     data["userContent"] = inSrc
 
-    response = requests.post(serverUrl, json=data)
+    response = requests.post(serverUrl, json=data, timeout=50)
 
     if response.status_code == 200:
         # api_logger.info("请求成功")
@@ -84,7 +85,7 @@ def translate_srt_en_to_zh(inSrc, inNewTransLate=True):
         ret_text = replaceSpecialWordEnToZh(ret_text)
         return ret_text
     else:
-        # api_logger.info("请求失败，状态码：", response.status_code)
-        # api_logger.info(response.text)
+        api_logger.error("请求失败，状态码：", response.status_code)
+        api_logger.info(response.text)
         return ""
 
