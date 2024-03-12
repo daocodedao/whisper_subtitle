@@ -217,6 +217,7 @@ def translate_srt(outSrtCnPath, inSrtFilePath, isVerticle = True):
     isFullNumberTranslate = False
     enPunctuations: str = "?.!"
     api_logger.info(f"字幕行数：{len(enAllSubList)}")
+    transLateCount = 1
     for index in range(0, len(enAllSubList)):
         enSub = enAllSubList[index]
         curLineEnContent = enSub.content
@@ -234,7 +235,8 @@ def translate_srt(outSrtCnPath, inSrtFilePath, isVerticle = True):
                     continue
 
 
-            api_logger.info("准备分组翻译")
+            api_logger.info(f"准备{transLateCount}个分组翻译")
+            transLateCount = transLateCount + 1
             api_logger.info(preTrans)
             subZhList = translate_list_remote(preTrans, enSubnList)
             zhAllSubList = zhAllSubList + subZhList
