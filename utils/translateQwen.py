@@ -45,7 +45,7 @@ def translate_en_to_zh(inSrc):
     data["systemContent"] = systemContent
     data["userContent"] = inSrc
 
-    response = requests.post(serverUrl, json=data)
+    response = requests.post(serverUrl, json=data, timeout=50)
 
     if response.status_code == 200:
         # api_logger.info("请求成功")
@@ -86,6 +86,6 @@ def translate_srt_en_to_zh(inSrc, inNewTransLate=True):
         return ret_text
     else:
         api_logger.error("请求失败，状态码：", response.status_code)
-        api_logger.info(response.text)
+        api_logger.error(response.text)
         return ""
 
