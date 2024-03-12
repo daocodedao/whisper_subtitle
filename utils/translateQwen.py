@@ -3,7 +3,7 @@ import requests
 import socket
 
 import json
-from logger_settings import api_logger
+from utils.logger_settings import api_logger
 
 def getNetworkIp():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
