@@ -235,7 +235,7 @@ def translate_srt(outSrtCnPath, inSrtFilePath, isVerticle = True):
                     continue
 
 
-            api_logger.info(f"准备{transLateCount}个分组翻译")
+            api_logger.info(f"准备{transLateCount}次分组翻译")
             transLateCount = transLateCount + 1
             api_logger.info(preTrans)
             subZhList = translate_list_remote(preTrans, enSubnList)
