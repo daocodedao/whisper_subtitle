@@ -145,7 +145,7 @@ def translate_list_remote(preTrans:str, preTransEnSubList):
     # 尝试3次
     subZhList = []
     for i in range(0,3):
-        api_logger.info(f"准备第{i}次翻译")
+        api_logger.info(f"第{i}次翻译")
         subZhList = []
         try:
             zhContent = translate_srt_en_to_zh(preTrans)
@@ -235,7 +235,7 @@ def translate_srt(outSrtCnPath, inSrtFilePath, isVerticle = True):
                     continue
 
 
-            api_logger.info(f"准备{transLateCount}次分组翻译")
+            api_logger.info(f"准备第{transLateCount}组翻译")
             transLateCount = transLateCount + 1
             api_logger.info(preTrans)
             subZhList = translate_list_remote(preTrans, enSubnList)
