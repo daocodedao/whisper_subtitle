@@ -145,6 +145,7 @@ class Util:
                     image_path = os.path.join(root, file)
                     image_paths.append(image_path)
 
+    image_paths.sort()
     return image_paths
 
 
