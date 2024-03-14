@@ -16,7 +16,7 @@ outVideoDir = f"./out/{processId}/"
 videoFpsFixPath = os.path.join(outVideoDir, f"{processId}-fps-fix.mp4")
 
 frameOutDir = os.path.join(outVideoDir, "frames")
-shutil.rmtree(frameOutDir, ignore_errors=True)
+# shutil.rmtree(frameOutDir, ignore_errors=True)
 os.makedirs(frameOutDir, exist_ok=True)
 
 cartoonOutDir = os.path.join(outVideoDir, "cartoon")
@@ -38,8 +38,8 @@ if int(src_fps) > kFixedFps:
 api_logger.info(f"现在的videoSrcPath={videoSrcPath}")
 
 framePaths = Util.get_image_paths_from_folder(frameOutDir)
-if len(framePaths) == 0:
-    api_logger.info(f"无需解压视频帧 {videoSrcPath}")
+if len(framePaths) > 0:
+    api_logger.info(f"无需解压视频帧 {frameOutDir}")
 else:
     api_logger.info(f"解压视频帧 {videoSrcPath}")
     framePaths = Util.extract_video_to_frames(videoSrcPath, frameOutDir)
@@ -50,6 +50,8 @@ model_id = "instruction-tuning-sd/cartoonizer"
 pipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
     model_id, torch_dtype=torch.bfloat16, use_auth_token=True
 ).to("cuda")
+# 优化速度
+torch.backends.cudnn.benchmark = True
 pipeline.enable_xformers_memory_efficient_attention()
 
 # image_path = "./sample/WX20240314-161847.png"
