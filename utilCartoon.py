@@ -16,7 +16,8 @@ api_logger.info("准备开始")
 
 globalPipeline = None
 # 10K
-kMinFileSizeK = 10 * 1024
+k10K = 10 * 1024
+kMinFileSizeK = k10K
 
 
 def generateImage(framePaths):
@@ -47,10 +48,14 @@ def generateImage(framePaths):
 
         fileSize = os.path.getsize(cartoonImagePath) 
         if fileSize < kMinFileSizeK:
-            api_logger.error(f"文件 {fileSize} 小于10K，生成错误, 将会删除")
+            api_logger.error(f"文件 {fileSize} < {kMinFileSizeK} 生成错误, 将会删除!")
             error_frames.append(image_path)
             if os.path.exists(cartoonImagePath):
                 os.remove(cartoonImagePath)
+        elif kMinFileSizeK == k10K:
+            # 有的图片黑色的，几十K，比正常图片小太多了
+            kMinFileSizeK = fileSize/2
+
 
         if os.path.exists(cartoonImagePath):
             result_frames.append(cartoonImagePath)
