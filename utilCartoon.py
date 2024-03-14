@@ -15,9 +15,9 @@ frameOutPath = "./out/simple5/frames/"
 shutil.rmtree(frameOutPath, ignore_errors=True)
 os.makedirs(frameOutPath, exist_ok=True)
 
-cartoonOutDir = "./out/simple5/cartoon5/"
-shutil.rmtree(frameOutPath, ignore_errors=True)
-os.makedirs(frameOutPath, exist_ok=True)
+cartoonOutDir = "./out/simple5/cartoon/"
+shutil.rmtree(cartoonOutDir, ignore_errors=True)
+os.makedirs(cartoonOutDir, exist_ok=True)
 
 api_logger.info(f"解压视频帧 {videoPosePath}")
 framePaths = Util.extract_video_to_frames(videoPosePath, frameOutPath)
