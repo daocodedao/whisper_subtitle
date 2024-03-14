@@ -23,3 +23,5 @@ hdbscan
 rotary_embedding_torch
 av
 moviepy
+yt_dlp
+gradio
