@@ -104,7 +104,7 @@ for idx, image_path in enumerate(framePaths) :
     image = load_image(image_path)
     kMaxTryCount = 3
     for tryIdx in range(kMaxTryCount):
-        num_inference_steps = 20 
+        num_inference_steps = 20 + tryIdx*40
         image_guidance_scale = 1
         guidance_scale = 7.5 
         api_logger.info(f"卡通化 {image_path}, 第{tryIdx + 1}次生成 inference_steps={num_inference_steps} image_guidance_scale={image_guidance_scale} guidance_scale={guidance_scale}")
