@@ -24,7 +24,7 @@ pipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
 # torch.backends.cudnn.benchmark = True
 # pipeline.enable_xformers_memory_efficient_attention()
 # pipeline.enable_model_cpu_offload()
-image_path = "/data/work/translate/BiB9YykxoZw/frames/18.png"
+image_path = "/data/work/translate/BiB9YykxoZw/frames/18.jpg"
 image = load_image(image_path)
 num_inference_steps = 20 
 image_guidance_scale = 1
