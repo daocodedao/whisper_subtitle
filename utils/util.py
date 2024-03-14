@@ -289,7 +289,7 @@ class Util:
     count = 0
     framePaths = []
     while success:
-      framePath = os.path.join(outDir, f"{count}.jpg")
+      framePath = os.path.join(outDir, f"{count}.png")
       cv2.imwrite(framePath, image)     # save frame as JPEG file      
       framePaths.append(framePath)
       success,image = vidcap.read()
