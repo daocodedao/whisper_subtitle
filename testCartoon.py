@@ -26,7 +26,7 @@ pipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
 # pipeline.enable_model_cpu_offload()
 image_path = "/data/work/translate/BiB9YykxoZw/frames/18.jpg"
 image = load_image(image_path)
-num_inference_steps = 20 
+num_inference_steps = 5 
 image_guidance_scale = 1
 guidance_scale = 7.5 
 image = pipeline("Cartoonize the following image", 
