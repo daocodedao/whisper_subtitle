@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 import av
 from PIL import Image
 import cv2
+from moviepy.editor import *
 
 def split(todo_text):
     splits = {"，", "。", "？", "！", ",", ".",
@@ -295,3 +296,19 @@ class Util:
       count += 1
 
     return framePaths
+  
+  def get_fps(video_path):
+    container = av.open(video_path)
+    video_stream = next(s for s in container.streams if s.type == "video")
+    fps = video_stream.average_rate
+    container.close()
+    return fps
+  
+  def changeVideoFps(filePath, fps=30, outFilePath=None):
+    # print(f"now fps = {int(get_fps(filePath))}")
+    clip = VideoFileClip(filePath)
+    if outFilePath is None:
+        outFilePath = filePath
+
+    clip.write_videofile(outFilePath, fps=fps)
+    # print(f"now fps = {int(get_fps(outFilePath))}")
