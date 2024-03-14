@@ -67,7 +67,7 @@ for idx, image_path in enumerate(framePaths) :
     result_frames.append(cartoonImagePath)
 
 final_vid = Util.create_video(result_frames, kFixedFps, outVideoPath)
-
+api_logger.info(f"视频保存到 {outVideoPath}")
 # num_inference_steps 默认100
 # image_guidance_scale 默认 1.5 , 接近原图的参数，越高越接近，最少1
 # guidance_scale 默认 7.5, 更高的引导标度值鼓励模型生成与文本紧密链接的图像
