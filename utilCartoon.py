@@ -8,8 +8,6 @@ from utils.logger_settings import api_logger
 import argparse
 import moviepy.editor as mp
 
-import time
-
 os.environ['HTTP_PROXY'] = '192.168.0.77:18808'
 os.environ['HTTPS_PROXY'] = '192.168.0.77:18808'
 api_logger.info("准备开始")

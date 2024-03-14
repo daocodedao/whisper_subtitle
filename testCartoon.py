@@ -24,7 +24,7 @@ pipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
 # torch.backends.cudnn.benchmark = True
 # pipeline.enable_xformers_memory_efficient_attention()
 # pipeline.enable_model_cpu_offload()
-image_path = "/data/work/translate/BiB9YykxoZw/frames/18.png"
+image_path = "/data/work/translate/BiB9YykxoZw/frames/17.png"
 image = load_image(image_path)
 num_inference_steps = 10
 image_guidance_scale = 2
@@ -35,7 +35,7 @@ image = pipeline("Cartoonize the following image",
                     image_guidance_scale=image_guidance_scale,
                     guidance_scale=guidance_scale
                     ).images[0]
-cartoonImagePath = "/data/work/translate/BiB9YykxoZw/cartoon/18.png"
+cartoonImagePath = "/data/work/translate/BiB9YykxoZw/cartoon/17.png"
 image.save(cartoonImagePath)
 
 
