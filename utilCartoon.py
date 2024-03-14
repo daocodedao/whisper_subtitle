@@ -25,7 +25,7 @@ shutil.rmtree(frameOutPath, ignore_errors=True)
 os.makedirs(frameOutPath, exist_ok=True)
 
 api_logger.info(f"解压视频帧 {videoPosePath}")
-framePaths = Util.extract_video_to_frames(videoPosePath)
+framePaths = Util.extract_video_to_frames(videoPosePath, frameOutPath)
 api_logger.info(f"共有 {len(videoPosePath)} 帧")
 # image_path = "./sample/WX20240314-161847.png"
 for idx, image_path in enumerate(framePaths) :
