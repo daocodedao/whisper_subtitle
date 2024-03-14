@@ -10,8 +10,8 @@ import moviepy.editor as mp
 
 
 
-# os.environ['HTTP_PROXY'] = '192.168.0.77:18808'
-# os.environ['HTTPS_PROXY'] = '192.168.0.77:18808'
+os.environ['HTTP_PROXY'] = '192.168.0.77:18808'
+os.environ['HTTPS_PROXY'] = '192.168.0.77:18808'
 api_logger.info("准备开始")
 
 program = argparse.ArgumentParser(
@@ -62,7 +62,7 @@ clip = mp.VideoFileClip(videoSrcPath)
 width = clip.w
 height = clip.h
 api_logger.info(f"---------判断视频是否要改尺寸 宽={width} 高={height}")
-clip_resized = 0
+
 if width > height:
     if width > kMaxWidthOrHeight:
         clip_resized = clip.resize(width=kMaxWidthOrHeight)
