@@ -107,7 +107,7 @@ for idx, image_path in enumerate(framePaths) :
         image = pipeline("Cartoonize the following image", 
                         image=image,
                         num_inference_steps=20,
-                        #  image_guidance_scale=1,
+                        image_guidance_scale=1,
                         #  guidance_scale=7
                         ).images[0]
         cartoonImagePath = os.path.join(cartoonOutDir, f"{idx}.png")
