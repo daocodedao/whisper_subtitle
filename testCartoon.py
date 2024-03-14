@@ -48,9 +48,9 @@ for tryIdx in range(100):
     fileSize = os.path.getsize(cartoonImagePath) 
     if fileSize < kMinFileSizeK:
         api_logger.error(f"文件 {fileSize} < {kMinFileSizeK} 生成错误, 重试{tryIdx}次")
-        num_inference_steps = 100
-        image_guidance_scale = 3.5
-        guidance_scale = 10 
+        num_inference_steps = 5
+        image_guidance_scale = 1.5
+        guidance_scale = 7.5 
 
         image = pipeline("Cartoonize the following image", 
                     image=image,
