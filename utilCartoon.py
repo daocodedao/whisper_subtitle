@@ -26,7 +26,7 @@ program.add_argument('-i', '--processId', help='process Id',
 args = program.parse_args()
 
 kFixedFps = 24
-kMaxWidthOrHeight = 540
+kMaxWidthOrHeight = 720
 
 videoSrcPath = args.videoPath
 processId = args.processId
@@ -104,9 +104,10 @@ for idx, image_path in enumerate(framePaths) :
     api_logger.info(f"卡通化 {image_path}")
     image = pipeline("Cartoonize the following image", 
                      image=image,
-                     num_inference_steps=10,
-                     image_guidance_scale=1,
-                     guidance_scale=7).images[0]
+                     num_inference_steps=20,
+                    #  image_guidance_scale=1,
+                    #  guidance_scale=7
+                     ).images[0]
     cartoonImagePath = os.path.join(cartoonOutDir, f"{idx}.png")
     image.save(cartoonImagePath)
     api_logger.info(f"卡通帧保存到 {cartoonImagePath}")
