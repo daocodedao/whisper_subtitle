@@ -56,3 +56,6 @@ for idx, image_path in enumerate(framePaths) :
     image.save(cartoonImagePath)
     api_logger.info(f"卡通帧保存到 {cartoonImagePath}")
 
+
+# images = pipe(prompt, image=image, num_inference_steps=10, image_guidance_scale=1).images
+# edit = pipe(prompt, image=image, num_inference_steps=20, image_guidance_scale=1.5, guidance_scale=7).images[0]
