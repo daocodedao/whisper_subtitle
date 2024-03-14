@@ -41,7 +41,7 @@ image = pipeline("Cartoonize the following image",
 cartoonImagePath = f"/data/work/translate/BiB9YykxoZw/cartoon/{fileIdx}.png"
 image.save(cartoonImagePath)
 
-k10K = 10 * 1024
+k10K = 200 * 1024
 kMinFileSizeK = k10K
 
 for tryIdx in range(100):
