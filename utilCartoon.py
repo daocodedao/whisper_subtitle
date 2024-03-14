@@ -58,10 +58,10 @@ if int(src_fps) > kFixedFps:
 
 api_logger.info(f"现在的videoSrcPath={videoSrcPath}")
 
-api_logger.info("---------判断视频是否要改尺寸")
 clip = mp.VideoFileClip(videoSrcPath)
 width = clip.w
 height = clip.h
+api_logger.info(f"---------判断视频是否要改尺寸 宽={width} 高={height}")
 clip_resized = 0
 if width > height:
     if width > kMaxWidthOrHeight:
