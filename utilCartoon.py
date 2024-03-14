@@ -46,6 +46,7 @@ model_id = "instruction-tuning-sd/cartoonizer"
 pipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
     model_id, torch_dtype=torch.bfloat16, use_auth_token=True
 ).to("cuda")
+pipeline.enable_xformers_memory_efficient_attention()
 
 # image_path = "./sample/WX20240314-161847.png"
 for idx, image_path in enumerate(framePaths) :
