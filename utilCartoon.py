@@ -1,6 +1,9 @@
 import torch
 from diffusers import StableDiffusionInstructPix2PixPipeline
 from diffusers.utils import load_image
+import os
+os.environ['HTTP_PROXY'] = '192.168.0.77:18808'
+os.environ['HTTPS_PROXY'] = '192.168.0.77:18808'
 
 model_id = "instruction-tuning-sd/cartoonizer"
 pipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
