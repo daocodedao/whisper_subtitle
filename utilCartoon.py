@@ -31,7 +31,7 @@ kMaxWidthOrHeight = 540
 videoSrcPath = args.videoPath
 processId = args.processId
 
-outVideoDir = f"./out/{processId}/"
+outVideoDir = os.path.dirname(videoSrcPath)
 outVideoPath = os.path.join(outVideoDir, f"{processId}-cartoon.mp4")
 videoFpsFixPath = os.path.join(outVideoDir, f"{processId}-fps-{kFixedFps}.mp4")
 videoSizeFixPath = os.path.join(outVideoDir, f"{processId}-{kMaxWidthOrHeight}.mp4")
@@ -58,7 +58,7 @@ if int(src_fps) > kFixedFps:
 
 api_logger.info(f"现在的videoSrcPath={videoSrcPath}")
 
-api_logger.info("---------判断视频是否要压缩")
+api_logger.info("---------判断视频是否要改尺寸")
 clip = mp.VideoFileClip(videoSrcPath)
 width = clip.w
 height = clip.h
