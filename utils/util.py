@@ -145,7 +145,7 @@ class Util:
                     image_path = os.path.join(root, file)
                     image_paths.append(image_path)
 
-    image_paths.sort()
+    image_paths.sort(key=lambda f: int(''.join(filter(str.isdigit, f))))
     return image_paths
 
 

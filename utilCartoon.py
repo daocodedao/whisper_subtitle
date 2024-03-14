@@ -5,19 +5,33 @@ import os
 from utils.util import Util
 import shutil
 from utils.logger_settings import api_logger
+import argparse
 
-os.environ['HTTP_PROXY'] = '192.168.0.77:18808'
-os.environ['HTTPS_PROXY'] = '192.168.0.77:18808'
+# os.environ['HTTP_PROXY'] = '192.168.0.77:18808'
+# os.environ['HTTPS_PROXY'] = '192.168.0.77:18808'
+api_logger.info("准备开始")
 
-processId = "simple5"
-videoSrcPath = "./sample/simple5-cut3.mp4"
+program = argparse.ArgumentParser(
+    formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=100))
+program.add_argument('-v', '--videoPath', help='videoPath',
+                     dest='videoPath', type=str, default='')
+program.add_argument('-i', '--processId', help='process Id',
+                     dest='processId', type=str, default='')
+# program.add_argument('-i', '--processId', help='process Id',
+#                      dest='processId', type=str, default='')
+
+args = program.parse_args()
+
+
+videoSrcPath = args.videoPath
+processId = args.processId
+
 outVideoDir = f"./out/{processId}/"
-
 outVideoPath = os.path.join(outVideoDir, f"{processId}-cartoon.mp4")
 videoFpsFixPath = os.path.join(outVideoDir, f"{processId}-fps-fix.mp4")
 
 frameOutDir = os.path.join(outVideoDir, "frames")
-# shutil.rmtree(frameOutDir, ignore_errors=True)
+shutil.rmtree(frameOutDir, ignore_errors=True)
 os.makedirs(frameOutDir, exist_ok=True)
 
 cartoonOutDir = os.path.join(outVideoDir, "cartoon")
@@ -72,7 +86,7 @@ for idx, image_path in enumerate(framePaths) :
     api_logger.info(f"卡通帧保存到 {cartoonImagePath}")
     result_frames.append(cartoonImagePath)
 
-result_frames.sort()
+result_frames.sort(key=lambda f: int(''.join(filter(str.isdigit, f))))
 final_vid = Util.create_video(result_frames, kFixedFps, outVideoPath)
 api_logger.info(f"视频保存到 {outVideoPath}")
 # num_inference_steps 默认100
@@ -82,3 +96,5 @@ api_logger.info(f"视频保存到 {outVideoPath}")
 
 # images = pipe(prompt, image=image, num_inference_steps=10, image_guidance_scale=1).images
 # edit = pipe(prompt, image=image, num_inference_steps=20, image_guidance_scale=1.5, guidance_scale=7).images[0]
+
+# /data/work/aishowos/whisper_subtitle/venv/bin/python -v '/data/work/translate/BiB9YykxoZw/BiB9YykxoZw-cn-subtitle.mp4' -i 'BiB9YykxoZw'
