@@ -17,7 +17,7 @@ outVideoPath = os.path.join(outVideoDir, f"{processId}-cartoon.mp4")
 videoFpsFixPath = os.path.join(outVideoDir, f"{processId}-fps-fix.mp4")
 
 frameOutDir = os.path.join(outVideoDir, "frames")
-shutil.rmtree(frameOutDir, ignore_errors=True)
+# shutil.rmtree(frameOutDir, ignore_errors=True)
 os.makedirs(frameOutDir, exist_ok=True)
 
 cartoonOutDir = os.path.join(outVideoDir, "cartoon")
