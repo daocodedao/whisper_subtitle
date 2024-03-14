@@ -6,6 +6,9 @@ from utils.util import Util
 import shutil
 from utils.logger_settings import api_logger
 import argparse
+import moviepy.editor as mp
+
+
 
 # os.environ['HTTP_PROXY'] = '192.168.0.77:18808'
 # os.environ['HTTPS_PROXY'] = '192.168.0.77:18808'
@@ -22,13 +25,16 @@ program.add_argument('-i', '--processId', help='process Id',
 
 args = program.parse_args()
 
+kFixedFps = 24
+kMaxWidthOrHeight = 540
 
 videoSrcPath = args.videoPath
 processId = args.processId
 
 outVideoDir = f"./out/{processId}/"
 outVideoPath = os.path.join(outVideoDir, f"{processId}-cartoon.mp4")
-videoFpsFixPath = os.path.join(outVideoDir, f"{processId}-fps-fix.mp4")
+videoFpsFixPath = os.path.join(outVideoDir, f"{processId}-fps-{kFixedFps}.mp4")
+videoSizeFixPath = os.path.join(outVideoDir, f"{processId}-{kMaxWidthOrHeight}.mp4")
 
 frameOutDir = os.path.join(outVideoDir, "frames")
 shutil.rmtree(frameOutDir, ignore_errors=True)
@@ -38,7 +44,7 @@ cartoonOutDir = os.path.join(outVideoDir, "cartoon")
 shutil.rmtree(cartoonOutDir, ignore_errors=True)
 os.makedirs(cartoonOutDir, exist_ok=True)
 
-kFixedFps = 24
+
 api_logger.info("---------调整POSEFPS")
 src_fps = Util.get_fps(videoSrcPath)
 api_logger.info(f"videoSrcPath={videoSrcPath} src_fps={int(src_fps)}")
@@ -52,6 +58,26 @@ if int(src_fps) > kFixedFps:
 
 api_logger.info(f"现在的videoSrcPath={videoSrcPath}")
 
+api_logger.info("---------判断视频是否要压缩")
+clip = mp.VideoFileClip(videoSrcPath)
+width = clip.w
+height = clip.h
+clip_resized = 0
+if width > height:
+    if width > kMaxWidthOrHeight:
+        clip_resized = clip.resize(width=kMaxWidthOrHeight)
+        clip_resized.write_videofile(videoSizeFixPath)
+        videoSrcPath = videoSizeFixPath
+        api_logger.info(f"横屏视频，视频宽度超过{kMaxWidthOrHeight}，已压缩 {videoSizeFixPath}")
+else:
+    if height > kMaxWidthOrHeight:
+        clip_resized = clip.resize(height=kMaxWidthOrHeight)
+        clip_resized.write_videofile(videoSizeFixPath)
+        videoSrcPath = videoSizeFixPath
+        api_logger.info(f"竖屏视频，视频高度超过{kMaxWidthOrHeight}，已压缩 {videoSizeFixPath}")
+
+
+api_logger.info("---------解压视频帧")
 framePaths = Util.get_image_paths_from_folder(frameOutDir)
 if len(framePaths) > 0:
     api_logger.info(f"无需解压视频帧 {frameOutDir}")
@@ -97,4 +123,4 @@ api_logger.info(f"视频保存到 {outVideoPath}")
 # images = pipe(prompt, image=image, num_inference_steps=10, image_guidance_scale=1).images
 # edit = pipe(prompt, image=image, num_inference_steps=20, image_guidance_scale=1.5, guidance_scale=7).images[0]
 
-# /data/work/aishowos/whisper_subtitle/venv/bin/python -v '/data/work/translate/BiB9YykxoZw/BiB9YykxoZw-cn-subtitle.mp4' -i 'BiB9YykxoZw'
+# /data/work/aishowos/whisper_subtitle/venv/bin/python utilCartoon.py -v '/data/work/translate/BiB9YykxoZw/BiB9YykxoZw-cn-subtitle.mp4' -i 'BiB9YykxoZw'

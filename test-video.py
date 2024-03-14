@@ -24,15 +24,30 @@ import re
 # clip = VideoFileClip(videoSrcPath)
 # print("done")
 
-frameOutDir="./out/simple5/cartoon/"
-outVideoPath="./out/simple5/simple5-cartoon.mp4"
-kFixedFps=24
-result_frames = Util.get_image_paths_from_folder(frameOutDir)
+# frameOutDir="./out/simple5/cartoon/"
+# outVideoPath="./out/simple5/simple5-cartoon.mp4"
+# kFixedFps=24
+# result_frames = Util.get_image_paths_from_folder(frameOutDir)
 
-# result_frames.sort()
-result_frames.sort(key=lambda f: int(''.join(filter(str.isdigit, f))))
+# # result_frames.sort()
+# result_frames.sort(key=lambda f: int(''.join(filter(str.isdigit, f))))
 
-# result_frames = sort_human(result_frames)
-print(result_frames)
-final_vid = Util.create_video(result_frames, kFixedFps, outVideoPath)
-# api_logger.info(f"视频保存到 {outVideoPath}")
+# # result_frames = sort_human(result_frames)
+# print(result_frames)
+# final_vid = Util.create_video(result_frames, kFixedFps, outVideoPath)
+# # api_logger.info(f"视频保存到 {outVideoPath}")
+
+
+import moviepy.editor as mp
+clip = mp.VideoFileClip("/Users/linzhiji/Downloads/cartoon/BiB9YykxoZw-cn-subtitle.mp4")
+width = clip.w
+height = clip.h
+kMaxWidthOrHeight = 540
+if width > height:
+    if width > kMaxWidthOrHeight:
+        clip_resized = clip.resize(width=kMaxWidthOrHeight)
+else:
+    if height > kMaxWidthOrHeight:
+        clip_resized = clip.resize(height=kMaxWidthOrHeight)
+
+clip_resized.write_videofile("/Users/linzhiji/Downloads/cartoon/movie_resized.mp4")
