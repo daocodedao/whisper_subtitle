@@ -10,13 +10,14 @@ os.environ['HTTP_PROXY'] = '192.168.0.77:18808'
 os.environ['HTTPS_PROXY'] = '192.168.0.77:18808'
 
 processId = "simple5"
-videoSrcPath = "./sample/simple5.mp4"
+videoSrcPath = "./sample/simple5-cut3.mp4"
 outVideoDir = f"./out/{processId}/"
 
+outVideoPath = os.path.join(outVideoDir, f"{processId}-cartoon.mp4")
 videoFpsFixPath = os.path.join(outVideoDir, f"{processId}-fps-fix.mp4")
 
 frameOutDir = os.path.join(outVideoDir, "frames")
-# shutil.rmtree(frameOutDir, ignore_errors=True)
+shutil.rmtree(frameOutDir, ignore_errors=True)
 os.makedirs(frameOutDir, exist_ok=True)
 
 cartoonOutDir = os.path.join(outVideoDir, "cartoon")
@@ -55,6 +56,7 @@ torch.backends.cudnn.benchmark = True
 pipeline.enable_xformers_memory_efficient_attention()
 
 # image_path = "./sample/WX20240314-161847.png"
+result_frames = []
 for idx, image_path in enumerate(framePaths) :
     image = load_image(image_path)
     api_logger.info(f"卡通化 {image_path}")
@@ -62,6 +64,9 @@ for idx, image_path in enumerate(framePaths) :
     cartoonImagePath = os.path.join(cartoonOutDir, f"cartoon{idx}.png")
     image.save(cartoonImagePath)
     api_logger.info(f"卡通帧保存到 {cartoonImagePath}")
+    result_frames.append(cartoonImagePath)
+
+final_vid = Util.create_video(result_frames, kFixedFps, outVideoPath)
 
 # num_inference_steps 默认100
 # image_guidance_scale 默认 1.5 , 接近原图的参数，越高越接近，最少1

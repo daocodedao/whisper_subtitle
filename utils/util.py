@@ -312,3 +312,10 @@ class Util:
 
     clip.write_videofile(outFilePath, fps=fps)
     # print(f"now fps = {int(get_fps(outFilePath))}")
+
+
+  def create_video(frames, fps, savePath):
+    # print("building video result")
+    clip = ImageSequenceClip(frames, fps=fps)
+    clip.write_videofile(savePath, fps=fps, verbose=False)
+    # return "/content/output.mp4"
