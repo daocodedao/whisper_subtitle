@@ -12,5 +12,6 @@ kFixedFps=24
 result_frames = Util.get_image_paths_from_folder(frameOutDir)
 
 result_frames.sort()
+print(result_frames)
 final_vid = Util.create_video(result_frames, kFixedFps, outVideoPath)
 # api_logger.info(f"视频保存到 {outVideoPath}")
