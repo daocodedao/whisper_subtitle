@@ -9,11 +9,6 @@ from utils.logger_settings import api_logger
 os.environ['HTTP_PROXY'] = '192.168.0.77:18808'
 os.environ['HTTPS_PROXY'] = '192.168.0.77:18808'
 
-api_logger.info("加载模型")
-model_id = "instruction-tuning-sd/cartoonizer"
-pipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
-    model_id, torch_dtype=torch.float16, use_auth_token=True
-).to("cuda")
 
 videoPosePath = "./sample/simple5.mp4"
 frameOutPath = "./out/simple5/frames/"
@@ -26,7 +21,13 @@ os.makedirs(frameOutPath, exist_ok=True)
 
 api_logger.info(f"解压视频帧 {videoPosePath}")
 framePaths = Util.extract_video_to_frames(videoPosePath, frameOutPath)
-api_logger.info(f"共有 {len(videoPosePath)} 帧")
+api_logger.info(f"共有 {len(framePaths)} 帧")
+api_logger.info("加载模型")
+model_id = "instruction-tuning-sd/cartoonizer"
+pipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
+    model_id, torch_dtype=torch.float16, use_auth_token=True
+).to("cuda")
+
 # image_path = "./sample/WX20240314-161847.png"
 for idx, image_path in enumerate(framePaths) :
     image = load_image(image_path)
