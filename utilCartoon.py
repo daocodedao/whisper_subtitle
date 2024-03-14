@@ -15,9 +15,9 @@ outVideoDir = f"./out/{processId}/"
 
 videoFpsFixPath = os.path.join(outVideoDir, f"{processId}-fps-fix.mp4")
 
-frameOutPath = os.path.join(outVideoDir, "frames")
-shutil.rmtree(frameOutPath, ignore_errors=True)
-os.makedirs(frameOutPath, exist_ok=True)
+frameOutDir = os.path.join(outVideoDir, "frames")
+shutil.rmtree(frameOutDir, ignore_errors=True)
+os.makedirs(frameOutDir, exist_ok=True)
 
 cartoonOutDir = os.path.join(outVideoDir, "cartoon")
 shutil.rmtree(cartoonOutDir, ignore_errors=True)
@@ -37,10 +37,14 @@ if int(src_fps) > kFixedFps:
 
 api_logger.info(f"现在的videoSrcPath={videoSrcPath}")
 
-
-api_logger.info(f"解压视频帧 {videoSrcPath}")
-framePaths = Util.extract_video_to_frames(videoSrcPath, frameOutPath)
+framePaths = Util.get_image_paths_from_folder(frameOutDir)
+if len(framePaths) == 0:
+    api_logger.info(f"无需解压视频帧 {videoSrcPath}")
+else:
+    api_logger.info(f"解压视频帧 {videoSrcPath}")
+    framePaths = Util.extract_video_to_frames(videoSrcPath, frameOutDir)
 api_logger.info(f"共有 {len(framePaths)} 帧")
+
 api_logger.info("加载模型")
 model_id = "instruction-tuning-sd/cartoonizer"
 pipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
@@ -52,11 +56,15 @@ pipeline.enable_xformers_memory_efficient_attention()
 for idx, image_path in enumerate(framePaths) :
     image = load_image(image_path)
     api_logger.info(f"卡通化 {image_path}")
-    image = pipeline("Cartoonize the following image", image=image, num_inference_steps=10).images[0]
+    image = pipeline("Cartoonize the following image", image=image, num_inference_steps=10, image_guidance_scale=1, guidance_scale=5).images[0]
     cartoonImagePath = os.path.join(cartoonOutDir, f"cartoon{idx}.png")
     image.save(cartoonImagePath)
     api_logger.info(f"卡通帧保存到 {cartoonImagePath}")
 
+# num_inference_steps 默认100
+# image_guidance_scale 默认 1.5 , 接近原图的参数，越高越接近，最少1
+# guidance_scale 默认 7.5, 更高的引导标度值鼓励模型生成与文本紧密链接的图像
+# 以上3个参数会影响推理速度，
 
 # images = pipe(prompt, image=image, num_inference_steps=10, image_guidance_scale=1).images
 # edit = pipe(prompt, image=image, num_inference_steps=20, image_guidance_scale=1.5, guidance_scale=7).images[0]
