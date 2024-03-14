@@ -45,7 +45,7 @@ shutil.rmtree(cartoonOutDir, ignore_errors=True)
 os.makedirs(cartoonOutDir, exist_ok=True)
 
 
-api_logger.info("---------调整POSEFPS")
+api_logger.info("---------调整视频帧率FPS")
 src_fps = Util.get_fps(videoSrcPath)
 api_logger.info(f"videoSrcPath={videoSrcPath} src_fps={int(src_fps)}")
 if int(src_fps) > kFixedFps:
@@ -86,7 +86,7 @@ else:
     framePaths = Util.extract_video_to_frames(videoSrcPath, frameOutDir)
 api_logger.info(f"共有 {len(framePaths)} 帧")
 
-api_logger.info("加载模型")
+api_logger.info("---------加载模型")
 model_id = "instruction-tuning-sd/cartoonizer"
 pipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
     model_id, torch_dtype=torch.bfloat16, use_auth_token=True
