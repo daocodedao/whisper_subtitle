@@ -37,7 +37,7 @@ videoFpsFixPath = os.path.join(outVideoDir, f"{processId}-fps-{kFixedFps}.mp4")
 videoSizeFixPath = os.path.join(outVideoDir, f"{processId}-{kMaxWidthOrHeight}.mp4")
 
 frameOutDir = os.path.join(outVideoDir, "frames")
-shutil.rmtree(frameOutDir, ignore_errors=True)
+# shutil.rmtree(frameOutDir, ignore_errors=True)
 os.makedirs(frameOutDir, exist_ok=True)
 
 cartoonOutDir = os.path.join(outVideoDir, "cartoon")
@@ -63,18 +63,21 @@ width = clip.w
 height = clip.h
 api_logger.info(f"---------判断视频是否要改尺寸 宽={width} 高={height}")
 
-if width > height:
-    if width > kMaxWidthOrHeight:
-        clip_resized = clip.resize(width=kMaxWidthOrHeight)
-        clip_resized.write_videofile(videoSizeFixPath)
-        videoSrcPath = videoSizeFixPath
-        api_logger.info(f"横屏视频，视频宽度超过{kMaxWidthOrHeight}，已压缩 {videoSizeFixPath}")
+if os.path.exists(videoSizeFixPath):
+    videoSrcPath = videoSizeFixPath
 else:
-    if height > kMaxWidthOrHeight:
-        clip_resized = clip.resize(height=kMaxWidthOrHeight)
-        clip_resized.write_videofile(videoSizeFixPath)
-        videoSrcPath = videoSizeFixPath
-        api_logger.info(f"竖屏视频，视频高度超过{kMaxWidthOrHeight}，已压缩 {videoSizeFixPath}")
+    if width > height:
+        if width > kMaxWidthOrHeight:
+            clip_resized = clip.resize(width=kMaxWidthOrHeight)
+            clip_resized.write_videofile(videoSizeFixPath)
+            videoSrcPath = videoSizeFixPath
+            api_logger.info(f"横屏视频，视频宽度超过{kMaxWidthOrHeight}，已压缩 {videoSizeFixPath}")
+    else:
+        if height > kMaxWidthOrHeight:
+            clip_resized = clip.resize(height=kMaxWidthOrHeight)
+            clip_resized.write_videofile(videoSizeFixPath)
+            videoSrcPath = videoSizeFixPath
+            api_logger.info(f"竖屏视频，视频高度超过{kMaxWidthOrHeight}，已压缩 {videoSizeFixPath}")
 
 
 api_logger.info("---------解压视频帧")
