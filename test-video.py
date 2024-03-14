@@ -30,7 +30,7 @@ kFixedFps=24
 result_frames = Util.get_image_paths_from_folder(frameOutDir)
 
 # result_frames.sort()
-result_frames.sort()
+result_frames.sort(key=lambda f: int(filter(str.isdigit, f)))
 
 # result_frames = sort_human(result_frames)
 print(result_frames)
