@@ -7,7 +7,7 @@ import shutil
 from utils.logger_settings import api_logger
 import argparse
 import moviepy.editor as mp
-
+import random
 
 
 os.environ['HTTP_PROXY'] = '192.168.0.77:18808'
@@ -104,11 +104,14 @@ for idx, image_path in enumerate(framePaths) :
     kMaxTryCount = 3
     for tryIdx in range(kMaxTryCount):
         api_logger.info(f"卡通化 {image_path}, 第{tryIdx + 1}次生成")
+        num_inference_steps = 20 + tryIdx * 10
+        image_guidance_scale = 1+ tryIdx * 0.2
+        guidance_scale = 7 + tryIdx * 0.3
         image = pipeline("Cartoonize the following image", 
                         image=image,
-                        num_inference_steps=20,
-                        image_guidance_scale=1,
-                        #  guidance_scale=7
+                        num_inference_steps=num_inference_steps,
+                        image_guidance_scale=image_guidance_scale,
+                        guidance_scale=guidance_scale
                         ).images[0]
         cartoonImagePath = os.path.join(cartoonOutDir, f"{idx}.png")
         image.save(cartoonImagePath)
