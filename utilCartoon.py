@@ -54,18 +54,21 @@ pipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
 # 优化速度
 torch.backends.cudnn.benchmark = True
 pipeline.enable_xformers_memory_efficient_attention()
+# pipeline.enable_model_cpu_offload()
+
 
 # image_path = "./sample/WX20240314-161847.png"
 result_frames = []
 for idx, image_path in enumerate(framePaths) :
     image = load_image(image_path)
     api_logger.info(f"卡通化 {image_path}")
-    image = pipeline("Cartoonize the following image", image=image, num_inference_steps=5).images[0]
+    image = pipeline("Cartoonize the following image", image=image, num_inference_steps=10).images[0]
     cartoonImagePath = os.path.join(cartoonOutDir, f"cartoon{idx}.png")
     image.save(cartoonImagePath)
     api_logger.info(f"卡通帧保存到 {cartoonImagePath}")
     result_frames.append(cartoonImagePath)
 
+result_frames.sort()
 final_vid = Util.create_video(result_frames, kFixedFps, outVideoPath)
 api_logger.info(f"视频保存到 {outVideoPath}")
 # num_inference_steps 默认100
