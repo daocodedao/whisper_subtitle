@@ -16,7 +16,7 @@ api_logger.info("准备开始")
 
 
 api_logger.info("---------加载模型")
-model_id = "instruction-tuning-sd/cartoonizer"
+model_id = "timbrooks/instruct-pix2pix"
 pipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
     model_id, torch_dtype=torch.bfloat16, use_auth_token=True
 ).to("cuda")
