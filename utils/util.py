@@ -177,20 +177,6 @@ class Util:
       return random.choice(effects).lower()
   
 
-  def get_filename_and_extension(s):
-    pattern = r'(\w+\.\w+)'
-    match = re.search(pattern, s)
-    if match:
-        return match.group(1)
-    else:
-        return None
-    
-  def get_filename_and_extension(url):
-    parsed_url = urlparse(url)
-    path = parsed_url.path
-    filename = os.path.basename(path)
-    filename_without_extension, file_extension = os.path.splitext(filename)
-    return filename
 
   def addHashTag(input=""):
     if len(input) == 0:

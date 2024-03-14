@@ -7,10 +7,55 @@ import shutil
 from utils.logger_settings import api_logger
 import argparse
 import moviepy.editor as mp
+from pathlib import Path
+
 
 os.environ['HTTP_PROXY'] = '192.168.0.77:18808'
 os.environ['HTTPS_PROXY'] = '192.168.0.77:18808'
 api_logger.info("准备开始")
+
+globalPipeline = None
+# 10K
+kMinFileSizeK = 10 * 1024
+
+
+def generateImage(framePaths):
+    global globalPipeline,kMinFileSizeK
+    result_frames = []
+    error_frames = []
+    for idx, image_path in enumerate(framePaths) :
+        image = load_image(image_path)
+        refImageName = Path(image_path).stem
+
+        # kMaxTryCount = 3
+        # for tryIdx in range(kMaxTryCount):
+        num_inference_steps = 20
+        image_guidance_scale = 1.5
+        guidance_scale = 7.5 
+        api_logger.info(f"卡通化 {image_path}")
+        # api_logger.info(f"生成 inference_steps={num_inference_steps} image_guidance_scale={image_guidance_scale} guidance_scale={guidance_scale}")
+
+        image = globalPipeline("Cartoonize the following image", 
+                        image=image,
+                        num_inference_steps=num_inference_steps,
+                        image_guidance_scale=image_guidance_scale,
+                        guidance_scale=guidance_scale
+                        ).images[0]
+        cartoonImagePath = os.path.join(cartoonOutDir, f"{refImageName}.png")
+        image.save(cartoonImagePath)
+        api_logger.info(f"卡通帧保存到 {cartoonImagePath}")
+
+        fileSize = os.path.getsize(cartoonImagePath) 
+        if fileSize < kMinFileSizeK:
+            api_logger.error(f"文件 {fileSize} 小于10K，生成错误, 将会删除")
+            error_frames.append(image_path)
+            if os.path.exists(cartoonImagePath):
+                os.remove(cartoonImagePath)
+
+        if os.path.exists(cartoonImagePath):
+            result_frames.append(cartoonImagePath)
+    return result_frames, error_frames
+
 
 program = argparse.ArgumentParser(
     formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=100))
@@ -89,56 +134,35 @@ api_logger.info(f"共有 {len(framePaths)} 帧")
 
 api_logger.info("---------加载模型")
 model_id = "instruction-tuning-sd/cartoonizer"
-pipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
+globalPipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
     model_id, torch_dtype=torch.bfloat16, use_auth_token=True
 ).to("cuda")
 # 优化速度
 # torch.backends.cudnn.benchmark = True
-# pipeline.enable_xformers_memory_efficient_attention()
-# pipeline.enable_model_cpu_offload()
+# globalPipeline.enable_xformers_memory_efficient_attention()
+# globalPipeline.enable_model_cpu_offload()
 
 
-# image_path = "./sample/WX20240314-161847.png"
-result_frames = []
-for idx, image_path in enumerate(framePaths) :
-    image = load_image(image_path)
-    kMaxTryCount = 3
-    for tryIdx in range(kMaxTryCount):
-        num_inference_steps = 20 + tryIdx*40
-        image_guidance_scale = 1.5
-        guidance_scale = 7.5 
-        api_logger.info(f"卡通化 {image_path}, 第{tryIdx + 1}次生成 inference_steps={num_inference_steps} image_guidance_scale={image_guidance_scale} guidance_scale={guidance_scale}")
+total_cartoon_frames, error_video_frames = generateImage(framePaths)
+if len(error_video_frames) > 0:
+    api_logger.error(f"生成图片失败, 共有 {len(error_video_frames)} 帧")
 
-        image = pipeline("Cartoonize the following image", 
-                        image=image,
-                        num_inference_steps=num_inference_steps,
-                        image_guidance_scale=image_guidance_scale,
-                        guidance_scale=guidance_scale
-                        ).images[0]
-        cartoonImagePath = os.path.join(cartoonOutDir, f"{idx}.png")
-        image.save(cartoonImagePath)
-        api_logger.info(f"卡通帧保存到 {cartoonImagePath}")
-
-        fileSize = os.path.getsize(cartoonImagePath) 
-        kRetryFileSizeK = 10 * 1024
-        kMinFileSizeK = 2 * 1024
-        if fileSize < kRetryFileSizeK :
-            api_logger.error(f"文件 {fileSize} 小于10K，生成错误，重试")
-            if tryIdx == kMaxTryCount - 1:
-                api_logger.info(f"已经重试{kMaxTryCount}次, 不再重试。")
-                if os.path.exists(cartoonImagePath) and  fileSize < kMinFileSizeK:
-                    api_logger.info(f"文件小于 {kMinFileSizeK} Byte, 将会删除 {cartoonImagePath}")
-                    os.remove(cartoonImagePath)
-                    break
-            # time.sleep(3)
-            continue
-        else:
+    for tryIdx in range(100):
+        api_logger.info(f"第 {tryIdx + 1} 次尝试, 还剩下错误帧={len(error_video_frames)}")
+        temp_cartoon_frames, temp_error_frame = generateImage(error_video_frames)
+        if len(temp_cartoon_frames) > 0:
+            total_cartoon_frames = total_cartoon_frames + temp_cartoon_frames
+        if len(temp_error_frame) == 0:
+            api_logger.info("已经没有错误帧")
             break
-    if os.path.exists(cartoonImagePath) and os.path.getsize(cartoonImagePath) > kMinFileSizeK:
-        result_frames.append(cartoonImagePath)
+        error_video_frames = temp_cartoon_frames
 
-result_frames.sort(key=lambda f: int(''.join(filter(str.isdigit, f))))
-final_vid = Util.create_video(result_frames, kFixedFps, outVideoPath)
+
+api_logger.error(f"最终还有错误帧={len(error_video_frames)}")
+
+
+total_cartoon_frames.sort(key=lambda f: int(''.join(filter(str.isdigit, f))))
+final_vid = Util.create_video(total_cartoon_frames, kFixedFps, outVideoPath)
 api_logger.info(f"视频保存到 {outVideoPath}")
 # num_inference_steps 默认100
 # image_guidance_scale 默认 1.5 , 接近原图的参数，越高越接近，最少1
