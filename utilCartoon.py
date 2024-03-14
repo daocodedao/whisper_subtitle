@@ -127,7 +127,7 @@ for idx, image_path in enumerate(framePaths) :
             continue
         else:
             break
-    if os.path.getsize(cartoonImagePath) > kMinFileSizeK:
+    if os.path.exists(cartoonImagePath) and os.path.getsize(cartoonImagePath) > kMinFileSizeK:
         result_frames.append(cartoonImagePath)
 
 result_frames.sort(key=lambda f: int(''.join(filter(str.isdigit, f))))
