@@ -60,7 +60,7 @@ result_frames = []
 for idx, image_path in enumerate(framePaths) :
     image = load_image(image_path)
     api_logger.info(f"卡通化 {image_path}")
-    image = pipeline("Cartoonize the following image", image=image, num_inference_steps=10, image_guidance_scale=1, guidance_scale=5).images[0]
+    image = pipeline("Cartoonize the following image", image=image, num_inference_steps=5).images[0]
     cartoonImagePath = os.path.join(cartoonOutDir, f"cartoon{idx}.png")
     image.save(cartoonImagePath)
     api_logger.info(f"卡通帧保存到 {cartoonImagePath}")
