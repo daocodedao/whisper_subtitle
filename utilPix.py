@@ -1,6 +1,6 @@
 #https://huggingface.co/spaces/fffiloni/Pix2Pix-Video/blob/main/app.py modified
 
-import gradio as gr
+# import gradio as gr
 import os, cv2, torch, time, random
 import numpy as np
 from moviepy.editor import *
