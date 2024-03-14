@@ -104,8 +104,8 @@ for idx, image_path in enumerate(framePaths) :
     kMaxTryCount = 3
     for tryIdx in range(kMaxTryCount):
         num_inference_steps = 20 - tryIdx * 5
-        image_guidance_scale = 1
-        guidance_scale = 7 
+        image_guidance_scale = 1+ tryIdx * 0.3
+        guidance_scale = 7.5 + tryIdx * 0.5
         api_logger.info(f"卡通化 {image_path}, 第{tryIdx + 1}次生成 inference_steps={num_inference_steps} image_guidance_scale={image_guidance_scale} guidance_scale={guidance_scale}")
 
         image = pipeline("Cartoonize the following image", 
