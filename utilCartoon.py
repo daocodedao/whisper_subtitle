@@ -132,7 +132,7 @@ for idx, image_path in enumerate(framePaths) :
                     api_logger.info(f"文件小于 {kMinFileSizeK} Byte, 将会删除 {cartoonImagePath}")
                     os.remove(cartoonImagePath)
                     break
-            time.sleep(3)
+            # time.sleep(3)
             continue
         else:
             break
