@@ -5,7 +5,9 @@ import subprocess
 from utils.logger_settings import api_logger
 import re
 from urllib.parse import urlparse
-
+import av
+from PIL import Image
+import cv2
 
 def split(todo_text):
     splits = {"，", "。", "？", "！", ",", ".",
@@ -261,3 +263,33 @@ class Util:
            break
 
     return ret
+  
+  def read_frames(video_path):
+    container = av.open(video_path)
+
+    video_stream = next(s for s in container.streams if s.type == "video")
+    frames = []
+    for packet in container.demux(video_stream):
+        for frame in packet.decode():
+            image = Image.frombytes(
+                "RGB",
+                (frame.width, frame.height),
+                frame.to_rgb().to_ndarray(),
+            )
+            frames.append(image)
+
+    return frames
+
+  def extract_video_to_frames(video_path, outDir):
+     
+    vidcap = cv2.VideoCapture(video_path)
+    success,image = vidcap.read()
+    count = 0
+    framePaths = []
+    while success:
+      framePath = os.path.join(outDir, f"frame{count}.jpg")
+      cv2.imwrite(framePath, image)     # save frame as JPEG file      
+      framePaths.append(framePath)
+      success,image = vidcap.read()
+      # print('Read a new frame: ', success)
+      count += 1

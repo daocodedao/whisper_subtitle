@@ -21,3 +21,4 @@ funasr==1.0.14
 modelscope
 hdbscan
 rotary_embedding_torch
+av
