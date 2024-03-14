@@ -26,7 +26,7 @@ program.add_argument('-i', '--processId', help='process Id',
 args = program.parse_args()
 
 kFixedFps = 24
-kMaxWidthOrHeight = 540
+kMaxWidthOrHeight = 720
 
 videoSrcPath = args.videoPath
 processId = args.processId
