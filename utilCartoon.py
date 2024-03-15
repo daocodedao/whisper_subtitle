@@ -155,6 +155,7 @@ globalPipeline.enable_xformers_memory_efficient_attention()
 
 
 total_cartoon_frames, error_video_frames = generateImage(framePaths)
+api_logger.info(f"生成结束，成功：{len(total_cartoon_frames)}帧， 失败：{len(error_video_frames)}帧")
 # if len(error_video_frames) > 0:
 #     api_logger.error(f"生成图片失败, 共有 {len(error_video_frames)} 帧")
 
