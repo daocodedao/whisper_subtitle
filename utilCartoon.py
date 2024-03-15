@@ -18,8 +18,8 @@ api_logger.info("准备开始")
 
 globalPipeline = None
 # 10K
-k10K = 10 * 1024
-kMinFileSizeK = k10K
+kConstantSize = 2 * 1024
+kMinFileSizeK = kConstantSize
 
 KInferenceStep = 10
 
@@ -55,12 +55,12 @@ def generateImage(framePaths):
             error_frames.append(image_path)
             # if os.path.exists(cartoonImagePath):
             #     os.remove(cartoonImagePath)
+            if os.path.exists(preCartoonImagePath):
+                preCartoonImagePath = os.path.join(cartoonOutDir, f"{int(refImageName)-1}.jpg")
+                shutil.copyfile(preCartoonImagePath, cartoonImagePath)
+                api_logger.info(f"复制上一帧 {preCartoonImagePath} 到 {cartoonImagePath}")
 
-            preCartoonImagePath = os.path.join(cartoonOutDir, f"{int(refImageName)-1}.jpg")
-            shutil.copyfile(preCartoonImagePath, cartoonImagePath)
-            api_logger.info(f"复制上一帧 {preCartoonImagePath} 到 {cartoonImagePath}")
-
-        elif kMinFileSizeK == k10K:
+        elif kMinFileSizeK == kConstantSize :
             # 有的图片黑色的，几十K，比正常图片小太多了
             kMinFileSizeK = fileSize/2
 
