@@ -91,6 +91,8 @@ processId = args.processId
 addVoice = args.addVoice
 needUploadTos = args.upload
 
+api_logger.info(f"videoSrcPath: {videoSrcPath} processId={processId}  addVoice={addVoice} needUploadTos={needUploadTos}")
+
 outVideoDir = os.path.dirname(videoSrcPath)
 outVideoMutePath = os.path.join(outVideoDir, f"{processId}-cartoon-mute.mp4")
 outVideoPath = os.path.join(outVideoDir, f"{processId}-cartoon.mp4")
