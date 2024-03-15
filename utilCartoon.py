@@ -21,6 +21,7 @@ globalPipeline = None
 k10K = 10 * 1024
 kMinFileSizeK = k10K
 
+KInferenceStep = 10
 
 def generateImage(framePaths):
     global globalPipeline,kMinFileSizeK
@@ -32,7 +33,7 @@ def generateImage(framePaths):
 
         # kMaxTryCount = 3
         # for tryIdx in range(kMaxTryCount):
-        num_inference_steps = 20
+        num_inference_steps = KInferenceStep
         image_guidance_scale = 1.5
         guidance_scale = 7.5 
         api_logger.info(f"卡通化 {image_path}")
