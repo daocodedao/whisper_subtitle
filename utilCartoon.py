@@ -48,10 +48,15 @@ def generateImage(framePaths):
 
         fileSize = os.path.getsize(cartoonImagePath) 
         if fileSize < kMinFileSizeK:
-            api_logger.error(f"文件 {fileSize} < {kMinFileSizeK} 生成错误, 将会删除!")
+            api_logger.error(f"文件 {fileSize} < {kMinFileSizeK} 生成错误")
             error_frames.append(image_path)
-            if os.path.exists(cartoonImagePath):
-                os.remove(cartoonImagePath)
+            # if os.path.exists(cartoonImagePath):
+            #     os.remove(cartoonImagePath)
+
+            preCartoonImagePath = os.path.join(cartoonOutDir, f"{int(refImageName)-1}.jpg")
+            shutil.copyfile(preCartoonImagePath, cartoonImagePath)
+            api_logger.info(f"复制上一帧 {preCartoonImagePath} 到 {cartoonImagePath}")
+
         elif kMinFileSizeK == k10K:
             # 有的图片黑色的，几十K，比正常图片小太多了
             kMinFileSizeK = fileSize/2
@@ -150,21 +155,21 @@ globalPipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
 
 
 total_cartoon_frames, error_video_frames = generateImage(framePaths)
-if len(error_video_frames) > 0:
-    api_logger.error(f"生成图片失败, 共有 {len(error_video_frames)} 帧")
+# if len(error_video_frames) > 0:
+#     api_logger.error(f"生成图片失败, 共有 {len(error_video_frames)} 帧")
 
-    for tryIdx in range(100):
-        api_logger.info(f"第 {tryIdx + 1} 次尝试, 还剩下错误帧={len(error_video_frames)}")
-        temp_cartoon_frames, temp_error_frame = generateImage(error_video_frames)
-        if len(temp_cartoon_frames) > 0:
-            total_cartoon_frames = total_cartoon_frames + temp_cartoon_frames
-        if len(temp_error_frame) == 0:
-            api_logger.info("已经没有错误帧")
-            break
-        error_video_frames = temp_cartoon_frames
+#     for tryIdx in range(100):
+#         api_logger.info(f"第 {tryIdx + 1} 次尝试, 还剩下错误帧={len(error_video_frames)}")
+#         temp_cartoon_frames, temp_error_frame = generateImage(error_video_frames)
+#         if len(temp_cartoon_frames) > 0:
+#             total_cartoon_frames = total_cartoon_frames + temp_cartoon_frames
+#         if len(temp_error_frame) == 0:
+#             api_logger.info("已经没有错误帧")
+#             break
+#         error_video_frames = temp_cartoon_frames
 
 
-api_logger.error(f"最终还有错误帧={len(error_video_frames)}")
+# api_logger.error(f"最终还有错误帧={len(error_video_frames)}")
 
 
 total_cartoon_frames.sort(key=lambda f: int(''.join(filter(str.isdigit, f))))
