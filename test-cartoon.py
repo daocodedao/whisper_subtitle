@@ -28,6 +28,7 @@ pipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
 # pipeline.enable_model_cpu_offload()
 fileIdx = 37
 image_path = f"/data/work/translate/BiB9YykxoZw/frames/{fileIdx}.png"
+api_logger.info(f"加载 {image_path}")
 image = load_image(image_path)
 
 num_inference_steps = 20
