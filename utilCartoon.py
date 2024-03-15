@@ -207,7 +207,7 @@ api_logger.info(f"视频保存到 {outVideoMutePath}")
 
 if addVoice == "add" and os.path.exists(outAudioPath):
     api_logger.info("---------添加音频")
-    command = f"ffmpeg -y -i {curVideoPath}  -i {outVideoMutePath} -shortest {outVideoPath}"
+    command = f"ffmpeg -y -i {curVideoPath}  -i {outAudioPath} -shortest {outVideoPath}"
     api_logger.info(f"命令：")
     api_logger.info(command)
     result = subprocess.check_output(command, shell=True)
@@ -236,7 +236,8 @@ if needUploadTos == "upload":
         playUrl = f"{KCDNPlayUrl}{reusultUrl}"
         api_logger.info(f"播放地址= {playUrl}")
 
-        notiMsg = f"文件名： {videoName}\n"
+        notiMsg = f"任务类型：卡通化视频\n"
+        notiMsg = notiMsg + f"文件名： {videoName}\n"
         notiMsg = f"原始文件地址： {videoSrcPath}\n"
         orginVideoUrl = playUrl.replace("http://magicphoto.cdn.yuebanjyapp.com/", "https://magicphoto-1315251136.cos.ap-hongkong.myqcloud.com/")
         notiMsg = notiMsg + f"cdn播放地址: {playUrl}\n"
