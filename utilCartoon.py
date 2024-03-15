@@ -18,7 +18,7 @@ api_logger.info("准备开始")
 
 globalPipeline = None
 # 10K
-kConstantSize = 2 * 1024
+kConstantSize = 10 * 1024
 kMinFileSizeK = kConstantSize
 
 KInferenceStep = 10
