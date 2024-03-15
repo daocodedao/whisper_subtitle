@@ -8,7 +8,9 @@ from utils.logger_settings import api_logger
 import argparse
 import moviepy.editor as mp
 from pathlib import Path
-
+import subprocess
+from utils.Tos import TosService
+from utils.notify import NotifyUtil
 
 os.environ['HTTP_PROXY'] = '192.168.0.77:18808'
 os.environ['HTTPS_PROXY'] = '192.168.0.77:18808'
@@ -73,8 +75,11 @@ program.add_argument('-v', '--videoPath', help='videoPath',
                      dest='videoPath', type=str, default='')
 program.add_argument('-i', '--processId', help='process Id',
                      dest='processId', type=str, default='')
-# program.add_argument('-i', '--processId', help='process Id',
-#                      dest='processId', type=str, default='')
+
+program.add_argument('-a', '--addVoice', help='is need add voice, value: add,noadd',
+                     dest='addVoice', type=str, default='add')
+program.add_argument('-u', '--upload', help='is need upload to cloud, value: upload,noupload',
+                     dest='upload', type=str, default='upload')
 
 args = program.parse_args()
 
@@ -83,11 +88,29 @@ kMaxWidthOrHeight = 720
 
 videoSrcPath = args.videoPath
 processId = args.processId
+addVoice = args.addVoice
+needUploadTos = args.upload
 
 outVideoDir = os.path.dirname(videoSrcPath)
+outVideoMutePath = os.path.join(outVideoDir, f"{processId}-cartoon-mute.mp4")
 outVideoPath = os.path.join(outVideoDir, f"{processId}-cartoon.mp4")
+outAudioPath= os.path.join(outVideoDir, f"{processId}.wav")
 videoFpsFixPath = os.path.join(outVideoDir, f"{processId}-fps-{kFixedFps}.mp4")
 videoSizeFixPath = os.path.join(outVideoDir, f"{processId}-{kMaxWidthOrHeight}.mp4")
+
+
+if addVoice == "add":
+    api_logger.info("需要原视频声音")
+    if not os.path.exists:
+        api_logger.info(f"从视频剥离音频文件 {outAudioPath}")
+        command = f"ffmpeg -y -i {videoSrcPath} -vn -acodec pcm_f32le -ar 44100 -ac 2 {outAudioPath}"
+        api_logger.info(command)
+        if os.path.exists(outAudioPath):
+            api_logger.info(f"从视频剥离音频文件成功 {outAudioPath}")
+    else:
+        api_logger.info(f"无需剥离音频，已经存在 {outAudioPath}")
+
+                        
 
 frameOutDir = os.path.join(outVideoDir, "frames")
 shutil.rmtree(frameOutDir, ignore_errors=True)
@@ -174,8 +197,61 @@ api_logger.info(f"生成结束，成功：{len(total_cartoon_frames)}帧， 失�
 
 
 total_cartoon_frames.sort(key=lambda f: int(''.join(filter(str.isdigit, f))))
-final_vid = Util.create_video(total_cartoon_frames, kFixedFps, outVideoPath)
-api_logger.info(f"视频保存到 {outVideoPath}")
+final_vid = Util.create_video(total_cartoon_frames, kFixedFps, outVideoMutePath)
+curVideoPath = outVideoMutePath
+api_logger.info(f"视频保存到 {outVideoMutePath}")
+
+
+if addVoice == "add" and os.path.exists(outAudioPath):
+    api_logger.info("---------添加音频")
+    command = f"ffmpeg -y -i {curVideoPath}  -i {outVideoMutePath} -shortest {outVideoPath}"
+    api_logger.info(f"命令：")
+    api_logger.info(command)
+    result = subprocess.check_output(command, shell=True)
+    Util.log_subprocess_output(result)
+    api_logger.info(f'完成音频合并任务: {outVideoPath}')
+    curVideoPath = outVideoPath
+
+
+if curVideoPath != outVideoPath:
+    shutil.copyfile(curVideoPath, outVideoPath)
+    curVideoPath = outVideoPath
+
+api_logger.info(f"最终视频保存到 {outVideoPath}")
+
+if needUploadTos == "upload":
+    api_logger.info("---------上传到oss")
+    bucketName = "magicphoto-1315251136"
+    resultUrlPre = f"cartoon/video/{processId}/"
+    videoName=os.path.basename(curVideoPath)
+    reusultUrl = f"{resultUrlPre}{videoName}"
+    api_logger.info(f"上传视频 {curVideoPath}")
+    if os.path.exists(curVideoPath):
+        api_logger.info(f"上传视频到OSS，curVideoPath:{curVideoPath}, task.key:{reusultUrl}, task.bucketName:{bucketName}")
+        TosService.upload_file(curVideoPath, reusultUrl, bucketName)
+        KCDNPlayUrl="http://magicphoto.cdn.yuebanjyapp.com/"
+        playUrl = f"{KCDNPlayUrl}{reusultUrl}"
+        api_logger.info(f"播放地址= {playUrl}")
+
+        notiMsg = f"文件名： {videoName}\n"
+        notiMsg = f"原始文件地址： {videoSrcPath}\n"
+        orginVideoUrl = playUrl.replace("http://magicphoto.cdn.yuebanjyapp.com/", "https://magicphoto-1315251136.cos.ap-hongkong.myqcloud.com/")
+        notiMsg = notiMsg + f"cdn播放地址: {playUrl}\n"
+        notiMsg = notiMsg + f"原始地址: {orginVideoUrl}\n"
+        NotifyUtil.notifyFeishu(notiMsg)
+        api_logger.info(notiMsg)
+        # # 打开文件并写入
+        # dataFilePath = f"/data/work/translate/{processId}/output.txt"
+        # os.makedirs(os.path.dirname(dataFilePath), exist_ok=True)
+        # api_logger.info(f"url 列表写入文件: {dataFilePath}")
+        # with open(dataFilePath, "w") as file:
+        #     file.write(playUrl + "\n")
+    else:
+        api_logger.error(f"上传文件失败, {curVideoPath}不存在")
+        exit(1)
+
+
+exit(0)
 # num_inference_steps 默认100
 # image_guidance_scale 默认 1.5 , 接近原图的参数，越高越接近，最少1
 # guidance_scale 默认 7.5, 更高的引导标度值鼓励模型生成与文本紧密链接的图像

@@ -306,3 +306,10 @@ class Util:
     clip = ImageSequenceClip(frames, fps=fps)
     clip.write_videofile(savePath, fps=fps, verbose=False)
     # return "/content/output.mp4"
+
+  def log_subprocess_output(inStr):
+    if len(inStr) > 0:
+        inStr = inStr.decode(sys.stdout.encoding)
+        logStrList = inStr.split('\n')
+        for line in logStrList:
+            api_logger.info(line)

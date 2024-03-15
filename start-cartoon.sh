@@ -17,16 +17,16 @@ source ${venvBinDir}activate
 helpFunction()
 {
    echo ""
-   echo "Usage: $0  -v videoPath -i processId -r role -b add"
+   echo "Usage: $0  -v videoPath -i processId"
    echo -e "\t-v video path"
    echo -e "\t-i process id"
-   echo -e "\t-r role"
-   echo -e "\t-b is add bgMusic"
+   echo -e "\t-a add voice, value: add,noadd"
+   echo -e "\t-u upload cloud, value: upload,noupload"
    exit 1 # Exit script after printing help
 }
 
 
-jobName=generateTransTtsVideo.py 
+jobName=utilCartoon.py 
 echo "${YELLOW}check $jobName pid${NOCOLOR}"
 echo "ps aux | grep "$jobName" | grep -v grep  | awk '{print $2}'"
 TAILPID=`ps aux | grep "$jobName" | grep -v grep | awk '{print $2}'`  
@@ -36,21 +36,25 @@ sudo kill -9 $TAILPID
 fi
 
 
-while getopts "v:i:r:b:" opt
+while getopts "v:i:a:u:" opt
 do
    case "$opt" in
       v ) videoPath="$OPTARG" ;;
       i ) processId="$OPTARG" ;;
-      r ) role="$OPTARG" ;;
-      b ) isAddBgMusic="$OPTARG" ;;
+      a ) addVoice="$OPTARG" ;;
+      u ) uploadTos="$OPTARG" ;;
       ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
    esac
 done
 
 [[ -z  $videoPath ]] &&  echo -e "${RED}videoPath is empty ${NOCOLOR}" &&  exit 1
 [[ -z  $processId ]] &&  echo -e "${RED}processId is empty ${NOCOLOR}" &&  exit 1
-[[ -z  $role ]] && role="he"
-[[ -z  $isAddBgMusic ]] && role="add"
+[[ -z  $addVoice ]] &&  addVoice="noAdd"
+[[ -z  $uploadTos ]] &&  uploadTos="noUpload"
 
-echo -e "${YELLOW}${pythonPath} $jobName  -v \"$videoPath\"   -i \"$processId\" ${NOCOLOR}"
-${pythonPath} $jobName  -v "$videoPath" -i "$processId"
+
+echo -e "${YELLOW}${pythonPath} $jobName  -v '$videoPath' -i '$processId' -a '$addVoice'  -u '$uploadTos'${NOCOLOR}"
+${pythonPath} $jobName  -v '$videoPath' -i '$processId' -a '$addVoice'  -u '$uploadTos'
+
+
+# /data/work/aishowos/whisper_subtitle/start-cartoon.sh -v '/data/work/translate/p5DfhG_DKSk/p5DfhG_DKSk-cut3.mp4' -i 'p5DfhG_DKSk' -a 'add' -u 'upload'
