@@ -51,7 +51,7 @@ kMinFileSizeK = k10K
 for tryIdx in range(100):
     fileSize = os.path.getsize(cartoonImagePath) 
     if fileSize < kMinFileSizeK:
-        num_inference_steps = random.randint(20, 100)
+        num_inference_steps = random.randint(2, 100)
         image_guidance_scale = 1.5
         guidance_scale = 7 
         api_logger.error(f"文件 {fileSize} < {kMinFileSizeK} 生成错误, 重试{tryIdx}次  num_inference_steps={num_inference_steps}")
