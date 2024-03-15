@@ -149,9 +149,9 @@ globalPipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
     model_id, torch_dtype=torch.bfloat16, use_auth_token=True
 ).to("cuda")
 # 优化速度
-# torch.backends.cudnn.benchmark = True
+torch.backends.cudnn.benchmark = True
 globalPipeline.enable_xformers_memory_efficient_attention()
-globalPipeline.enable_model_cpu_offload()
+# globalPipeline.enable_model_cpu_offload()
 
 
 total_cartoon_frames, error_video_frames = generateImage(framePaths)
