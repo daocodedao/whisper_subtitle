@@ -26,4 +26,4 @@ hdbscan
 rotary_embedding_torch
 av
 moviepy
-SubRipFile
+pysrt
