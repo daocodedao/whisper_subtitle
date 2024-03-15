@@ -32,7 +32,7 @@ image = load_image(image_path)
 
 num_inference_steps = 20
 image_guidance_scale = 1
-guidance_scale = 7.5 
+guidance_scale = 7
 
 negative_prompt="The entire picture is black"
 image = pipeline("Cartoonize the following image", 
