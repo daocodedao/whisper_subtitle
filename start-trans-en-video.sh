@@ -52,5 +52,5 @@ done
 [[ -z  $role ]] && role="he"
 [[ -z  $isAddBgMusic ]] && role="add"
 
-echo -e "${YELLOW}${pythonPath} $jobName  -v \"$videoPath\"   -i \"$processId\" ${NOCOLOR}"
-${pythonPath} $jobName  -v "$videoPath" -i "$processId"
+echo -e "${YELLOW}${pythonPath} $jobName  -v \"$videoPath\"   -i \"$processId\"  -r \"$role\" -b \"$isAddBgMusic\"  ${NOCOLOR}"
+${pythonPath} $jobName  -v "$videoPath" -i "$processId" -r "$role"  -b "$isAddBgMusic"
