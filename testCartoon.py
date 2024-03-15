@@ -34,9 +34,10 @@ num_inference_steps = 20
 image_guidance_scale = 1
 guidance_scale = 7.5 
 
-
+negative_prompt="The entire picture is black"
 image = pipeline("Cartoonize the following image", 
                     image=image,
+                    negative_prompt=negative_prompt,
                     num_inference_steps=num_inference_steps,
                     image_guidance_scale=image_guidance_scale,
                     guidance_scale=guidance_scale
