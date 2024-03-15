@@ -69,19 +69,19 @@ def generateImage(framePaths):
     return result_frames, error_frames
 
 
-program = argparse.ArgumentParser(
-    formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=100))
+program = argparse.ArgumentParser(formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=100))
 program.add_argument('-v', '--videoPath', help='videoPath',
                      dest='videoPath', type=str, default='')
 program.add_argument('-i', '--processId', help='process Id',
                      dest='processId', type=str, default='')
-
 program.add_argument('-a', '--addVoice', help='is need add voice, value: add,noadd',
                      dest='addVoice', type=str, default='add')
 program.add_argument('-u', '--upload', help='is need upload to cloud, value: upload,noupload',
                      dest='upload', type=str, default='upload')
 
 args = program.parse_args()
+
+print(args)
 
 kFixedFps = 24
 kMaxWidthOrHeight = 720

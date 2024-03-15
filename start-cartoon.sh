@@ -54,7 +54,7 @@ done
 
 
 echo -e "${YELLOW}${pythonPath} $jobName  -v '$videoPath' -i '$processId' -a '$addVoice'  -u '$uploadTos'${NOCOLOR}"
-${pythonPath} $jobName  -v '$videoPath' -i '$processId' -a '$addVoice'  -u '$uploadTos'
+${pythonPath} $jobName  -v "$videoPath" -i "$processId" -a "$addVoice"  -u "$uploadTos"
 
 
-# /data/work/aishowos/whisper_subtitle/start-cartoon.sh -v '/data/work/translate/p5DfhG_DKSk/p5DfhG_DKSk-cut3.mp4' -i 'p5DfhG_DKSk' -a 'add' -u 'upload'
+# /data/work/aishowos/whisper_subtitle/start-cartoon.sh -v "/data/work/translate/p5DfhG_DKSk/p5DfhG_DKSk-cut3.mp4" -i "p5DfhG_DKSk" -a "add" -u "upload"

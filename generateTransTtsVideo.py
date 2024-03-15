@@ -505,8 +505,7 @@ def addCustomSrt(srcPath, videoPath):
 
 api_logger.info("准备开始")
 
-program = argparse.ArgumentParser(
-    formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=100))
+program = argparse.ArgumentParser(formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=100))
 program.add_argument('-v', '--video', help='videoPath',
                      dest='videoPath', type=str, default='')
 program.add_argument('-i', '--processId', help='process Id',
