@@ -138,8 +138,8 @@ else:
 api_logger.info(f"共有 {len(framePaths)} 帧")
 
 api_logger.info("---------加载模型")
-# model_id = "instruction-tuning-sd/cartoonizer"
-model_id = "timbrooks/instruct-pix2pix"
+model_id = "instruction-tuning-sd/cartoonizer"
+# model_id = "timbrooks/instruct-pix2pix"
 globalPipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
     model_id, torch_dtype=torch.bfloat16, use_auth_token=True
 ).to("cuda")
