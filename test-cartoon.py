@@ -27,7 +27,7 @@ pipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
 # pipeline.enable_xformers_memory_efficient_attention()
 # pipeline.enable_model_cpu_offload()
 fileIdx = 37
-image_path = f"/data/work/translate/BiB9YykxoZw/frames/{fileIdx}.png"
+image_path = f"/data/work/translate/BiB9YykxoZw/frames/{fileIdx}.jpg"
 api_logger.info(f"加载 {image_path}")
 image = load_image(image_path)
 
@@ -43,7 +43,7 @@ image = pipeline("Cartoonize the following image",
                     image_guidance_scale=image_guidance_scale,
                     guidance_scale=guidance_scale
                     ).images[0]
-cartoonImagePath = f"/data/work/translate/BiB9YykxoZw/cartoon/{fileIdx}.png"
+cartoonImagePath = f"/data/work/translate/BiB9YykxoZw/cartoon/{fileIdx}.jpg"
 image.save(cartoonImagePath)
 
 k10K = 100 * 1024

@@ -42,7 +42,7 @@ def generateImage(framePaths):
                         image_guidance_scale=image_guidance_scale,
                         guidance_scale=guidance_scale
                         ).images[0]
-        cartoonImagePath = os.path.join(cartoonOutDir, f"{refImageName}.png")
+        cartoonImagePath = os.path.join(cartoonOutDir, f"{refImageName}.jpg")
         image.save(cartoonImagePath)
         api_logger.info(f"卡通帧保存到 {cartoonImagePath}")
 
