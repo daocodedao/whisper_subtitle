@@ -238,7 +238,7 @@ if needUploadTos == "upload":
 
         notiMsg = f"任务类型：卡通化视频\n"
         notiMsg = notiMsg + f"文件名： {videoName}\n"
-        notiMsg = f"原始文件地址： {videoSrcPath}\n"
+        notiMsg = notiMsg + f"原始文件地址： {videoSrcPath}\n"
         orginVideoUrl = playUrl.replace("http://magicphoto.cdn.yuebanjyapp.com/", "https://magicphoto-1315251136.cos.ap-hongkong.myqcloud.com/")
         notiMsg = notiMsg + f"cdn播放地址: {playUrl}\n"
         notiMsg = notiMsg + f"原始地址: {orginVideoUrl}\n"
