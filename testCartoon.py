@@ -7,7 +7,7 @@ import shutil
 from utils.logger_settings import api_logger
 import argparse
 import moviepy.editor as mp
-
+import PIL
 import time
 
 os.environ['HTTP_PROXY'] = '192.168.0.77:18808'
@@ -27,8 +27,11 @@ pipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
 fileIdx = 37
 image_path = f"/data/work/translate/BiB9YykxoZw/frames/{fileIdx}.png"
 image = load_image(image_path)
+image = PIL.ImageOps.exif_transpose(image)
+image = image.convert("RGB")
+
 num_inference_steps = 20
-image_guidance_scale = 1.5
+image_guidance_scale = 1
 guidance_scale = 7.5 
 
 
