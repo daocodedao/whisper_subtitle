@@ -503,7 +503,7 @@ def addCustomSrt(srcPath, videoPath):
 
 
 
-api_logger.info("准备开始")
+
 
 program = argparse.ArgumentParser(formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=100))
 program.add_argument('-v', '--video', help='videoPath',
@@ -524,7 +524,8 @@ if args.isAddBgMusic == 'add':
     isAddBgMusic = True
 role = args.role
 
-api_logger.info(f"videoPath: {videoPath} processId:{processId}")
+api_logger.info("准备开始")
+api_logger.info(f"videoPath: {videoPath} processId:{processId} role={role} isAddBgMusic={isAddBgMusic}")
 
 language = "en"
 videoDir = os.path.dirname(videoPath)
