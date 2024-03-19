@@ -17,11 +17,11 @@ source ${venvBinDir}activate
 helpFunction()
 {
    echo ""
-   echo "Usage: $0  -v videoPath -i processId"
+   echo "Usage: $0  -v videoPath -i processId -a noadd -u noupload"
    echo -e "\t-v video path"
    echo -e "\t-i process id"
-   echo -e "\t-a add voice, value: add,noadd"
-   echo -e "\t-u upload cloud, value: upload,noupload"
+   echo -e "\t-a add voice, value: add, noadd"
+   echo -e "\t-u upload cloud, value: upload, noupload"
    exit 1 # Exit script after printing help
 }
 
