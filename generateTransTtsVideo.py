@@ -562,11 +562,6 @@ if check_video_verticle(videoPath):
     isVerticle = True     
 
 
-api_logger.info(f"0.1---------从视频剥离音频文件 {srcAudioPath}")
-command = f"ffmpeg -y -i {videoPath} -vn -acodec pcm_f32le -ar 44100 -ac 2 {srcAudioPath}"
-api_logger.info(command)
-result = subprocess.check_output(command, shell=True)
-Util.log_subprocess_output(result)
 curVideoPath = videoPath
 
 if isNeedCartoon:
@@ -578,9 +573,21 @@ if isNeedCartoon:
     if os.path.exists(videoCartoonPath):
         api_logger.info(f"视频卡通化成功 {videoCartoonPath}")
         curVideoPath = videoCartoonPath
+    else:
+        api_logger.error(f"视频卡通化失败")
+        exit(1)
 
 if isNeedTranslate:
     api_logger.info("1---------视频生成英文SRT")
+
+    api_logger.info(f"从视频剥离音频文件 {srcAudioPath}")
+    command = f"ffmpeg -y -i {curVideoPath} -vn -acodec pcm_f32le -ar 44100 -ac 2 {srcAudioPath}"
+    api_logger.info(command)
+    result = subprocess.check_output(command, shell=True)
+    Util.log_subprocess_output(result)
+
+
+
     api_logger.info(f"生成字幕 {outSrtEnPath}")
     result, json_object = whisper_transcribe_en(curVideoPath)
     whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
