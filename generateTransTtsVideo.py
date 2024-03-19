@@ -517,7 +517,7 @@ program.add_argument('-c', '--needCartoon',
                      dest='needCartoon', type=str, default='noCartoon')
 args = program.parse_args()
 
-api_logger(args)
+api_logger.info(args)
 videoPath = args.videoPath
 processId = args.processId
 isAddBgMusic = False
