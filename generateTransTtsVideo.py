@@ -529,13 +529,13 @@ if args.needTranslate == 'noTranslate':
     isNeedTranslate = False
 
 isNeedCartoon = False
-if args.needTranslate == 'cartoon':
-    isNeedTranslate = True
+if args.needCartoon == 'cartoon':
+    isNeedCartoon = True
 
 role = args.role
 
 api_logger.info("准备开始")
-api_logger.info(f"videoPath: {videoPath} processId:{processId} role={role} isAddBgMusic={isAddBgMusic}")
+api_logger.info(f"videoPath: {videoPath} processId:{processId} role={role} isAddBgMusic={isAddBgMusic} isNeedCartoon={isNeedCartoon} isNeedCartoon={isNeedCartoon}")
 
 language = "en"
 videoDir = os.path.dirname(videoPath)
