@@ -58,5 +58,5 @@ done
 [[ -z  $isNeedTranslate ]] && isNeedTranslate="translate"
 [[ -z  $isNeedCartoon ]] && isNeedCartoon="noCartoon"
 
-echo -e "${YELLOW}${pythonPath} $jobName  -v '$videoPath'   -i '$processId'  -r '$role' -c '$isAddBgMusic'   -t '$isNeedTranslate' -b '$isNeedCartoon'${NOCOLOR}"
+echo -e "${YELLOW}${pythonPath} $jobName  -v '$videoPath'   -i '$processId'  -r '$role' -b '$isAddBgMusic'   -t '$isNeedTranslate' -c '$isNeedCartoon'${NOCOLOR}"
 ${pythonPath} $jobName  -v "$videoPath" -i "$processId" -r "$role"  -b "$isAddBgMusic" -t "$isNeedTranslate" -c "$isNeedCartoon"
