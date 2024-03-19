@@ -571,7 +571,7 @@ curVideoPath = videoPath
 
 if isNeedCartoon:
     api_logger.info("0.2---------视频卡通化")
-    command = f"/data/work/aishowos/whisper_subtitle/start-cartoon.sh -v {curVideoPath} -t {processId}"
+    command = f"/data/work/aishowos/whisper_subtitle/start-cartoon.sh -v {curVideoPath} -t {processId} -a add"
     api_logger.info(command)
     result = subprocess.check_output(command, shell=True)
     Util.log_subprocess_output(result)
