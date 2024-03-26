@@ -1,6 +1,7 @@
 import srt
 from utils.logger_settings import api_logger
 from utils.util import Util
+from utils.mediaUtil import MediaUtil
 import datetime
 
 
@@ -18,7 +19,7 @@ def addCustomSrt(srcPath, videoPath):
     totalSub = len(subList)
     lastSub = subList[totalSub - 1]
     lastEndTime = lastSub.end.total_seconds()
-    videoDuration = Util.getMediaDuration(videoPath)
+    videoDuration = MediaUtil.getMediaDuration(videoPath)
 
 
     if videoDuration - lastEndTime > 2:

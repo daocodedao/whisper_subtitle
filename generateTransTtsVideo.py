@@ -8,7 +8,6 @@ import json
 from pathlib import Path
 from typing import Iterator, TextIO
 import os
-from utils.util import Util
 from pydub import AudioSegment
 import librosa
 from scipy.io import wavfile
@@ -20,9 +19,11 @@ import math
 from utils.replaceKeyword import *
 from utilAsr import start_zh_asr_to_srt
 from utils.util import Util
+from utils.mediaUtil import MediaUtil
 import time
 import sys
 import datetime
+
 
 # import traceback
 
@@ -57,7 +58,7 @@ def whisper_transcribe_cn(file="{}/audio.mp3".format(dir), download_root = "./mo
     json_object = json.dumps(result, indent=4)
     return result, json_object
 
-def whisper_result_to_srt(whisper_result, outPath="", language: str = "cn"):
+def whisper_result_to_srt(videoPath, whisper_result, outPath="", language: str = "cn"):
     
     '''converts whisper result to SRT format'''
     if len(outPath) == 0:
@@ -412,8 +413,7 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3
         subs = srt.parse(content)
         subList = list(subs)
 
-    # print(len(subList))
-    # index = 0
+
     combined = None
     totalSrtDuraton = 0
     totalGenDuration = 0
@@ -424,7 +424,7 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3
             continue
 
         audioFilePath = os.path.join(ttsDir, audioFile)
-        curAudioFileDuration = Util.getMediaDuration(audioFilePath)
+        curAudioFileDuration = MediaUtil.getMediaDuration(audioFilePath)
         sub = subList[index]
         timeDiff = sub.end.total_seconds() - sub.start.total_seconds()
         api_logger.info(f"中文音频时长: {curAudioFileDuration} srt时长:{timeDiff}  srt时长-中文音频:{timeDiff-curAudioFileDuration}")
@@ -439,6 +439,13 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3
             second_of_silence = AudioSegment.silent(duration=silence_duration)
             combined = combined + second_of_silence
             curAudioFileDuration = curAudioFileDuration + silence_duration/1000
+        elif index == 0:
+            if sub.start.total_seconds() > 0.5:
+                silence_duration = sub.start.total_seconds()*1000
+                api_logger.info(f"需要加入静音音频， 时长：{silence_duration}毫秒")
+                second_of_silence = AudioSegment.silent(duration=silence_duration)
+                combined = second_of_silence
+                curAudioFileDuration = curAudioFileDuration + silence_duration/1000
 
 
         totalSrtDuraton = totalSrtDuraton + timeDiff
@@ -452,8 +459,8 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3
 
     file_handle = combined.export(combineMp3Path, format="mp3")
 
-    combine_mp3_duration = Util.getMediaDuration(combineMp3Path)
-    video_duration = Util.getMediaDuration(videoMutePath)
+    combine_mp3_duration = MediaUtil.getMediaDuration(combineMp3Path)
+    video_duration = MediaUtil.getMediaDuration(videoMutePath)
     api_logger.info(f"判断是否需要变速, combine_mp3_duration={combine_mp3_duration} video_duration={video_duration}")
     if combine_mp3_duration > video_duration:
         api_logger.info(f"视频需要变速, {combine_mp3_duration/video_duration}")
@@ -478,7 +485,7 @@ def addCustomSrt(srcPath, videoPath):
     totalSub = len(subList)
     lastSub = subList[totalSub - 1]
     lastEndTime = lastSub.end.total_seconds()
-    videoDuration = Util.getMediaDuration(videoPath)
+    videoDuration = MediaUtil.getMediaDuration(videoPath)
 
     if videoDuration - lastEndTime > 2:
         api_logger.info("可以添加自定义话术")
@@ -590,7 +597,7 @@ if isNeedTranslate:
 
     api_logger.info(f"生成字幕 {outSrtEnPath}")
     result, json_object = whisper_transcribe_en(curVideoPath)
-    whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
+    whisper_result_to_srt(videoPath, result, outPath=outSrtEnPath, language=language)
     loopHandleEn_srt(inSrcFilePath=outSrtEnPath, outSrcFilePath=outSrtEnReComposePath)
 
 

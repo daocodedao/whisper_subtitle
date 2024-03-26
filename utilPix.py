@@ -1,5 +1,6 @@
-#https://huggingface.co/spaces/fffiloni/Pix2Pix-Video/blob/main/app.py modified
-
+# https://huggingface.co/spaces/fffiloni/Pix2Pix-Video/blob/main/app.py modified
+# 指定图片各种风格化
+# https://twitter.com/CitizenPlain
 # import gradio as gr
 import os, cv2, torch, time, random
 import numpy as np

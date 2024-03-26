@@ -3,6 +3,7 @@ from diffusers import StableDiffusionInstructPix2PixPipeline
 from diffusers.utils import load_image
 import os
 from utils.util import Util
+from utils.mediaUtil import MediaUtil
 import shutil
 from utils.logger_settings import api_logger
 import argparse
@@ -125,12 +126,12 @@ os.makedirs(cartoonOutDir, exist_ok=True)
 
 
 api_logger.info("---------调整视频帧率FPS")
-src_fps = Util.get_fps(videoSrcPath)
+src_fps = MediaUtil.get_fps(videoSrcPath)
 api_logger.info(f"videoSrcPath={videoSrcPath} src_fps={int(src_fps)}")
 if int(src_fps) > kFixedFps:
     if not os.path.exists(videoFpsFixPath): 
         api_logger.info(f"原视频FPS需要调整为{kFixedFps}")
-        Util.changeVideoFps(videoSrcPath, kFixedFps, videoFpsFixPath)
+        MediaUtil.changeVideoFps(videoSrcPath, kFixedFps, videoFpsFixPath)
         api_logger.info(f"fps调整完成")
     
     videoSrcPath = videoFpsFixPath
@@ -160,12 +161,12 @@ else:
 
 
 api_logger.info("---------解压视频帧")
-framePaths = Util.get_image_paths_from_folder(frameOutDir)
+framePaths = MediaUtil.get_image_paths_from_folder(frameOutDir)
 if len(framePaths) > 0:
     api_logger.info(f"无需解压视频帧 {frameOutDir}")
 else:
     api_logger.info(f"解压视频帧 {videoSrcPath}")
-    framePaths = Util.extract_video_to_frames(videoSrcPath, frameOutDir)
+    framePaths = MediaUtil.extract_video_to_frames(videoSrcPath, frameOutDir)
 api_logger.info(f"共有 {len(framePaths)} 帧")
 
 api_logger.info("---------加载模型")
@@ -200,7 +201,7 @@ api_logger.info(f"生成结束，成功：{len(total_cartoon_frames)}帧， 失�
 
 
 total_cartoon_frames.sort(key=lambda f: int(''.join(filter(str.isdigit, f))))
-final_vid = Util.create_video(total_cartoon_frames, kFixedFps, outVideoMutePath)
+final_vid = MediaUtil.create_video(total_cartoon_frames, kFixedFps, outVideoMutePath)
 curVideoPath = outVideoMutePath
 api_logger.info(f"视频保存到 {outVideoMutePath}")
 

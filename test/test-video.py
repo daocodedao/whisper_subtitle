@@ -1,6 +1,7 @@
 
 from moviepy.editor import *
 from utils.util import Util
+from utils.mediaUtil import MediaUtil
 import re
 import moviepy.editor as mp
 from utils.logger_settings import api_logger
@@ -14,13 +15,13 @@ def combineVideoFromDir():
     # outDir = os.path.dirname(frameOutDir)
     outVideoPath=os.path.join(frameOutDir,"out.mp4")
     kFixedFps=24
-    result_frames = Util.get_image_paths_from_folder(frameOutDir)
+    result_frames = MediaUtil.get_image_paths_from_folder(frameOutDir)
 
     # result_frames.sort()
     result_frames.sort(key=lambda f: int(''.join(filter(str.isdigit, f))))
 
     print(result_frames)
-    final_vid = Util.create_video(result_frames, kFixedFps, outVideoPath)
+    final_vid = MediaUtil.create_video(result_frames, kFixedFps, outVideoPath)
     api_logger.info(f"视频保存到 {outVideoPath}")
 
 combineVideoFromDir()
