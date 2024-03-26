@@ -55,12 +55,14 @@ def whisper_result_to_srt(videoPath, whisper_result, outPath="", language: str =
     return
 
 
+processId = "ZG2UUyMxkX4"
+
 if Util.isMac():
     videoDir = "/Users/linzhiji/Downloads/ZG2UUyMxkX4/"
 else:
-    videoDir = "/data/work/translate"
+    videoDir = f"/data/work/translate/{processId}"
 
-processId = "ZG2UUyMxkX4"
+
 
 # videoDir = os.path.dirname(videoPath)
 
