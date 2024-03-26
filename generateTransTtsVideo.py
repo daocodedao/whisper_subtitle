@@ -58,12 +58,12 @@ def whisper_transcribe_cn(file="{}/audio.mp3".format(dir), download_root = "./mo
     json_object = json.dumps(result, indent=4)
     return result, json_object
 
-def whisper_result_to_srt(videoPath, whisper_result, outPath="", language: str = "cn"):
+def whisper_result_to_srt( whisper_result, outPath="", language: str = "cn"):
     
     '''converts whisper result to SRT format'''
-    if len(outPath) == 0:
-        file_name = Path(videoPath).stem
-        outPath = "{}.srt".format(file_name)
+    # if len(outPath) == 0:
+    #     file_name = Path(videoPath).stem
+    #     outPath = "{}.srt".format(file_name)
     with open(outPath, "w", encoding="utf-8") as srt:
         write_srt(whisper_result["segments"], file=srt, language=language)
     return
@@ -243,6 +243,7 @@ def translate_srt(outSrtCnPath, inSrtFilePath, isVerticle = True):
     
     writeSublistToFile(zhAllSubList, outSrtCnPath)
     
+# 中文字幕根据屏幕宽度判断是否换行
 def relayout_cn_tts(outSrtCnPath, isVerticle = True):
     maxCnSubtitleLen = 20
     if not isVerticle:
@@ -522,6 +523,8 @@ program.add_argument('-t', '--needTranslate',
                      dest='needTranslate', type=str, default='translate')
 program.add_argument('-c', '--needCartoon',
                      dest='needCartoon', type=str, default='noCartoon')
+program.add_argument('-u', '--cutNoHumanVoiceThreshold',
+                     dest='cutNoHumanVoiceThreshold', type=int, default=0)
 args = program.parse_args()
 
 api_logger.info(args)
@@ -539,6 +542,8 @@ isNeedCartoon = False
 if args.needCartoon == 'cartoon':
     isNeedCartoon = True
 
+cutNoHumanVoiceThreshold = args.cutNoHumanVoiceThreshold
+
 role = args.role
 
 api_logger.info("准备开始")
@@ -552,6 +557,7 @@ videoCnPath = os.path.join(videoDir, f"{processId}-cn.mp4")
 videoCnSubtitlePath = os.path.join(videoDir, f"{processId}-cn-subtitle.mp4")
 videoCnSubtitleBgPath = os.path.join(videoDir, f"{processId}-cn-subtitle-bg.mp4")
 videoCartoonPath = os.path.join(videoDir, f"{processId}-cartoon.mp4")
+videoCutPath = os.path.join(videoDir, f"{processId}-cut.mp4")
 
 srcAudioPath = os.path.join(videoDir, f"{processId}.wav")
 combineMp3Path = os.path.join(videoDir, f"{processId}.mp3")
@@ -570,9 +576,10 @@ if check_video_verticle(videoPath):
 
 
 curVideoPath = videoPath
-
+stepIndex = 1
 if isNeedCartoon:
-    api_logger.info("0.2---------视频卡通化")
+    api_logger.info(f"{stepIndex}---------视频卡通化")
+    stepIndex = stepIndex + 1
     command = f"/data/work/aishowos/whisper_subtitle/start-cartoon.sh -v {curVideoPath} -i {processId} -a add"
     api_logger.info(command)
     result = subprocess.check_output(command, shell=True)
@@ -585,24 +592,23 @@ if isNeedCartoon:
         exit(1)
 
 if isNeedTranslate:
-    api_logger.info("1---------视频生成英文SRT")
-
+    api_logger.info(f"{stepIndex}---------视频生成英文SRT")
+    stepIndex = stepIndex + 1
     api_logger.info(f"从视频剥离音频文件 {srcAudioPath}")
     command = f"ffmpeg -y -i {curVideoPath} -vn -acodec pcm_f32le -ar 44100 -ac 2 {srcAudioPath}"
     api_logger.info(command)
     result = subprocess.check_output(command, shell=True)
     Util.log_subprocess_output(result)
 
-
-
     api_logger.info(f"生成字幕 {outSrtEnPath}")
     result, json_object = whisper_transcribe_en(curVideoPath)
-    whisper_result_to_srt(videoPath, result, outPath=outSrtEnPath, language=language)
+    whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
     loopHandleEn_srt(inSrcFilePath=outSrtEnPath, outSrcFilePath=outSrtEnReComposePath)
 
 
 if isNeedTranslate:
-    api_logger.info("2---------翻译中文SRT")
+    api_logger.info(f"{stepIndex}---------翻译中文SRT")
+    stepIndex = stepIndex + 1
     try:
         # 字幕不要在这个函数里换行，会影响语音TTS
         api_logger.info("翻译中文字幕")
@@ -614,7 +620,8 @@ if isNeedTranslate:
         exit(1)
 
 if isNeedTranslate:
-    api_logger.info("3---------中文SRT转TTS")
+    api_logger.info(f"{stepIndex}---------中文SRT转TTS")
+    stepIndex = stepIndex + 1
     try:
         command = f"/data/work/GPT-SoVITS/start-gen-voice-local.sh -l 'zh'  -r {role} -s '{outSrtCnPath}' "
         api_logger.info(f"命令：")
@@ -627,7 +634,8 @@ if isNeedTranslate:
         exit(1)
 
 if isNeedTranslate:
-    api_logger.info("4---------原视频静音")
+    api_logger.info(f"{stepIndex}---------原视频静音")
+    stepIndex = stepIndex + 1
     try:
         # curVideoPath = videoPath
         command = f"ffmpeg -y -i '{curVideoPath}' -c copy -an {videoMutePath}"
@@ -642,7 +650,8 @@ if isNeedTranslate:
 
 
 if isNeedTranslate:
-    api_logger.info("5---------视频加上中文TTS")
+    api_logger.info(f"{stepIndex}---------视频加上中文TTS")
+    stepIndex = stepIndex + 1
     try:
         curVideoPath = videoMutePath
         add_cn_tts(outSrtCnPath, curVideoPath, videoDir, combineMp3Path, combineMp3SpeedPath)
@@ -652,7 +661,8 @@ if isNeedTranslate:
 
 
 if isNeedTranslate:
-    api_logger.info("6---------视频加上中文字幕")
+    api_logger.info(f"{stepIndex}---------视频加上中文字幕")
+    stepIndex = stepIndex + 1
     try:
         curVideoPath = videoCnPath
         language="chinese"
@@ -678,7 +688,8 @@ if isNeedTranslate:
 if isNeedTranslate:
     curVideoPath = videoCnSubtitlePath
     if isAddBgMusic:
-        api_logger.info("7---------视频加上背景音乐")
+        api_logger.info(f"{stepIndex}---------视频加上背景音乐")
+        stepIndex = stepIndex + 1
         try:
             for tryIndex in range(0,5):
                 try:
@@ -711,10 +722,33 @@ if isNeedTranslate:
             api_logger.error(f"视频加上背景音乐失败：{e}")
             # exit(1)
     else:
-        api_logger.info("7---------视频无需加上背景音乐")
+        api_logger.info(f"{stepIndex}---------视频无需加上背景音乐")
+
+if isNeedTranslate and cutNoHumanVoiceThreshold > 0:
+    if isAddBgMusic:
+        api_logger.info(f"{stepIndex}---------剪切没有人声音且超过2秒的片段")
+        stepIndex = stepIndex + 1
+
+        api_logger.info(f"tts 根据视频生成中文字幕")
+        language="chinese"
+        result, json_object = whisper_transcribe_cn(curVideoPath)
+        whisper_result_to_srt(result, outPath=outSrtTtsCnPath, language=language)
 
 
-api_logger.info("8---------上传到腾讯云")
+        api_logger.info(f"获取需要没有人声的视频片段")
+        noHumanParts = MediaUtil.getNoHumanParts(outSrtTtsCnPath, cutNoHumanVoiceThreshold)
+        if len(noHumanParts) > 0:
+            cmd = MediaUtil.create_ffmpeg_cmd(noHumanParts, curVideoPath, videoCutPath)
+            api_logger.info(cmd)
+            subprocess.call(cmd, shell=True)
+            curVideoPath = videoCutPath
+        else:
+            api_logger.info(f"视频无需剪切")
+
+
+
+api_logger.info(f"{stepIndex}---------上传到腾讯云")
+stepIndex = stepIndex + 1
 # curVideoPath = videoCnSubtitlePath
 bucketName = "magicphoto-1315251136"
 resultUrlPre = f"translate/video/{processId}/"

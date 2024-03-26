@@ -44,7 +44,7 @@ def whisper_transcribe_cn(file="{}/audio.mp3".format(dir), download_root = "./mo
     json_object = json.dumps(result, indent=4)
     return result, json_object
 
-def whisper_result_to_srt(videoPath, whisper_result, outPath="", language: str = "cn"):
+def whisper_result_to_srt(whisper_result, outPath="", language: str = "cn"):
     
     '''converts whisper result to SRT format'''
     if len(outPath) == 0:
@@ -61,8 +61,6 @@ if Util.isMac():
     videoDir = "/Users/linzhiji/Downloads/ZG2UUyMxkX4/"
 else:
     videoDir = f"/data/work/translate/{processId}"
-
-
 
 # videoDir = os.path.dirname(videoPath)
 
@@ -89,7 +87,7 @@ outSrtAsrCnPath = os.path.join(videoDir, f"{processId}-asr-cn.srt")
 curVideoPath = videoCnPath
 language="chinese"
 result, json_object = whisper_transcribe_cn(curVideoPath)
-whisper_result_to_srt(videoPath, result, outPath=outSrtTtsCnPath, language=language)
+whisper_result_to_srt(result, outPath=outSrtTtsCnPath, language=language)
 
-api_logger.info("根据音频生成中文字幕")
-start_zh_asr_to_srt(combineMp3Path, outSrtAsrCnPath)
+# api_logger.info("根据音频生成中文字幕")
+# start_zh_asr_to_srt(combineMp3Path, outSrtAsrCnPath)

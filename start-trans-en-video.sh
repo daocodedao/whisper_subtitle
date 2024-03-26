@@ -24,6 +24,7 @@ helpFunction()
    echo -e "\t-b is add bgMusic"
    echo -e "\t-t is need translate"
    echo -e "\t-c is need cartoon"
+   echo -e "\t-u is need cut no human voice parts"
    exit 1 # Exit script after printing help
 }
 
@@ -38,7 +39,7 @@ sudo kill -9 $TAILPID
 fi
 
 
-while getopts "v:i:r:b:t:c:" opt
+while getopts "v:i:r:b:t:c:u:" opt
 do
    case "$opt" in
       v ) videoPath="$OPTARG" ;;
@@ -47,6 +48,7 @@ do
       b ) isAddBgMusic="$OPTARG" ;;
       t ) isNeedTranslate="$OPTARG" ;;
       c ) isNeedCartoon="$OPTARG" ;;
+      u ) cutNoHumanVoiceThreshold="$OPTARG" ;;
       ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
    esac
 done
@@ -57,6 +59,8 @@ done
 [[ -z  $isAddBgMusic ]] && isAddBgMusic="add"
 [[ -z  $isNeedTranslate ]] && isNeedTranslate="translate"
 [[ -z  $isNeedCartoon ]] && isNeedCartoon="noCartoon"
+[[ -z  $cutNoHumanVoiceThreshold ]] && cutNoHumanVoiceThreshold=0
 
-echo -e "${YELLOW}${pythonPath} $jobName  -v '$videoPath'   -i '$processId'  -r '$role' -b '$isAddBgMusic'   -t '$isNeedTranslate' -c '$isNeedCartoon'${NOCOLOR}"
-${pythonPath} $jobName  -v "$videoPath" -i "$processId" -r "$role"  -b "$isAddBgMusic" -t "$isNeedTranslate" -c "$isNeedCartoon"
+
+echo -e "${YELLOW}${pythonPath} $jobName  -v '$videoPath'   -i '$processId'  -r '$role' -b '$isAddBgMusic'   -t '$isNeedTranslate' -c '$isNeedCartoon' -u '$cutNoHumanVoiceThreshold' ${NOCOLOR}"
+${pythonPath} $jobName  -v "$videoPath" -i "$processId" -r "$role"  -b "$isAddBgMusic" -t "$isNeedTranslate" -c "$isNeedCartoon" -u "$cutNoHumanVoiceThreshold"

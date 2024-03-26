@@ -7,6 +7,7 @@ import av
 from PIL import Image
 import cv2
 from moviepy.editor import *
+import srt
 
 # 常用工具
 class MediaUtil:
@@ -102,3 +103,56 @@ class MediaUtil:
     def create_video(frames, fps, savePath):
         clip = ImageSequenceClip(frames, fps=fps)
         clip.write_videofile(savePath, fps=fps, verbose=False)
+
+
+    def create_ffmpeg_cmd(deleteRange, input_file, output_file):
+        segments = []
+        last_end = 0.0  # Start of video
+
+        for start, end in deleteRange:
+            segments.append((last_end, start))
+            last_end = end
+
+        segments.append((last_end, None))  # End of video
+
+        filter_parts = []
+        for idx, (start, end) in enumerate(segments):
+            if end is None:
+                video_segment = f"[0:v]trim=start={start},setpts=PTS-STARTPTS[v{idx}];"
+                audio_segment = f"[0:a]atrim=start={start},asetpts=PTS-STARTPTS[a{idx}];"
+            else:
+                video_segment = f"[0:v]trim=start={start}:end={end},setpts=PTS-STARTPTS[v{idx}];"
+                audio_segment = f"[0:a]atrim=start={start}:end={end},asetpts=PTS-STARTPTS[a{idx}];"
+            filter_parts.extend([video_segment, audio_segment])
+
+        filter_concat = "".join(filter_parts)
+        filter_concat += "".join([f"[v{i}][a{i}]" for i in range(len(segments))])
+        filter_concat += f"concat=n={len(segments)}:v=1:a=1[outv][outa]"
+
+        cmd = f"ffmpeg -y -i {input_file} -filter_complex \"{filter_concat}\" -map \"[outv]\" -map \"[outa]\" {output_file}"
+        return cmd
+
+
+    def getNoHumanParts(srtPath, cutThreshold=2):
+        # deleteRange = [(40.12/1000, 46.583/1000), (51.312/1000, 53.229/1000), (128.055/1000, 130.536/1000)]
+
+        noHumanParts = []
+        subList = []
+        with open(srtPath, 'r') as srcFile:
+            # 读取文件内容
+            content = srcFile.read()
+            subs = srt.parse(content)
+            subList = list(subs)
+
+            for index, sub in enumerate(subList):
+                if index + 1 >= len(subList):
+                    break
+                
+                sub = subList[index]
+                nextSub = subList[index + 1]
+
+                timeDiff = nextSub.start.total_seconds() - sub.end.total_seconds()
+                api_logger.info(f"下个字幕时间-当前字幕时间:{timeDiff} ")
+                if timeDiff > cutThreshold:
+                    noHumanParts.append((sub.start.total_seconds(), nextSub.start.total_seconds()))
+        return noHumanParts
