@@ -693,9 +693,8 @@ if isNeedTranslate and cutNoHumanVoiceThreshold > 0:
     result, json_object = whisper_transcribe_cn(curVideoPath)
     whisper_result_to_srt(result, outPath=outSrtTtsCnPath, language=language)
 
-
-    api_logger.info(f"获取需要没有人声的视频片段")
     noHumanParts = MediaUtil.getNoHumanParts(outSrtTtsCnPath, cutNoHumanVoiceThreshold)
+    api_logger.info(f"获取需要没有人声的视频片段 {noHumanParts}")
     if len(noHumanParts) > 0:
         cmd = MediaUtil.create_ffmpeg_cmd(noHumanParts, curVideoPath, videoCutPath)
         api_logger.info(cmd)
