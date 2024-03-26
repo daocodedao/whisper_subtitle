@@ -557,7 +557,7 @@ videoCnPath = os.path.join(videoDir, f"{processId}-cn.mp4")
 videoCnSubtitlePath = os.path.join(videoDir, f"{processId}-cn-subtitle.mp4")
 videoCnSubtitleBgPath = os.path.join(videoDir, f"{processId}-cn-subtitle-bg.mp4")
 videoCartoonPath = os.path.join(videoDir, f"{processId}-cartoon.mp4")
-videoCutPath = os.path.join(videoDir, f"{processId}-cut.mp4")
+videoCutPath = os.path.join(videoDir, f"{processId}-human-cut.mp4")
 
 srcAudioPath = os.path.join(videoDir, f"{processId}.wav")
 combineMp3Path = os.path.join(videoDir, f"{processId}.mp3")
