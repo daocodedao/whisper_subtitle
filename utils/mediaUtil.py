@@ -154,5 +154,5 @@ class MediaUtil:
                 timeDiff = nextSub.start.total_seconds() - sub.end.total_seconds()
                 api_logger.info(f"下个字幕{index + 1}时间-当前字幕{index}时间:{timeDiff} ")
                 if timeDiff > cutThreshold:
-                    noHumanParts.append((sub.start.total_seconds(), nextSub.start.total_seconds()))
+                    noHumanParts.append((sub.end.total_seconds(), nextSub.start.total_seconds()))
         return noHumanParts
