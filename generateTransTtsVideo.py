@@ -607,7 +607,7 @@ if isNeedTranslate:
 
 
 if isNeedTranslate:
-    api_logger.info(f"{stepIndex}---------翻译中文SRT")
+    api_logger.info(f"{stepIndex}---------英文SRT翻译中文SRT")
     stepIndex = stepIndex + 1
     try:
         # 字幕不要在这个函数里换行，会影响语音TTS
@@ -637,13 +637,12 @@ if isNeedTranslate:
     api_logger.info(f"{stepIndex}---------原视频静音")
     stepIndex = stepIndex + 1
     try:
-        # curVideoPath = videoPath
         command = f"ffmpeg -y -i '{curVideoPath}' -c copy -an {videoMutePath}"
         api_logger.info(f"命令：")
         api_logger.info(command)
         result = subprocess.check_output(command, shell=True)
         Util.log_subprocess_output(result)
-        # api_logger.info(traceback.format_exc())
+        curVideoPath = videoMutePath
     except Exception as e:
         api_logger.error(f"原视频静音失败：{e}")
         exit(1)
@@ -653,8 +652,8 @@ if isNeedTranslate:
     api_logger.info(f"{stepIndex}---------视频加上中文TTS")
     stepIndex = stepIndex + 1
     try:
-        curVideoPath = videoMutePath
         add_cn_tts(outSrtCnPath, curVideoPath, videoDir, combineMp3Path, combineMp3SpeedPath)
+        curVideoPath = videoCnPath
     except Exception as e:
         api_logger.error(f"视频加上中文TTS失败：{e}")
         exit(1)
@@ -664,7 +663,6 @@ if isNeedTranslate:
     api_logger.info(f"{stepIndex}---------视频加上中文字幕")
     stepIndex = stepIndex + 1
     try:
-        curVideoPath = videoCnPath
         language="chinese"
         # result, json_object = whisper_transcribe_cn(curVideoPath)
         # whisper_result_to_srt(result, outPath=outSrtTtsCnPath, language=language)
@@ -681,75 +679,70 @@ if isNeedTranslate:
         api_logger.info("中文字幕重新调整行数")
         relayout_cn_tts(outSrtCnPath, isVerticle)
         combinSubtitle(curVideoPath, outSrtCnPath, videoCnSubtitlePath)
+        curVideoPath = videoCnSubtitlePath
     except Exception as e:
         api_logger.error(f"视频加上中文字幕失败：{e}")
         exit(1)
 
-if isNeedTranslate:
-    curVideoPath = videoCnSubtitlePath
-    if isAddBgMusic:
-        api_logger.info(f"{stepIndex}---------视频加上背景音乐")
-        stepIndex = stepIndex + 1
-        try:
-            for tryIndex in range(0,5):
-                try:
-                    api_logger.info(f"第{tryIndex}获取背景音乐")
-                    command = f"/data/work/GPT-SoVITS/start-urv.sh -s {srcAudioPath} -i {processId} -n {audioInsPath}"
-                    api_logger.info(f"命令：")
-                    api_logger.info(command)
-                    result = subprocess.check_output(command, shell=True)
-                    Util.log_subprocess_output(result)
-                    if os.path.exists(audioInsPath):
-                        api_logger.info(f'完成音频urv任务: {audioInsPath}')
-                        break
-                except Exception as e:
-                    api_logger.error(f"第{tryIndex}次，获取背景音乐失败：{e} 休息2秒后重试")
-                    time.sleep(2)
+if isNeedTranslate and cutNoHumanVoiceThreshold > 0:
+    api_logger.info(f"{stepIndex}---------剪切没有人声音且超过{cutNoHumanVoiceThreshold}秒的片段")
+    stepIndex = stepIndex + 1
 
-            if os.path.exists(audioInsPath):
-                api_logger.info(f"添加背景音乐 {curVideoPath}")
-                command = f"ffmpeg -y -i {curVideoPath}  -i {audioInsPath} -c:v copy -filter_complex '[0:a]aformat=fltp:44100:stereo,apad[0a];[1]aformat=fltp:44100:stereo,volume=0.6[1a];[0a][1a]amerge[a]' -map 0:v -map '[a]' -ac 2 {videoCnSubtitleBgPath}"
-                # command = f'ffmpeg -y -i {curVideoPath} -i {audioInsPath} -c copy -map 0:v:0 -map 1:a:0 {videoCnSubtitleBgPath}'
+    api_logger.info(f"tts 根据视频生成中文字幕")
+    language="chinese"
+    result, json_object = whisper_transcribe_cn(curVideoPath)
+    whisper_result_to_srt(result, outPath=outSrtTtsCnPath, language=language)
+
+
+    api_logger.info(f"获取需要没有人声的视频片段")
+    noHumanParts = MediaUtil.getNoHumanParts(outSrtTtsCnPath, cutNoHumanVoiceThreshold)
+    if len(noHumanParts) > 0:
+        cmd = MediaUtil.create_ffmpeg_cmd(noHumanParts, curVideoPath, videoCutPath)
+        api_logger.info(cmd)
+        subprocess.call(cmd, shell=True)
+        api_logger.info(f"剪切没有人声的视频片段")
+        curVideoPath = videoCutPath
+    else:
+        api_logger.info(f"视频无需剪切")
+
+if isNeedTranslate and isAddBgMusic:
+    api_logger.info(f"{stepIndex}---------视频加上背景音乐")
+    stepIndex = stepIndex + 1
+    try:
+        for tryIndex in range(0,5):
+            try:
+                api_logger.info(f"第{tryIndex}获取背景音乐")
+                command = f"/data/work/GPT-SoVITS/start-urv.sh -s {srcAudioPath} -i {processId} -n {audioInsPath}"
                 api_logger.info(f"命令：")
                 api_logger.info(command)
                 result = subprocess.check_output(command, shell=True)
                 Util.log_subprocess_output(result)
-                api_logger.info(f'完成背景音乐合并任务: {videoCnSubtitleBgPath}')
-                curVideoPath = videoCnSubtitleBgPath
-            else:
-                api_logger.error(f"背景音乐 {audioInsPath} 不存在")
-        except Exception as e:
-            api_logger.error(f"视频加上背景音乐失败：{e}")
-            # exit(1)
-    else:
-        api_logger.info(f"{stepIndex}---------视频无需加上背景音乐")
+                if os.path.exists(audioInsPath):
+                    api_logger.info(f'完成音频urv任务: {audioInsPath}')
+                    break
+            except Exception as e:
+                api_logger.error(f"第{tryIndex}次，获取背景音乐失败：{e} 休息2秒后重试")
+                time.sleep(2)
 
-if isNeedTranslate and cutNoHumanVoiceThreshold > 0:
-    if isAddBgMusic:
-        api_logger.info(f"{stepIndex}---------剪切没有人声音且超过2秒的片段")
-        stepIndex = stepIndex + 1
-
-        api_logger.info(f"tts 根据视频生成中文字幕")
-        language="chinese"
-        result, json_object = whisper_transcribe_cn(curVideoPath)
-        whisper_result_to_srt(result, outPath=outSrtTtsCnPath, language=language)
-
-
-        api_logger.info(f"获取需要没有人声的视频片段")
-        noHumanParts = MediaUtil.getNoHumanParts(outSrtTtsCnPath, cutNoHumanVoiceThreshold)
-        if len(noHumanParts) > 0:
-            cmd = MediaUtil.create_ffmpeg_cmd(noHumanParts, curVideoPath, videoCutPath)
-            api_logger.info(cmd)
-            subprocess.call(cmd, shell=True)
-            curVideoPath = videoCutPath
+        if os.path.exists(audioInsPath):
+            api_logger.info(f"添加背景音乐 {curVideoPath}")
+            command = f"ffmpeg -y -i {curVideoPath}  -i {audioInsPath} -c:v copy -filter_complex '[0:a]aformat=fltp:44100:stereo,apad[0a];[1]aformat=fltp:44100:stereo,volume=0.6[1a];[0a][1a]amerge[a]' -map 0:v -map '[a]' -ac 2 {videoCnSubtitleBgPath}"
+            # command = f'ffmpeg -y -i {curVideoPath} -i {audioInsPath} -c copy -map 0:v:0 -map 1:a:0 {videoCnSubtitleBgPath}'
+            api_logger.info(f"命令：")
+            api_logger.info(command)
+            result = subprocess.check_output(command, shell=True)
+            Util.log_subprocess_output(result)
+            api_logger.info(f'完成背景音乐合并任务: {videoCnSubtitleBgPath}')
+            curVideoPath = videoCnSubtitleBgPath
         else:
-            api_logger.info(f"视频无需剪切")
-
+            api_logger.error(f"背景音乐 {audioInsPath} 不存在")
+    except Exception as e:
+        api_logger.error(f"视频加上背景音乐失败：{e}")
+            # exit(1)
 
 
 api_logger.info(f"{stepIndex}---------上传到腾讯云")
 stepIndex = stepIndex + 1
-# curVideoPath = videoCnSubtitlePath
 bucketName = "magicphoto-1315251136"
 resultUrlPre = f"translate/video/{processId}/"
 videoCnName=os.path.basename(curVideoPath)
@@ -771,7 +764,5 @@ if os.path.exists(curVideoPath):
 else:
     api_logger.error(f"上传文件失败, {curVideoPath}不存在")
     exit(1)
-
-
 
 exit(0)
