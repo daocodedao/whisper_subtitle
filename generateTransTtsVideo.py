@@ -23,7 +23,7 @@ from utils.mediaUtil import MediaUtil
 import time
 import sys
 import datetime
-
+import shutil
 
 # import traceback
 
@@ -552,6 +552,7 @@ api_logger.info(f"videoPath: {videoPath} processId:{processId} role={role} isAdd
 language = "en"
 videoDir = os.path.dirname(videoPath)
 ttsDir = os.path.join(videoDir, "tts")
+nobgVideoPath = os.path.join(videoDir, f"{processId}-no-bgmusic.mp4")
 videoMutePath = os.path.join(videoDir, f"{processId}-mute.mp4")
 videoCnPath = os.path.join(videoDir, f"{processId}-cn.mp4")
 videoCnSubtitlePath = os.path.join(videoDir, f"{processId}-cn-subtitle.mp4")
@@ -576,6 +577,7 @@ if check_video_verticle(videoPath):
 
 
 curVideoPath = videoPath
+
 stepIndex = 1
 if isNeedCartoon:
     api_logger.info(f"{stepIndex}---------视频卡通化")
@@ -704,6 +706,10 @@ if isNeedTranslate and cutNoHumanVoiceThreshold > 0:
     else:
         api_logger.info(f"视频无需剪切")
 
+
+if os.path.exists(curVideoPath):
+    shutil.copyfile(curVideoPath, nobgVideoPath)
+
 if isNeedTranslate and isAddBgMusic:
     api_logger.info(f"{stepIndex}---------视频加上背景音乐")
     stepIndex = stepIndex + 1
@@ -746,11 +752,11 @@ bucketName = "magicphoto-1315251136"
 resultUrlPre = f"translate/video/{processId}/"
 videoCnName=os.path.basename(curVideoPath)
 reusultUrl = f"{resultUrlPre}{videoCnName}"
+KCDNPlayUrl="http://magicphoto.cdn.yuebanjyapp.com/"
 api_logger.info(f"上传视频 {curVideoPath}")
 if os.path.exists(curVideoPath):
     api_logger.info(f"上传视频到OSS，curVideoPath:{curVideoPath}, task.key:{reusultUrl}, task.bucketName:{bucketName}")
     TosService.upload_file(curVideoPath, reusultUrl, bucketName)
-    KCDNPlayUrl="http://magicphoto.cdn.yuebanjyapp.com/"
     playUrl = f"{KCDNPlayUrl}{reusultUrl}"
     api_logger.info(f"播放地址= {playUrl}")
 
@@ -763,5 +769,14 @@ if os.path.exists(curVideoPath):
 else:
     api_logger.error(f"上传文件失败, {curVideoPath}不存在")
     exit(1)
+
+if os.path.exists(nobgVideoPath):
+    videoCnName = os.path.basename(nobgVideoPath)
+    reusultUrl = f"{resultUrlPre}{videoCnName}"
+
+    api_logger.info(f"上传无背景音乐视频到OSS，curVideoPath:{nobgVideoPath}, task.key:{reusultUrl}, task.bucketName:{bucketName}")
+    TosService.upload_file(nobgVideoPath, reusultUrl, bucketName)
+    playUrl = f"{KCDNPlayUrl}{reusultUrl}"
+    api_logger.info(f"无背景音乐播放地址= {playUrl}")
 
 exit(0)
