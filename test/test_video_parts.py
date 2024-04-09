@@ -2,8 +2,6 @@ import srt,sys,os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from combineSubtitle import *
-from utilAsr import start_zh_asr_to_srt
-from utils.logger_settings import api_logger
 from utils.util import Util
 from utils.mediaUtil import MediaUtil
 

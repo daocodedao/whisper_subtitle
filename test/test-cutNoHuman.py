@@ -8,7 +8,6 @@ import torch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from combineSubtitle import *
-from utilAsr import start_zh_asr_to_srt
 from utils.logger_settings import api_logger
 from utils.util import Util
 
@@ -89,5 +88,3 @@ language="chinese"
 result, json_object = whisper_transcribe_cn(curVideoPath)
 whisper_result_to_srt(result, outPath=outSrtTtsCnPath, language=language)
 
-# api_logger.info("根据音频生成中文字幕")
-# start_zh_asr_to_srt(combineMp3Path, outSrtAsrCnPath)
