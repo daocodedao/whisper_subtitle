@@ -1,11 +1,3 @@
-from funasr import AutoModel
-# paraformer-zh is a multi-functional asr model
-# use vad, punc, spk or not as you need
-from utils.logger_settings import api_logger
-from typing import Iterator, TextIO
-import srt
-from pydub import AudioSegment
-
 
 import os
 import utilAsr
