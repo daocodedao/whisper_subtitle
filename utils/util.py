@@ -205,8 +205,6 @@ class Util:
 
     return ret
   
-
-
   def log_subprocess_output(inStr):
     if len(inStr) > 0:
         inStr = inStr.decode(sys.stdout.encoding)

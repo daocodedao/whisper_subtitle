@@ -2,7 +2,6 @@ import srt
 # from translate import Translator
 from utils.logger_settings import api_logger
 import subprocess
-from subprocess import Popen, PIPE, STDOUT 
 import whisper
 import json
 from pathlib import Path
