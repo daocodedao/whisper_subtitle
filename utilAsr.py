@@ -40,11 +40,10 @@ def write_srt(transcript: Iterator[dict], file: TextIO, language:str="zh"):
         )
 
 def start_zh_asr_to_srt(audioFilePath, srtFilePath):
-    model = AutoModel(model="paraformer-zh", model_revision="v2.0.4"
-                    vad_model="fsmn-vad", vad_model_revision="v2.0.4",  
-                    punc_model="ct-punc-c", punc_model_revision="v2.0.4", 
+    model = AutoModel(model="paraformer-zh",  
+                    vad_model="fsmn-vad",  
+                    punc_model="ct-punc-c", 
                     sentence_timestamp=True)
-    
     resList = model.generate(input=audioFilePath, 
                         batch_size_s=300, 
                         hotword='魔搭')
