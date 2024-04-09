@@ -1,5 +1,6 @@
 
-import os
+import srt,sys,os
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 import utilAsr
 
 videoDir = "/Users/linzhiji/Downloads/longvideo"
