@@ -59,6 +59,11 @@
         "key-word":"点赞订阅",
         "replace-word":"记得点赞，关注我们"
     }
+    ,
+    {
+        "key-word":"欢迎订阅",
+        "replace-word":"记得点赞，关注我们"
+    }
     
     
 ]
