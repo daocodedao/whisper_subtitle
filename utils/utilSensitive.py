@@ -58,7 +58,7 @@ def detectSensitiveByNLP(text:str):
     return False
 
 def detectSensitiveFromStr(text: str):
-    api_logger.info(f"检测字符串： {text}")
+    # api_logger.info(f"检测字符串： {text}")
     global sensitive_word_detector
     if not sensitive_word_detector:
         load_en_sensitive_words()
