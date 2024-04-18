@@ -23,10 +23,8 @@ import time
 import sys
 import datetime
 import shutil
-
-# import traceback
-
-
+from utils import utilSensitive
+from utils.notify import NotifyUtil
 
 def whisper_transcribe_en(file="{}/audio.mp3".format(dir), download_root = "./models/"):
     '''transcribe audio to text using whisper'''
@@ -397,7 +395,6 @@ def loopHandleEn_srt(inSrcFilePath, outSrcFilePath):
             file_b.write(content_a)
 
 def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3SpeedPath):
-
     ttsDir = os.path.join(videoDir, "tts")
     wav_files = [f for f in os.listdir(ttsDir) if f.endswith(".wav")]
     if(len(wav_files) == 0):
@@ -508,7 +505,6 @@ def addCustomSrt(srcPath, videoPath):
     else:
         api_logger.info("无需添加话术")
 
-
 program = argparse.ArgumentParser(formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=100))
 program.add_argument('-v', '--video', help='videoPath',
                      dest='videoPath', type=str, default='')
@@ -574,7 +570,6 @@ isVerticle = False
 if check_video_verticle(videoPath):
     isVerticle = True     
 
-
 curVideoPath = videoPath
 
 stepIndex = 1
@@ -604,8 +599,17 @@ if isNeedTranslate:
     api_logger.info(f"生成字幕 {outSrtEnPath}")
     result, json_object = whisper_transcribe_en(curVideoPath)
     whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
-    loopHandleEn_srt(inSrcFilePath=outSrtEnPath, outSrcFilePath=outSrtEnReComposePath)
 
+    isSensitive = utilSensitive.detectSensitiveFromFile(outSrtEnPath)
+    if isSensitive:
+        notiMsg = "字幕包含敏感词"
+        notiMsg = notiMsg + f"视频地址: {videoPath}\n"
+        notiMsg = notiMsg + f"视频ID: {processId}\n"
+        api_logger.info(notiMsg)
+        NotifyUtil.notifyFeishu(notiMsg)
+        exit(1)
+
+    loopHandleEn_srt(inSrcFilePath=outSrtEnPath, outSrcFilePath=outSrtEnReComposePath)
 
 if isNeedTranslate:
     api_logger.info(f"{stepIndex}---------英文SRT翻译中文SRT")
@@ -648,7 +652,6 @@ if isNeedTranslate:
         api_logger.error(f"原视频静音失败：{e}")
         exit(1)
 
-
 if isNeedTranslate:
     api_logger.info(f"{stepIndex}---------视频加上中文TTS")
     stepIndex = stepIndex + 1
@@ -658,7 +661,6 @@ if isNeedTranslate:
     except Exception as e:
         api_logger.error(f"视频加上中文TTS失败：{e}")
         exit(1)
-
 
 if isNeedTranslate:
     api_logger.info(f"{stepIndex}---------视频加上中文字幕")
@@ -705,7 +707,6 @@ if isNeedTranslate and cutNoHumanVoiceThreshold > 0:
     else:
         api_logger.info(f"视频无需剪切")
 
-
 if os.path.exists(curVideoPath):
     shutil.copyfile(curVideoPath, nobgVideoPath)
 
@@ -743,7 +744,6 @@ if isNeedTranslate and isAddBgMusic:
     except Exception as e:
         api_logger.error(f"视频加上背景音乐失败：{e}")
             # exit(1)
-
 
 api_logger.info(f"{stepIndex}---------上传到腾讯云")
 stepIndex = stepIndex + 1

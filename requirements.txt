@@ -27,3 +27,4 @@ rotary_embedding_torch
 av
 moviepy
 pysrt
+spacy
