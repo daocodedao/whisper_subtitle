@@ -58,6 +58,7 @@ def detectSensitiveByNLP(text:str):
     return False
 
 def detectSensitiveFromStr(text: str):
+    api_logger.info(f"检测字符串： {text}")
     global sensitive_word_detector
     if not sensitive_word_detector:
         load_en_sensitive_words()
@@ -67,12 +68,11 @@ def detectSensitiveFromStr(text: str):
             api_logger.info(f"{text} 分词检测包含敏感词 {word}")
             return True
 
-
     isDetect = detectSensitiveByNLP(text)
     return isDetect
 
 def detectSensitiveFromFile(filePath: str):
-    if os.path.exists(filePath):
+    if not os.path.exists(filePath):
         return False
     
     with open(filePath, "r") as file:
