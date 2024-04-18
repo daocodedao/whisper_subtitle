@@ -600,6 +600,7 @@ if isNeedTranslate:
     result, json_object = whisper_transcribe_en(curVideoPath)
     whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
 
+    api_logger.info(f"敏感词检测 {outSrtEnPath}")
     isSensitive = utilSensitive.detectSensitiveFromFile(outSrtEnPath)
     if isSensitive:
         notiMsg = "字幕包含敏感词"
