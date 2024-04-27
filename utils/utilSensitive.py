@@ -85,10 +85,9 @@ def detectSensitiveFromSrt(filePath: str):
         return False
 
     with open(filePath, 'r') as srcFile:
-        # 读取文件内容
         content = srcFile.read()
         subs = srt.parse(content)
-        subList = List(subs)
+        subList = list(subs)
         for sub in subList:
             curLineContent = sub.content
             if detectSensitiveFromStr(curLineContent):
