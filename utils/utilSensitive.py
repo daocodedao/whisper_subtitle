@@ -91,7 +91,7 @@ def detectSensitiveFromSrt(filePath: str):
         subList = List(subs)
         for sub in subList:
             curLineContent = sub.content
-            if detectSensitiveFromStr(content):
+            if detectSensitiveFromStr(curLineContent):
                 return True
     return False
 
