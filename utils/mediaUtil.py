@@ -67,7 +67,7 @@ class MediaUtil:
             # print('Read a new frame: ', success)
             count += 1
 
-            return framePaths
+        return framePaths
         
     def get_image_paths_from_folder(folder_path):
         image_extensions = [".jpg", ".jpeg", ".png", ".bmp"]

@@ -5,8 +5,8 @@ import spacy
 from spacy import displacy
 import spacy.cli
 import os,time
-
-
+from typing import List
+import srt
 # import 路径修改
 import sys,os
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
@@ -78,6 +78,23 @@ def detectSensitiveFromFile(filePath: str):
     with open(filePath, "r") as file:
         content = file.read()
         return detectSensitiveFromStr(content)
+
+
+def detectSensitiveFromSrt(filePath: str):
+    if not os.path.exists(filePath):
+        return False
+
+    with open(filePath, 'r') as srcFile:
+        # 读取文件内容
+        content = srcFile.read()
+        subs = srt.parse(content)
+        subList = List(subs)
+        for sub in subList:
+            curLineContent = sub.content
+            if detectSensitiveFromStr(content):
+                return True
+    return False
+
 
 # 提取英文敏感词到独立文件
 def distributeEnSensitive():
