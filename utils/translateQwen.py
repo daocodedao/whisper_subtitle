@@ -11,11 +11,11 @@ def getNetworkIp():
     s.connect(('<broadcast>', 0))
     return s.getsockname()[0]
 
-serverUrl = "http://39.105.194.16:9191/v1/chat/completions/"
+serverUrl = "http://39.105.194.16:9191/v3/chat/completions/"
 # localIp = getNetworkIp()
 # print(f"localIp:{localIp}")
 # if "192.168.0" in localIp:
-#     serverUrl = "http://192.168.0.67:9191/v1/chat/completions/"
+#     serverUrl = "http://192.168.0.67:9191/v3/chat/completions/"
 
 
 def replaceSpecialWordEnToZh(srcStr:str = None):
@@ -31,7 +31,7 @@ def replaceSpecialWordEnToZh(srcStr:str = None):
     return srcStr
 
 def translate_en_to_zh(inSrc):
-    # url = "http://39.105.194.16:9191/v1/chat/completions/"  # 替换为您要发送请求的URL
+    # url = "http://39.105.194.16:9191/v3/chat/completions/"  # 替换为您要发送请求的URL
     data = {
             "systemRole": "system",
             "systemContent": "You are a helpful assistant.",
@@ -60,7 +60,7 @@ def translate_en_to_zh(inSrc):
         return ""
 
 def translate_srt_en_to_zh(inSrc, inNewTransLate=True):
-    # url = "http://39.105.194.16:9191/v1/chat/completions/"  # 替换为您要发送请求的URL
+    # url = "http://39.105.194.16:9191/v3/chat/completions/"  # 替换为您要发送请求的URL
     data = {
             "systemRole": "system",
             "systemContent": "You are a helpful assistant.",
