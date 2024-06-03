@@ -19,7 +19,7 @@ processId = "ZG2UUyMxkX4"
 if Util.isMac():
     videoDir = "/Users/linzhiji/Downloads/ZG2UUyMxkX4/"
 else:
-    videoDir = f"/data/work/translate/{processId}"
+    videoDir = f"/data3/work/translate/{processId}"
 
 
 # videoDir = os.path.dirname(videoPath)

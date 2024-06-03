@@ -761,7 +761,7 @@ if os.path.exists(curVideoPath):
     api_logger.info(f"播放地址= {playUrl}")
 
     # 打开文件并写入
-    dataFilePath = f"/data/work/translate/{processId}/output.txt"
+    dataFilePath = f"{videoDir}/output.txt"
     os.makedirs(os.path.dirname(dataFilePath), exist_ok=True)
     api_logger.info(f"url 列表写入文件: {dataFilePath}")
     with open(dataFilePath, "w") as file:

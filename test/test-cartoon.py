@@ -27,7 +27,7 @@ pipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
 # pipeline.enable_xformers_memory_efficient_attention()
 # pipeline.enable_model_cpu_offload()
 fileIdx = 37
-image_path = f"/data/work/translate/BiB9YykxoZw/frames/{fileIdx}.jpg"
+image_path = f"/data3/work/translate/BiB9YykxoZw/frames/{fileIdx}.jpg"
 api_logger.info(f"加载 {image_path}")
 image = load_image(image_path)
 
@@ -43,7 +43,7 @@ image = pipeline("Cartoonize the following image",
                     image_guidance_scale=image_guidance_scale,
                     guidance_scale=guidance_scale
                     ).images[0]
-cartoonImagePath = f"/data/work/translate/BiB9YykxoZw/cartoon/{fileIdx}.jpg"
+cartoonImagePath = f"/data3/work/translate/BiB9YykxoZw/cartoon/{fileIdx}.jpg"
 image.save(cartoonImagePath)
 
 k10K = 100 * 1024
@@ -63,7 +63,7 @@ for tryIdx in range(100):
                     image_guidance_scale=image_guidance_scale,
                     guidance_scale=guidance_scale
                     ).images[0]
-        cartoonImagePath = f"/data/work/translate/BiB9YykxoZw/cartoon/{fileIdx}.png"
+        cartoonImagePath = f"/data3/work/translate/BiB9YykxoZw/cartoon/{fileIdx}.png"
         image.save(cartoonImagePath)
     else:
         break
@@ -77,5 +77,3 @@ api_logger.info(f"完成")
 
 # images = pipe(prompt, image=image, num_inference_steps=10, image_guidance_scale=1).images
 # edit = pipe(prompt, image=image, num_inference_steps=20, image_guidance_scale=1.5, guidance_scale=7).images[0]
-
-# /data/work/aishowos/whisper_subtitle/venv/bin/python utilCartoon.py -v '/data/work/translate/BiB9YykxoZw/BiB9YykxoZw-cn-subtitle.mp4' -i 'BiB9YykxoZw'

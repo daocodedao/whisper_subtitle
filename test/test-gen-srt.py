@@ -189,7 +189,6 @@ def loopHandleEn_srt(inSrcFilePath, outSrcFilePath):
             file_b.write(content_a)
 
 
-# videoPath="/data/work/translate/p0X4mhxQpjU/p0X4mhxQpjU.mp4"
 videoPath="sample/wbHUdEeVeDU.mp4"
 videoDir = os.path.dirname(videoPath)
 processId="wbHUdEeVeDU"

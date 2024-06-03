@@ -245,12 +245,7 @@ if needUploadTos == "upload":
         notiMsg = notiMsg + f"原始地址: {orginVideoUrl}\n"
         NotifyUtil.notifyFeishu(notiMsg)
         api_logger.info(notiMsg)
-        # # 打开文件并写入
-        # dataFilePath = f"/data/work/translate/{processId}/output.txt"
-        # os.makedirs(os.path.dirname(dataFilePath), exist_ok=True)
-        # api_logger.info(f"url 列表写入文件: {dataFilePath}")
-        # with open(dataFilePath, "w") as file:
-        #     file.write(playUrl + "\n")
+
     else:
         api_logger.error(f"上传文件失败, {curVideoPath}不存在")
         exit(1)
@@ -265,4 +260,3 @@ exit(0)
 # images = pipe(prompt, image=image, num_inference_steps=10, image_guidance_scale=1).images
 # edit = pipe(prompt, image=image, num_inference_steps=20, image_guidance_scale=1.5, guidance_scale=7).images[0]
 
-# /data/work/aishowos/whisper_subtitle/venv/bin/python utilCartoon.py -v '/data/work/translate/BiB9YykxoZw/BiB9YykxoZw-cn-subtitle.mp4' -i 'BiB9YykxoZw'
