@@ -196,7 +196,8 @@ def writeSublistToFile(zhAllSubList, outSrtCnPath):
                 flush=True,
             )
 
-kMaxTranslateLineCount = 8
+kMinMaxTranslateLineCount = 10
+kMaxMaxTranslateLineCount = 10
 def translate_srt(outSrtCnPath, inSrtFilePath, isVerticle = True):
     enAllSubList=[]
     with open(inSrtFilePath, 'r') as srcFile:
@@ -218,7 +219,7 @@ def translate_srt(outSrtCnPath, inSrtFilePath, isVerticle = True):
         enSubnList.append(enSub)
         preTrans =  f"{preTrans}{enSub.index}\n{Util.format_timestamp(enSub.start.total_seconds(), always_include_hours=True)} --> {Util.format_timestamp(enSub.end.total_seconds(), always_include_hours=True)}\n{enSub.content}\n"
         
-        if isFullNumberTranslate or (index + 1) % kMaxTranslateLineCount == 0 or index == len(enAllSubList)-1:
+        if isFullNumberTranslate or (index + 1) % kMinMaxTranslateLineCount == 0 or index == len(enAllSubList)-1:
             isFullNumberTranslate = True
 
             if len(curLineEnContent) > 0:
