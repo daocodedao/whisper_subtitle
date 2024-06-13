@@ -196,8 +196,8 @@ def writeSublistToFile(zhAllSubList, outSrtCnPath):
                 flush=True,
             )
 
-kMinMaxTranslateLineCount = 10
-kMaxMaxTranslateLineCount = 10
+kMinMaxTranslateLineCount = 8
+kMaxMaxTranslateLineCount = 12
 def translate_srt(outSrtCnPath, inSrtFilePath, isVerticle = True):
     enAllSubList=[]
     with open(inSrtFilePath, 'r') as srcFile:
@@ -225,7 +225,7 @@ def translate_srt(outSrtCnPath, inSrtFilePath, isVerticle = True):
             if len(curLineEnContent) > 0:
                 lastChar = curLineEnContent[len(curLineEnContent) - 1]
                 # 结尾不是标点符号, 准备操作
-                if lastChar not in enPunctuations and index + 1 < len(enAllSubList): 
+                if lastChar not in enPunctuations and index + 1 < len(enAllSubList) and index < kMaxMaxTranslateLineCount: 
                     api_logger.info(f"当前是{index}行。末尾不是.?, 继续取下一行。")
                     continue
 
