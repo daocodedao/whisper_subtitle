@@ -196,7 +196,7 @@ def writeSublistToFile(zhAllSubList, outSrtCnPath):
                 flush=True,
             )
 
-kMaxTranslateLineCount = 10
+kMaxTranslateLineCount = 8
 def translate_srt(outSrtCnPath, inSrtFilePath, isVerticle = True):
     enAllSubList=[]
     with open(inSrtFilePath, 'r') as srcFile:
