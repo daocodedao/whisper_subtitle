@@ -416,6 +416,7 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3
     totalSrtDuraton = 0
     totalGenDuration = 0
     for audioFile in wav_files:
+        # 字幕里有 sub.index ， 音频文件名字也对应的  index.wav
         file_name_without_ext = os.path.splitext(os.path.basename(audioFile))[0]
         index = int(file_name_without_ext) - 1
         if index >= len(subList):
@@ -429,8 +430,8 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3
 
         # 判断是否需要加入静音
         api_logger.info(f"当前字幕开始时间: {sub.start.total_seconds()} 已经合并的音频时长:{totalGenDuration}")
-        # if sub.start.total_seconds() > totalGenDuration:
-        # 大于5秒再加静音
+
+        # 字幕时间大于语音时间5秒，再加静音
         if sub.start.total_seconds() - totalGenDuration >= 5 and Util.lastCharIsCnClosePunctuations(sub.content):
             silence_duration = (sub.start.total_seconds() - totalGenDuration)*1000
             api_logger.info(f"需要加入静音音频， 时长：{silence_duration}毫秒")
@@ -458,6 +459,7 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3
 
     combine_mp3_duration = MediaUtil.getMediaDuration(combineMp3Path)
     video_duration = MediaUtil.getMediaDuration(videoMutePath)
+    # 音频时间 大于 视频时间，音频需要变速
     api_logger.info(f"判断是否需要变速, combine_mp3_duration={combine_mp3_duration} video_duration={video_duration}")
     if combine_mp3_duration > video_duration:
         api_logger.info(f"视频需要变速, {combine_mp3_duration/video_duration}")
@@ -557,6 +559,7 @@ videoCutPath = os.path.join(videoDir, f"{processId}-human-cut.mp4")
 
 srcAudioPath = os.path.join(videoDir, f"{processId}.wav")
 combineMp3Path = os.path.join(videoDir, f"{processId}.mp3")
+# 变速后的音频地址
 combineMp3SpeedPath = os.path.join(videoDir, f"{processId}-speed.mp3")
 audioInsPath = os.path.join(videoDir, f"{processId}-ins.wav")
 
