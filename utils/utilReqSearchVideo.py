@@ -16,7 +16,6 @@ async def searchVideoFromApi(segmentKeywords, searchCount=10, isHorizon=True, fr
     if not fromCategory:
         fromCategory = "all"
         
-        
     paraDic = {
         "keyword":segmentKeywords,
         "searchCount":searchCount,
