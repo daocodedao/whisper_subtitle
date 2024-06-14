@@ -412,7 +412,6 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3
         subs = srt.parse(content)
         subList = list(subs)
 
-
     combined = None
     totalSrtDuraton = 0
     totalGenDuration = 0
@@ -445,7 +444,6 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3
                 second_of_silence = AudioSegment.silent(duration=silence_duration)
                 combined = second_of_silence
                 curAudioFileDuration = curAudioFileDuration + silence_duration/1000
-
 
         totalSrtDuraton = totalSrtDuraton + timeDiff
         totalGenDuration = totalGenDuration + curAudioFileDuration
@@ -575,8 +573,8 @@ if check_video_verticle(videoPath):
 curVideoPath = videoPath
 
 stepIndex = 1
-if isNeedCartoon:
-    api_logger.info(f"{stepIndex}---------视频卡通化")
+api_logger.info(f"{stepIndex}---------视频卡通化")
+if isNeedCartoon:    
     stepIndex = stepIndex + 1
     command = f"/data/work/aishowos/whisper_subtitle/start-cartoon.sh -v {curVideoPath} -i {processId} -a add"
     api_logger.info(command)
@@ -589,8 +587,8 @@ if isNeedCartoon:
         api_logger.error(f"视频卡通化失败")
         exit(1)
 
+api_logger.info(f"{stepIndex}---------视频生成英文SRT")
 if isNeedTranslate:
-    api_logger.info(f"{stepIndex}---------视频生成英文SRT")
     stepIndex = stepIndex + 1
     api_logger.info(f"从视频剥离音频文件 {srcAudioPath}")
     command = f"ffmpeg -y -i {curVideoPath} -vn -acodec pcm_f32le -ar 44100 -ac 2 {srcAudioPath}"
@@ -614,8 +612,8 @@ if isNeedTranslate:
 
     loopHandleEn_srt(inSrcFilePath=outSrtEnPath, outSrcFilePath=outSrtEnReComposePath)
 
+api_logger.info(f"{stepIndex}---------英文SRT翻译中文SRT")
 if isNeedTranslate:
-    api_logger.info(f"{stepIndex}---------英文SRT翻译中文SRT")
     stepIndex = stepIndex + 1
     try:
         # 字幕不要在这个函数里换行，会影响语音TTS
@@ -627,8 +625,8 @@ if isNeedTranslate:
         api_logger.error(f"翻译失败：{e}")
         exit(1)
 
+api_logger.info(f"{stepIndex}---------中文SRT转TTS")
 if isNeedTranslate:
-    api_logger.info(f"{stepIndex}---------中文SRT转TTS")
     stepIndex = stepIndex + 1
     try:
         command = f"/data/work/GPT-SoVITS/start-gen-voice-local.sh -l 'zh'  -r {role} -s '{outSrtCnPath}' "
@@ -641,8 +639,8 @@ if isNeedTranslate:
         api_logger.error(f"中文SRT转TTS失败：{e}")
         exit(1)
 
+api_logger.info(f"{stepIndex}---------原视频静音")
 if isNeedTranslate:
-    api_logger.info(f"{stepIndex}---------原视频静音")
     stepIndex = stepIndex + 1
     try:
         command = f"ffmpeg -y -i '{curVideoPath}' -c copy -an {videoMutePath}"
@@ -655,8 +653,8 @@ if isNeedTranslate:
         api_logger.error(f"原视频静音失败：{e}")
         exit(1)
 
+api_logger.info(f"{stepIndex}---------视频加上中文TTS")
 if isNeedTranslate:
-    api_logger.info(f"{stepIndex}---------视频加上中文TTS")
     stepIndex = stepIndex + 1
     try:
         add_cn_tts(outSrtCnPath, curVideoPath, videoDir, combineMp3Path, combineMp3SpeedPath)
@@ -665,8 +663,8 @@ if isNeedTranslate:
         api_logger.error(f"视频加上中文TTS失败：{e}")
         exit(1)
 
+api_logger.info(f"{stepIndex}---------视频加上中文字幕")
 if isNeedTranslate:
-    api_logger.info(f"{stepIndex}---------视频加上中文字幕")
     stepIndex = stepIndex + 1
     try:
         language="chinese"
@@ -690,8 +688,9 @@ if isNeedTranslate:
         api_logger.error(f"视频加上中文字幕失败：{e}")
         exit(1)
 
+api_logger.info(f"{stepIndex}---------剪切没有人声音且超过{cutNoHumanVoiceThreshold}秒的片段")
 if isNeedTranslate and cutNoHumanVoiceThreshold > 0:
-    api_logger.info(f"{stepIndex}---------剪切没有人声音且超过{cutNoHumanVoiceThreshold}秒的片段")
+   
     stepIndex = stepIndex + 1
 
     api_logger.info(f"tts 根据视频生成中文字幕")
@@ -713,8 +712,8 @@ if isNeedTranslate and cutNoHumanVoiceThreshold > 0:
 if os.path.exists(curVideoPath):
     shutil.copyfile(curVideoPath, nobgVideoPath)
 
+api_logger.info(f"{stepIndex}---------视频加上背景音乐")
 if isNeedTranslate and isAddBgMusic:
-    api_logger.info(f"{stepIndex}---------视频加上背景音乐")
     stepIndex = stepIndex + 1
     try:
         for tryIndex in range(0,5):
