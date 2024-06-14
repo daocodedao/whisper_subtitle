@@ -416,7 +416,7 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3
     totalSrtDuraton = 0
     totalGenDuration = 0
     for audioFile in wav_files:
-        # 字幕里有 sub.index ， 音频文件名字也对应的  index.wav
+        # 字幕里有 sub.index ， 音频文件名字也对应的 index.wav
         file_name_without_ext = os.path.splitext(os.path.basename(audioFile))[0]
         index = int(file_name_without_ext) - 1
         if index >= len(subList):
@@ -439,6 +439,7 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3
             combined = combined + second_of_silence
             curAudioFileDuration = curAudioFileDuration + silence_duration/1000
         elif index == 0:
+            # 视频片头和字幕比较，判断是否需要在视频片头加入静音
             if sub.start.total_seconds() > 0.5:
                 silence_duration = sub.start.total_seconds()*1000
                 api_logger.info(f"需要加入静音音频， 时长：{silence_duration}毫秒")
