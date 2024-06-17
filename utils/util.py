@@ -1,6 +1,6 @@
 import time,datetime,json,os
 import platform
-
+import subprocess
 from utils.logger_settings import api_logger
 from urllib.parse import urlparse
 import av
@@ -211,3 +211,28 @@ class Util:
         logStrList = inStr.split('\n')
         for line in logStrList:
             api_logger.info(line)
+
+
+   # 显存，返回 M 兆
+  def get_first_gpu_memory():
+    if platform.system() == "Linux":
+      command = "nvidia-smi --query-gpu=memory.free --format=csv"
+      memory_free_info = subprocess.check_output(command.split()).decode('ascii').split('\n')[:-1][1:]
+      memory_free_values = [int(x.split()[0]) for i, x in enumerate(memory_free_info)]
+      if len(memory_free_values) > 0:
+          return memory_free_values[0]
+      else:
+          return 0
+    else:
+       return 0
+
+  # 显存数组，返回 M 兆
+  def get_gpu_memory():
+    if platform.system() == "Linux":
+      command = "nvidia-smi --query-gpu=memory.free --format=csv"
+      memory_free_info = subprocess.check_output(command.split()).decode('ascii').split('\n')[:-1][1:]
+      memory_free_values = [int(x.split()[0]) for i, x in enumerate(memory_free_info)]
+      return memory_free_values
+    else:
+      return 0
+    

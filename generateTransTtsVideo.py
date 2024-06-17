@@ -577,7 +577,7 @@ if check_video_verticle(videoPath):
 curVideoPath = videoPath
 
 stepIndex = 1
-api_logger.info(f"{stepIndex}---------视频卡通化")
+api_logger.info(f"{stepIndex}---------视频卡通化-----GPU 显存 {Util.get_first_gpu_memory()}")
 if isNeedCartoon:    
     stepIndex = stepIndex + 1
     command = f"/data/work/aishowos/whisper_subtitle/start-cartoon.sh -v {curVideoPath} -i {processId} -a add"
@@ -591,7 +591,7 @@ if isNeedCartoon:
         api_logger.error(f"视频卡通化失败")
         exit(1)
 
-api_logger.info(f"{stepIndex}---------视频生成英文SRT")
+api_logger.info(f"{stepIndex}---------视频生成英文SRT-----GPU 显存 {Util.get_first_gpu_memory()}")
 if isNeedTranslate:
     stepIndex = stepIndex + 1
     api_logger.info(f"从视频剥离音频文件 {srcAudioPath}")
@@ -616,7 +616,7 @@ if isNeedTranslate:
 
     loopHandleEn_srt(inSrcFilePath=outSrtEnPath, outSrcFilePath=outSrtEnReComposePath)
 
-api_logger.info(f"{stepIndex}---------英文SRT翻译中文SRT")
+api_logger.info(f"{stepIndex}---------英文SRT翻译中文SRT-----GPU 显存 {Util.get_first_gpu_memory()}")
 if isNeedTranslate:
     stepIndex = stepIndex + 1
     try:
@@ -629,7 +629,7 @@ if isNeedTranslate:
         api_logger.error(f"翻译失败：{e}")
         exit(1)
 
-api_logger.info(f"{stepIndex}---------中文SRT转TTS")
+api_logger.info(f"{stepIndex}---------中文SRT转TTS-----GPU 显存 {Util.get_first_gpu_memory()}")
 if isNeedTranslate:
     stepIndex = stepIndex + 1
     try:
@@ -643,7 +643,7 @@ if isNeedTranslate:
         api_logger.error(f"中文SRT转TTS失败：{e}")
         exit(1)
 
-api_logger.info(f"{stepIndex}---------原视频静音")
+api_logger.info(f"{stepIndex}---------原视频静音-----GPU 显存 {Util.get_first_gpu_memory()}")
 if isNeedTranslate:
     stepIndex = stepIndex + 1
     try:
@@ -657,7 +657,7 @@ if isNeedTranslate:
         api_logger.error(f"原视频静音失败：{e}")
         exit(1)
 
-api_logger.info(f"{stepIndex}---------视频加上中文TTS")
+api_logger.info(f"{stepIndex}---------视频加上中文TTS-----GPU 显存 {Util.get_first_gpu_memory()}")
 if isNeedTranslate:
     stepIndex = stepIndex + 1
     try:
@@ -667,7 +667,7 @@ if isNeedTranslate:
         api_logger.error(f"视频加上中文TTS失败：{e}")
         exit(1)
 
-api_logger.info(f"{stepIndex}---------视频加上中文字幕")
+api_logger.info(f"{stepIndex}---------视频加上中文字幕-----GPU 显存 {Util.get_first_gpu_memory()}")
 if isNeedTranslate:
     stepIndex = stepIndex + 1
     try:
@@ -692,7 +692,7 @@ if isNeedTranslate:
         api_logger.error(f"视频加上中文字幕失败：{e}")
         exit(1)
 
-api_logger.info(f"{stepIndex}---------剪切没有人声音且超过{cutNoHumanVoiceThreshold}秒的片段")
+api_logger.info(f"{stepIndex}---------剪切没有人声音且超过{cutNoHumanVoiceThreshold}秒的片段-----GPU 显存 {Util.get_first_gpu_memory()}")
 if isNeedTranslate and cutNoHumanVoiceThreshold > 0:
    
     stepIndex = stepIndex + 1
@@ -716,7 +716,7 @@ if isNeedTranslate and cutNoHumanVoiceThreshold > 0:
 if os.path.exists(curVideoPath):
     shutil.copyfile(curVideoPath, nobgVideoPath)
 
-api_logger.info(f"{stepIndex}---------视频加上背景音乐")
+api_logger.info(f"{stepIndex}---------视频加上背景音乐-----GPU 显存 {Util.get_first_gpu_memory()}")
 if isNeedTranslate and isAddBgMusic:
     stepIndex = stepIndex + 1
     try:
@@ -751,7 +751,7 @@ if isNeedTranslate and isAddBgMusic:
         api_logger.error(f"视频加上背景音乐失败：{e}")
             # exit(1)
 
-api_logger.info(f"{stepIndex}---------上传到腾讯云")
+api_logger.info(f"{stepIndex}---------上传到腾讯云-----GPU 显存 {Util.get_first_gpu_memory()}")
 stepIndex = stepIndex + 1
 bucketName = "magicphoto-1315251136"
 resultUrlPre = f"translate/video/{processId}/"
