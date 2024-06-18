@@ -3,10 +3,8 @@ from utils.logger_settings import api_logger
 from utils.translateBaidu import *
 import srt
 from utils.translateQwen import *
-from utils.replaceKeyword import *
 from utils.util import Util
-
-
+from utils.utilSrt import replaceSentenceSysKeywordFromStr
 
 
 def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
@@ -52,7 +50,7 @@ def translate_srt(outSrtCnPath, outSrtEnPath, isVerticle = True):
                 zhSub = zhSubList[index]
 
                 zhContent = zhSub.content
-                zhContent = replaceSentenceWithKeyword(zhContent)
+                zhContent = replaceSentenceSysKeywordFromStr(zhContent)
 
                 print(
                     f"{enSub.index}\n"

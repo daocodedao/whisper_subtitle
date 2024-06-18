@@ -15,7 +15,6 @@ from utils.Tos import TosService
 from utils.translateQwen import *
 from combineSubtitle import *
 import math
-from utils.replaceKeyword import *
 from utilAsr import start_zh_asr_to_srt
 from utils.util import Util
 from utils.mediaUtil import MediaUtil
@@ -25,6 +24,8 @@ import datetime
 import shutil
 from utils import utilSensitive
 from utils.notify import NotifyUtil
+from utils.utilSrt import writeSublistToFile, replaceKeywordFromFile
+
 
 def whisper_transcribe_en(file="{}/audio.mp3".format(dir), download_root = "./models/"):
     '''transcribe audio to text using whisper'''
@@ -179,22 +180,6 @@ def translate_list_remote(preTrans:str, preTransEnSubList):
     
     return subZhList
 
-def writeSublistToFile(zhAllSubList, outSrtCnPath):
-    api_logger.info(f"写回文件：{outSrtCnPath}")
-    with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
-        for index in range(0, len(zhAllSubList)):
-            zhSub = zhAllSubList[index]
-            zhContent = zhSub.content
-            zhContent = replaceSentenceWithKeyword(zhContent)
-
-            print(
-                f"{index + 1}\n"
-                f"{Util.format_timestamp(zhSub.start.total_seconds(), always_include_hours=True)} --> "
-                f"{Util.format_timestamp(zhSub.end.total_seconds(), always_include_hours=True)}\n"
-                f"{zhContent}",
-                file=outFile,
-                flush=True,
-            )
 
 kMinMaxTranslateLineCount = 8
 kMaxMaxTranslateLineCount = 10
@@ -508,6 +493,7 @@ def addCustomSrt(srcPath, videoPath):
     else:
         api_logger.info("无需添加话术")
 
+
 program = argparse.ArgumentParser(formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=100))
 program.add_argument('-v', '--video', help='videoPath',
                      dest='videoPath', type=str, default='')
@@ -523,6 +509,8 @@ program.add_argument('-c', '--needCartoon',
                      dest='needCartoon', type=str, default='noCartoon')
 program.add_argument('-u', '--cutNoHumanVoiceThreshold',
                      dest='cutNoHumanVoiceThreshold', type=int, default=0)
+program.add_argument('-k', '--replaceKeyWorkTxtFilePath',
+                     dest='replaceKeyWorkTxtFilePath', type=str)
 args = program.parse_args()
 
 api_logger.info(args)
@@ -539,6 +527,10 @@ if args.needTranslate == 'noTranslate':
 isNeedCartoon = False
 if args.needCartoon == 'cartoon':
     isNeedCartoon = True
+
+replaceKeyWorkTxtFilePath=None
+if args.replaceKeyWorkTxtFilePath:
+    replaceKeyWorkTxtFilePath=args.replaceKeyWorkTxtFilePath
 
 cutNoHumanVoiceThreshold = args.cutNoHumanVoiceThreshold
 
@@ -614,6 +606,10 @@ if isNeedTranslate:
         api_logger.info(notiMsg)
         NotifyUtil.notifyFeishu(notiMsg)
         exit(1)
+
+    api_logger.info(f"字幕替换关键字 {outSrtEnPath}")
+    replaceKeywordFromFile(outSrtEnPath, replaceKeyWorkTxtFilePath)
+
 
     loopHandleEn_srt(inSrcFilePath=outSrtEnPath, outSrcFilePath=outSrtEnReComposePath)
 

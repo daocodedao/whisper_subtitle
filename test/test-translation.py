@@ -7,28 +7,15 @@
 
 
 import os
-from utils.logger_settings import api_logger
+from typing import List
 import srt
-
+# import 路径修改
+import sys,os
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+from utils.logger_settings import api_logger
 from utils.util import Util
 from utils.translateQwen import *
-
-def writeSublistToFile(zhAllSubList, outSrtCnPath):
-    api_logger.info(f"写回文件：{outSrtCnPath}")
-    with open(outSrtCnPath, "w", encoding="utf-8") as outFile:
-        for index in range(0, len(zhAllSubList)):
-            zhSub = zhAllSubList[index]
-            zhContent = zhSub.content
-            zhContent = replaceSentenceWithKeyword(zhContent)
-
-            print(
-                f"{index}\n"
-                f"{Util.format_timestamp(zhSub.start.total_seconds(), always_include_hours=True)} --> "
-                f"{Util.format_timestamp(zhSub.end.total_seconds(), always_include_hours=True)}\n"
-                f"{zhContent}",
-                file=outFile,
-                flush=True,
-            )
+from utils.utilSrt import replaceSentenceSysKeywordFromStr, writeSublistToFile,replaceKeywordFromFile
 
 def translate_list_remote(preTrans:str, preTransEnSubList):
     # 尝试3次
@@ -41,7 +28,7 @@ def translate_list_remote(preTrans:str, preTransEnSubList):
             api_logger.info(zhContent)
 
             zhSubs = srt.parse(zhContent)
-            subZhList = list(zhSubs)
+            subZhList = List(zhSubs)
             
             # 分组翻译成功后，直接更新中文的时间戳，避免累积太多，视频最后都是静音
             if len(preTransEnSubList) >= len(subZhList) and len(subZhList) > 0:
@@ -68,15 +55,12 @@ def translate_list_remote(preTrans:str, preTransEnSubList):
     
     return subZhList
 
-
-
-
 def translate_srt(outSrtCnPath, inSrtFilePath, isVerticle = True):
     enAllSubList=[]
     with open(inSrtFilePath, 'r') as srcFile:
         content = srcFile.read()
         subs = srt.parse(content)
-        enAllSubList = list(subs)
+        enAllSubList = List(subs)
 
     zhAllSubList = []
     preTrans = ""
@@ -95,23 +79,13 @@ def translate_srt(outSrtCnPath, inSrtFilePath, isVerticle = True):
     
     writeSublistToFile(zhAllSubList, outSrtCnPath)
 
-
-
 videoDir = "./sample"
 processId = "simple5"
 outSrtEnPath = os.path.join(videoDir, f"{processId}-en.srt")
+outSrtPath = os.path.join(videoDir, f"{processId}-out.srt")
 outSrtCnPath = os.path.join(videoDir, f"{processId}-cn.srt")
 outSrtEnReComposePath = os.path.join(videoDir, f"{processId}-en-recompse.srt")
+replaceKeyWorkTxtFilePath =  os.path.join(videoDir, f"keyword.txt")
 
-
-# checkSubs = srt.open(outSrtCnPath)
-# api_logger.info(len(checkSubs))
-
-# with open(outSrtCnPath, 'r') as srcFile:
-#     # 读取文件内容
-#     content = srcFile.read()
-#     subs = srt.parse(content)
-#     subList = list(subs)
-#     print("donw")
-
-translate_srt(outSrtCnPath, outSrtEnPath, True)
+api_logger.info(f"字幕替换关键字 {outSrtEnPath}")
+replaceKeywordFromFile(outSrtEnPath, replaceKeyWorkTxtFilePath, outSrtPath)
