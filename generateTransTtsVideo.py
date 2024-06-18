@@ -528,9 +528,7 @@ isNeedCartoon = False
 if args.needCartoon == 'cartoon':
     isNeedCartoon = True
 
-replaceKeyWorkTxtFilePath=None
-if args.replaceKeyWorkTxtFilePath:
-    replaceKeyWorkTxtFilePath=args.replaceKeyWorkTxtFilePath
+replaceKeyWorkTxtFilePath=replaceKeyWorkTxtFilePath=args.replaceKeyWorkTxtFilePath
 
 cutNoHumanVoiceThreshold = args.cutNoHumanVoiceThreshold
 
