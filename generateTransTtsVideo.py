@@ -607,8 +607,9 @@ if isNeedTranslate:
         NotifyUtil.notifyFeishu(notiMsg)
         exit(1)
 
-    api_logger.info(f"字幕替换关键字 src: {outSrtEnPath} key: {replaceKeyWorkTxtFilePath} out: {outSrtEnPath}")
-    replaceKeywordFromFile(outSrtEnPath, replaceKeyWorkTxtFilePath, outSrtEnPath)
+    if replaceKeyWorkTxtFilePath and os.path.exists(replaceKeyWorkTxtFilePath):
+        api_logger.info(f"字幕替换关键字 src: {outSrtEnPath} key: {replaceKeyWorkTxtFilePath} out: {outSrtEnPath}")
+        replaceKeywordFromFile(outSrtEnPath, replaceKeyWorkTxtFilePath, outSrtEnPath)
 
     loopHandleEn_srt(inSrcFilePath=outSrtEnPath, outSrcFilePath=outSrtEnReComposePath)
 
