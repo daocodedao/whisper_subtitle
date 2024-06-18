@@ -39,7 +39,7 @@ sudo kill -9 $TAILPID
 fi
 
 
-while getopts "v:i:r:b:t:c:u:" opt
+while getopts "v:i:r:b:t:c:u:k:" opt
 do
    case "$opt" in
       v ) videoPath="$OPTARG" ;;
@@ -49,18 +49,38 @@ do
       t ) isNeedTranslate="$OPTARG" ;;
       c ) isNeedCartoon="$OPTARG" ;;
       u ) cutNoHumanVoiceThreshold="$OPTARG" ;;
+      k ) replaceKeyWorkTxtFilePath="$OPTARG" ;;
       ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
    esac
 done
 
+cmd="${pythonPath} $jobName"
+
 [[ -z  $videoPath ]] &&  echo -e "${RED}videoPath is empty ${NOCOLOR}" &&  exit 1
 [[ -z  $processId ]] &&  echo -e "${RED}processId is empty ${NOCOLOR}" &&  exit 1
+cmd="${cmd} -v $videoPath -i $processId "
+
 [[ -z  $role ]] && role="he"
+cmd="${cmd} -r $role "
+
 [[ -z  $isAddBgMusic ]] && isAddBgMusic="add"
+cmd="${cmd} -b $isAddBgMusic "
+
 [[ -z  $isNeedTranslate ]] && isNeedTranslate="translate"
+cmd="${cmd} -t $isNeedTranslate "
+
 [[ -z  $isNeedCartoon ]] && isNeedCartoon="noCartoon"
+cmd="${cmd} -c $isNeedCartoon "
+
 [[ -z  $cutNoHumanVoiceThreshold ]] && cutNoHumanVoiceThreshold=0
+cmd="${cmd} -u $cutNoHumanVoiceThreshold "
+
+[[ -n $replaceKeyWorkTxtFilePath ]] && cmd="${cmd} -k $replaceKeyWorkTxtFilePath "
 
 
-echo -e "${YELLOW}${pythonPath} $jobName  -v '$videoPath'   -i '$processId'  -r '$role' -b '$isAddBgMusic'   -t '$isNeedTranslate' -c '$isNeedCartoon' -u '$cutNoHumanVoiceThreshold' ${NOCOLOR}"
-${pythonPath} $jobName  -v "$videoPath" -i "$processId" -r "$role"  -b "$isAddBgMusic" -t "$isNeedTranslate" -c "$isNeedCartoon" -u "$cutNoHumanVoiceThreshold"
+
+echo -e "${YELLOW}${cmd}${NOCOLOR}"
+${cmd}
+
+# echo -e "${YELLOW}${pythonPath} $jobName  -v '$videoPath'   -i '$processId'  -r '$role' -b '$isAddBgMusic'   -t '$isNeedTranslate' -c '$isNeedCartoon' -u '$cutNoHumanVoiceThreshold' ${NOCOLOR}"
+# ${pythonPath} $jobName  -v "$videoPath" -i "$processId" -r "$role"  -b "$isAddBgMusic" -t "$isNeedTranslate" -c "$isNeedCartoon" -u "$cutNoHumanVoiceThreshold"

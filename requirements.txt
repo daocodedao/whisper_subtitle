@@ -28,3 +28,4 @@ av
 moviepy
 pysrt
 spacy
+scenedetect

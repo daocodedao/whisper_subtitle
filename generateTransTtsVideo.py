@@ -550,6 +550,7 @@ api_logger.info(f"videoPath: {videoPath} processId:{processId} role={role} isAdd
 language = "en"
 videoDir = os.path.dirname(videoPath)
 ttsDir = os.path.join(videoDir, "tts")
+splitDir = os.path.join(videoDir, "split")
 nobgVideoPath = os.path.join(videoDir, f"{processId}-no-bgmusic.mp4")
 videoMutePath = os.path.join(videoDir, f"{processId}-mute.mp4")
 videoCnPath = os.path.join(videoDir, f"{processId}-cn.mp4")
@@ -656,6 +657,13 @@ if isNeedTranslate:
     except Exception as e:
         api_logger.error(f"原视频静音失败：{e}")
         exit(1)
+
+# api_logger.info(f"{stepIndex}---------原视频切片-----GPU 显存 {Util.get_first_gpu_memory()}")
+# if isNeedTranslate:
+#     stepIndex = stepIndex + 1
+#     splitDir
+
+
 
 api_logger.info(f"{stepIndex}---------视频加上中文TTS-----GPU 显存 {Util.get_first_gpu_memory()}")
 if isNeedTranslate:
