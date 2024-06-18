@@ -608,8 +608,7 @@ if isNeedTranslate:
         exit(1)
 
     api_logger.info(f"字幕替换关键字 {outSrtEnPath}")
-    replaceKeywordFromFile(outSrtEnPath, replaceKeyWorkTxtFilePath)
-
+    replaceKeywordFromFile(outSrtEnPath, replaceKeyWorkTxtFilePath, outSrtEnPath)
 
     loopHandleEn_srt(inSrcFilePath=outSrtEnPath, outSrcFilePath=outSrtEnReComposePath)
 
