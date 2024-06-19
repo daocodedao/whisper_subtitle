@@ -26,6 +26,8 @@ from utils import utilSensitive
 from utils.notify import NotifyUtil
 from utils.utilSrt import writeSublistToFile, replaceKeywordFromFile
 from utils.splitVideo import splitVideoFastByPath
+from utils.const import CommonError
+
 
 def whisper_transcribe_en(file="{}/audio.mp3".format(dir), download_root = "./models/"):
     '''transcribe audio to text using whisper'''
@@ -612,7 +614,7 @@ if isNeedTranslate:
         notiMsg = notiMsg + f"视频ID: {processId}\n"
         api_logger.info(notiMsg)
         NotifyUtil.notifyFeishu(notiMsg)
-        exit(1)
+        exit(CommonError.SensitiveDetected.value)
 
     if replaceKeyWorkTxtFilePath and os.path.exists(replaceKeyWorkTxtFilePath):
         api_logger.info(f"字幕替换关键字 src: {outSrtEnPath} key: {replaceKeyWorkTxtFilePath} out: {outSrtEnPath}")
@@ -758,7 +760,7 @@ if isNeedTranslate and isAddBgMusic:
             api_logger.error(f"背景音乐 {audioInsPath} 不存在")
     except Exception as e:
         api_logger.error(f"视频加上背景音乐失败：{e}")
-            # exit(1)
+        # exit(1)
 
 api_logger.info(f"{stepIndex}---------上传到腾讯云-----GPU 显存 {Util.get_first_gpu_memory()}")
 stepIndex = stepIndex + 1
