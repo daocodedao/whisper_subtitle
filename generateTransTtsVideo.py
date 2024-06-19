@@ -453,22 +453,22 @@ def add_cn_tts(outSrtCnPath,
 
     file_handle = combined.export(combineMp3Path, format="mp3")
 
-    if isNeedChangeSpeed:
-        combine_mp3_duration = MediaUtil.getMediaDuration(combineMp3Path)
-        video_duration = MediaUtil.getMediaDuration(videoMutePath)
-        # 音频时间 大于 视频时间，音频需要变速
-        api_logger.info(f"判断是否需要变速, combine_mp3_duration={combine_mp3_duration} video_duration={video_duration}")
-        if combine_mp3_duration > video_duration:
-            api_logger.info(f"视频需要变速, {combine_mp3_duration/video_duration}")
-            speed_change(combineMp3Path, combineMp3SpeedPath,
-                        combine_mp3_duration/video_duration)
-            combineMp3Path = combineMp3SpeedPath
+    # if isNeedChangeSpeed:
+    combine_mp3_duration = MediaUtil.getMediaDuration(combineMp3Path)
+    video_duration = MediaUtil.getMediaDuration(videoMutePath)
+    # 音频时间 大于 视频时间，音频需要变速
+    api_logger.info(f"判断是否需要变速, combine_mp3_duration={combine_mp3_duration} video_duration={video_duration}")
+    if combine_mp3_duration > video_duration:
+        api_logger.info(f"视频需要变速, {combine_mp3_duration/video_duration}")
+        speed_change(combineMp3Path, combineMp3SpeedPath,
+                    combine_mp3_duration/video_duration)
+        combineMp3Path = combineMp3SpeedPath
 
-        cmd = f'ffmpeg -y -i {videoMutePath} -i {combineMp3Path} -c:v copy -c:a aac {videoCnPath}'
-        subprocess.call(cmd, shell=True)
-        api_logger.info(f'完成任务: {videoCnPath}')
-    else:
-        splitVideoDir
+    cmd = f'ffmpeg -y -i {videoMutePath} -i {combineMp3Path} -c:v copy -c:a aac {videoCnPath}'
+    subprocess.call(cmd, shell=True)
+    api_logger.info(f'完成任务: {videoCnPath}')
+    # else:
+    #     splitVideoDir
 
 def addCustomSrt(srcPath, videoPath):
     subList = []
@@ -674,7 +674,11 @@ api_logger.info(f"{stepIndex}---------视频加上中文TTS-----GPU 显存 {Util
 if isNeedTranslate:
     stepIndex = stepIndex + 1
     try:
-        add_cn_tts(outSrtCnPath, curVideoPath, videoDir, combineMp3Path, combineMp3SpeedPath)
+        add_cn_tts(outSrtCnPath, 
+                   curVideoPath, 
+                   videoDir, 
+                   combineMp3Path, 
+                   combineMp3SpeedPath)
         curVideoPath = videoCnPath
     except Exception as e:
         api_logger.error(f"视频加上中文TTS失败：{e}")
