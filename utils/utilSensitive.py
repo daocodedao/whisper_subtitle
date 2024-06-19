@@ -53,9 +53,9 @@ def detectSensitiveByNLP(text:str):
     for word in nerSet:
         if word in sensitive_word_detector:
             api_logger.info(f"{text} NLP检测包含敏感词 {word}")
-            return True
+            return True, word
 
-    return False
+    return False, ""
 
 def detectSensitiveFromStr(text: str):
     # api_logger.info(f"检测字符串： {text}")
@@ -66,10 +66,10 @@ def detectSensitiveFromStr(text: str):
     for word in jieba.cut(text):
         if word in sensitive_word_detector:
             api_logger.info(f"{text} 分词检测包含敏感词 {word}")
-            return True
+            return True, word
 
-    isDetect = detectSensitiveByNLP(text)
-    return isDetect
+    isDetect, detectWord = detectSensitiveByNLP(text)
+    return isDetect, detectWord
 
 def detectSensitiveFromFile(filePath: str):
     if not os.path.exists(filePath):
@@ -77,7 +77,8 @@ def detectSensitiveFromFile(filePath: str):
     
     with open(filePath, "r") as file:
         content = file.read()
-        return detectSensitiveFromStr(content)
+        isDetect, detectWord =  detectSensitiveFromStr(content)
+        return isDetect, detectWord
 
 
 def detectSensitiveFromSrt(filePath: str):
@@ -90,9 +91,9 @@ def detectSensitiveFromSrt(filePath: str):
         subList = list(subs)
         for sub in subList:
             curLineContent = sub.content
-            if detectSensitiveFromStr(curLineContent):
-                return True
-    return False
+            isDetect, isDetect =  detectSensitiveFromStr(curLineContent):
+            return isDetect, isDetect
+    return False, ""
 
 
 # 提取英文敏感词到独立文件

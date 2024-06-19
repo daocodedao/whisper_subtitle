@@ -25,7 +25,7 @@ import shutil
 from utils import utilSensitive
 from utils.notify import NotifyUtil
 from utils.utilSrt import writeSublistToFile, replaceKeywordFromFile
-
+from utils.splitVideo import splitVideoFastByPath
 
 def whisper_transcribe_en(file="{}/audio.mp3".format(dir), download_root = "./models/"):
     '''transcribe audio to text using whisper'''
@@ -381,7 +381,13 @@ def loopHandleEn_srt(inSrcFilePath, outSrcFilePath):
         with open(inSrcFilePath, 'w') as file_b:
             file_b.write(content_a)
 
-def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3SpeedPath):
+def add_cn_tts(outSrtCnPath, 
+               videoMutePath, 
+               videoDir, 
+               combineMp3Path, 
+               combineMp3SpeedPath,
+               splitVideoDir,
+               isNeedChangeSpeed=True):
     ttsDir = os.path.join(videoDir, "tts")
     wav_files = [f for f in os.listdir(ttsDir) if f.endswith(".wav")]
     if(len(wav_files) == 0):
@@ -443,19 +449,22 @@ def add_cn_tts(outSrtCnPath, videoMutePath, videoDir, combineMp3Path, combineMp3
 
     file_handle = combined.export(combineMp3Path, format="mp3")
 
-    combine_mp3_duration = MediaUtil.getMediaDuration(combineMp3Path)
-    video_duration = MediaUtil.getMediaDuration(videoMutePath)
-    # 音频时间 大于 视频时间，音频需要变速
-    api_logger.info(f"判断是否需要变速, combine_mp3_duration={combine_mp3_duration} video_duration={video_duration}")
-    if combine_mp3_duration > video_duration:
-        api_logger.info(f"视频需要变速, {combine_mp3_duration/video_duration}")
-        speed_change(combineMp3Path, combineMp3SpeedPath,
-                     combine_mp3_duration/video_duration)
-        combineMp3Path = combineMp3SpeedPath
+    if isNeedChangeSpeed:
+        combine_mp3_duration = MediaUtil.getMediaDuration(combineMp3Path)
+        video_duration = MediaUtil.getMediaDuration(videoMutePath)
+        # 音频时间 大于 视频时间，音频需要变速
+        api_logger.info(f"判断是否需要变速, combine_mp3_duration={combine_mp3_duration} video_duration={video_duration}")
+        if combine_mp3_duration > video_duration:
+            api_logger.info(f"视频需要变速, {combine_mp3_duration/video_duration}")
+            speed_change(combineMp3Path, combineMp3SpeedPath,
+                        combine_mp3_duration/video_duration)
+            combineMp3Path = combineMp3SpeedPath
 
-    cmd = f'ffmpeg -y -i {videoMutePath} -i {combineMp3Path} -c:v copy -c:a aac {videoCnPath}'
-    subprocess.call(cmd, shell=True)
-    api_logger.info(f'完成任务: {videoCnPath}')
+        cmd = f'ffmpeg -y -i {videoMutePath} -i {combineMp3Path} -c:v copy -c:a aac {videoCnPath}'
+        subprocess.call(cmd, shell=True)
+        api_logger.info(f'完成任务: {videoCnPath}')
+    else:
+        splitVideoDir
 
 def addCustomSrt(srcPath, videoPath):
     subList = []
@@ -596,9 +605,9 @@ if isNeedTranslate:
     whisper_result_to_srt(result, outPath=outSrtEnPath, language=language)
 
     api_logger.info(f"敏感词检测 {outSrtEnPath}")
-    isSensitive = utilSensitive.detectSensitiveFromSrt(outSrtEnPath)
+    isSensitive, sensitiveWord = utilSensitive.detectSensitiveFromSrt(outSrtEnPath)
     if isSensitive:
-        notiMsg = "字幕包含敏感词"
+        notiMsg = f"字幕包含敏感词: {sensitiveWord}\n"
         notiMsg = notiMsg + f"视频地址: {videoPath}\n"
         notiMsg = notiMsg + f"视频ID: {processId}\n"
         api_logger.info(notiMsg)
@@ -655,9 +664,7 @@ if isNeedTranslate:
 # api_logger.info(f"{stepIndex}---------原视频切片-----GPU 显存 {Util.get_first_gpu_memory()}")
 # if isNeedTranslate:
 #     stepIndex = stepIndex + 1
-#     splitDir
-
-
+#     splitVideoFastByPath(curVideoPath, splitDir)
 
 api_logger.info(f"{stepIndex}---------视频加上中文TTS-----GPU 显存 {Util.get_first_gpu_memory()}")
 if isNeedTranslate:

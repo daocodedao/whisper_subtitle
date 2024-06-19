@@ -20,8 +20,8 @@ def getVideoPathsFromDir(fromDir):
 
 def splitVideoFastByPath(video_path, subVideoDir, threshold=30.0):
 
-    if Util.isMac():
-        video_path = "./tmp/3728.mp4"
+    # if Util.isMac():
+    #     video_path = "./tmp/3728.mp4"
 
     if not video_path or os.path.exists(video_path) == False:
         return []
