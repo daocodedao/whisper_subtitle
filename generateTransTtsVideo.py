@@ -296,7 +296,9 @@ def recom_en_srt(inSrcFilePath, outSrcFilePath):
                 append_punctuations: str = "?.,"
                 # 最后一个字符不是标点符号
                 curLineContent = sub.content
-                lastChar = curLineContent[len(curLineContent) - 1]
+                lastChar = ""
+                if len(curLineContent) > 0:
+                    lastChar = curLineContent[len(curLineContent) - 1]
                 # 结尾不是标点符号, 准备连续操作两行
                 if len(curLineContent) > 0 and lastChar not in append_punctuations and index + 1 < len(subList):
                     isModified = True
