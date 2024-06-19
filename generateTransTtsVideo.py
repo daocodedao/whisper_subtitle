@@ -390,7 +390,7 @@ def add_cn_tts(outSrtCnPath,
                videoDir, 
                combineMp3Path, 
                combineMp3SpeedPath,
-               splitVideoDir,
+               splitVideoDir = None,
                isNeedChangeSpeed=True):
     ttsDir = os.path.join(videoDir, "tts")
     wav_files = [f for f in os.listdir(ttsDir) if f.endswith(".wav")]
