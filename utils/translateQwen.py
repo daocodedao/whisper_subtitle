@@ -44,14 +44,12 @@ def translate_en_to_zh(inSrc):
 
     systemContent = f"你是翻译助手，将后续的内容翻译成中文"
     jsonData = composeV1Dic(systemContent=systemContent, userContent=inSrc)
-
     response = requests.post(serverUrl, json=jsonData, timeout=kRequestTimeout)
-
     if response.status_code == 200:
         # api_logger.info("请求成功")
         retJson = response.json()
         # api_logger.info(retJson)
-        ret_text = retJson["message"]
+        ret_text = retJson["content"]
         ret_text = replaceSpecialWordEnToZh(ret_text)
         return ret_text
     else:
@@ -71,7 +69,7 @@ def translate_srt_en_to_zh(inSrc, inNewTransLate=True):
         # api_logger.info("请求成功")
         retJson = response.json()
         # api_logger.info(retJson)
-        ret_text = retJson["message"]
+        ret_text = retJson["content"]
         ret_text = replaceSpecialWordEnToZh(ret_text)
         return ret_text
     else:
