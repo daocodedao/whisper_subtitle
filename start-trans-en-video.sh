@@ -78,7 +78,6 @@ cmd="${cmd} -u $cutNoHumanVoiceThreshold "
 [[ -n $replaceKeyWorkTxtFilePath ]] && cmd="${cmd} -k $replaceKeyWorkTxtFilePath "
 
 
-
 echo -e "${YELLOW}${cmd}${NOCOLOR}"
 ${cmd}
 
