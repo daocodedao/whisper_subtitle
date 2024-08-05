@@ -1,6 +1,6 @@
 import srt
 # from translate import Translator
-from utils.logger_settings import api_logger
+
 import subprocess
 import whisper
 import json
@@ -27,7 +27,7 @@ from utils.notify import NotifyUtil
 from utils.utilSrt import writeSublistToFile, replaceKeywordFromFile
 from utils.splitVideo import splitVideoFastByPath
 from utils.const import CommonError
-
+from utils.logger_settings import api_logger
 
 def whisper_transcribe_en(file="{}/audio.mp3".format(dir), download_root = "./models/"):
     '''transcribe audio to text using whisper'''
