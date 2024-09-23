@@ -1,4 +1,6 @@
 from pydub import AudioSegment
+import srt,sys,os
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from utils.logger_settings import api_logger
 
 
