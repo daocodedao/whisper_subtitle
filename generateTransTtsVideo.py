@@ -431,7 +431,10 @@ def add_cn_tts(outSrtCnPath,
             silence_duration = (sub.start.total_seconds() - totalGenDuration)*1000
             api_logger.info(f"需要加入静音音频， 时长：{silence_duration}毫秒")
             second_of_silence = AudioSegment.silent(duration=silence_duration)
-            combined = combined + second_of_silence
+            if combined:
+                combined = combined + second_of_silence
+            else:
+                combined = second_of_silence
             curAudioFileDuration = curAudioFileDuration + silence_duration/1000
         elif index == 0:
             # 视频片头和字幕比较，判断是否需要在视频片头加入静音
